@@ -7,10 +7,14 @@ import express from 'express'
 import AuthRouter from './routes/auth.js'
 import AppRouter from './routes/app.js'
 import ApiRouter from './routes/api.js'
+import connectDB from './db/connectDB.js'
 
 
 // create server
 const server = express()
+
+// connect server to database
+connectDB()
 
 
 // connect grouped routes to server using their routers
