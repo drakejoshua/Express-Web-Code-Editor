@@ -2,8 +2,21 @@
 import express from 'express'
 
 
+
+// import server routers
+import AuthRouter from './routes/auth.js'
+import AppRouter from './routes/app.js'
+import ApiRouter from './routes/api.js'
+
+
 // create server
 const server = express()
+
+
+// connect grouped routes to server using their routers
+server.use('/auth', AuthRouter )
+server.use('/app', AppRouter )
+server.use('/api', ApiRouter )
 
 // test route
 server.get("/hello", function( req, res ) {
