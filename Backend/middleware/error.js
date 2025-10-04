@@ -5,7 +5,7 @@
 
 function errorHandler( err, req, res, next ) {
     // log error message to console
-    console.error(err.message)
+    console.error('Error: ', err.message)
 
     // check if error has a status code and send error
     // response with the status code, else, send '500' 

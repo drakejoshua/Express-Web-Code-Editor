@@ -2,7 +2,7 @@
 import express from 'express'
 
 // import router middleware
-import { appIdAuth } from '../middleware/app-id-auth.js'
+import appIdAuth from '../middleware/app-id-auth.js'
 
 // create router from express
 export const router = express.Router()

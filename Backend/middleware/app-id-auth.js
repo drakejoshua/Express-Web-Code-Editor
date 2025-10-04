@@ -3,7 +3,7 @@
 // using a predefined app identifier from the request headers
 
 // import middleware dependencies
-import { reportInvalidAppIdError } from "../utils/error-utils"
+import { reportInvalidAppIdError } from "../utils/error-utils.js"
 
 function appIdAuth( req, res, next ) {
     // get app identifier from request headers
