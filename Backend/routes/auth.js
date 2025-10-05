@@ -1,5 +1,7 @@
-// import route dependencies
+// import router dependencies
 import express from 'express'
+import upload from '../configs/multer.js'
+import { body, param, header } from 'express-validator'
 
 // import router middleware
 import appIdAuth from '../middleware/app-id-auth.js'
@@ -13,10 +15,22 @@ router.use( appIdAuth )
 
 
 // router test route
-router.get('/hello', function( req, res ) {
-    res.send("hello world: auth")
-})
+// router.get('/hello', function( req, res ) {
+//     res.send("hello world: auth")
+// })
 
+
+// POST /auth/signup - 
+router.post("/signup",
+    [
+        body("email")
+            .exists()
+            .withMessage()
+
+    ]
+function( req, res, next ) {
+
+})
 
 
 
