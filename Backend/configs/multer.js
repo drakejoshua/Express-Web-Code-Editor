@@ -15,9 +15,12 @@ function fileFilter( req, file, cb ) {
     if ( file.mimetype.startsWith("image/") ) {
         cb( null, true )
     } else {
+        // create a custom error object and pass it to the callback
         const fileFilterError = new Error("Invalid File Type encountered during upload.")
         fileFilterError.statusCode = 400
         fileFilterError.errorCode = ERROR_CODES.INVALID_FILE_TYPE
+
+        // reject the file with the custom error
         cb( fileFilterError, false )
     }
 }
