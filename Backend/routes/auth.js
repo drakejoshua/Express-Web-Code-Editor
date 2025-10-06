@@ -336,5 +336,11 @@ async function( req, res, next ) {
     }
 })
 
+
+// POST /auth/login - auth route for user login with email and password
+// expects JSON request body with 'email' and 'password' fields
+router.post("/login", async (req, res, next) => {})
+
+
 // export router for plug-in into server
 export default router

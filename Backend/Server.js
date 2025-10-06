@@ -1,5 +1,7 @@
 // import server dependencies
 import express from 'express'
+import passport from 'passport'
+import { configurePassport } from './configs/passport.js'
 
 
 
@@ -20,6 +22,12 @@ const server = express()
 
 // connect server to database
 connectDB()
+
+// initialize passport middleware on server
+server.use( passport.initialize() )
+
+// configure initialized passport instance with strategies
+configurePassport( passport )
 
 // initialize logging middleware on server
 server.use( logger )
