@@ -6,6 +6,7 @@ import {
     ERROR_CODES, 
     reportEmailConfirmationExpiredError, 
     reportEmailExistsError, 
+    reportEmailNotVerifiedError, 
     reportInvalidEmailError, 
     reportInvalidPasswordFormatError, 
     reportInvalidRequestTokenError, 
@@ -13,18 +14,18 @@ import {
 } from '../utils/error-utils.js'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
+import passport from 'passport'
 
 // import database models
 import Users from '../db/UserSchema.js'
 import Bloks from '../db/BlokSchema.js'
 
-// import router middleware
+// import router middleware and utilities
 import appIdAuth from '../middleware/app-id-auth.js'
 import { cloudinaryUpload } from '../utils/cloudinary-utils.js'
 import { sendVerificationEmail } from '../utils/email-utils.js'
 import { generateAccessToken, generateRefreshToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
-import path from 'path'
 
 
 // create router from express
@@ -339,7 +340,87 @@ async function( req, res, next ) {
 
 // POST /auth/login - auth route for user login with email and password
 // expects JSON request body with 'email' and 'password' fields
-router.post("/login", async (req, res, next) => {})
+router.post("/signin", 
+
+    // for user login, validate the email and password in the
+    // incoming request data using express-validator
+    [
+        body("email")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .bail()
+            .isEmail()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .normalizeEmail()
+            .bail(),
+        body("password")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
+            .bail()
+            .isLength({ min: 6 })
+            .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
+    ],
+
+    // authenticate user using passport local strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('local', { session: false }),
+
+async function( req, res, next )  {
+    // check for validation errors if any
+    const errors = validationResult(req)
+
+    // report validation errors if any was found
+    if ( !errors.isEmpty() ) {
+        switch ( errors.array()[0].msg ) {
+            case ERROR_CODES.INVALID_EMAIL:
+                return reportInvalidEmailError( next )
+            case ERROR_CODES.INVALID_PASSWORD_FORMAT:
+                return reportInvalidPasswordFormatError( next )
+        }
+    }   
+
+    // if no validation errors were found, proceed to handle user login
+    try {
+        // at this point, user has been authenticated so user document
+        // is obtained in req.user from passport middleware
+        const user = req.user
+
+        // check if user email is verified
+        // if not, report email not verified error
+        if ( !user.email_verified ) {
+            return reportEmailNotVerifiedError( next )
+        }
+
+        // if email is verified, proceed with login
+        // generate access and refresh tokens
+        const accessToken = generateAccessToken(user)
+        const refreshToken = generateRefreshToken(user)
+
+        // set refresh token in HTTP-only cookie
+        res.cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            path: '/auth/refresh-token',
+            secure: nodeEnv === 'production', // use secure cookies in production
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
+        })
+
+        // send success response with user data and tokens
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user: {
+                    ...prepareUserResponse(user),
+                    access_token: accessToken,
+                }
+            }
+        })
+
+    } catch( error ) {
+        return next(error)
+    }
+})
 
 
 // export router for plug-in into server

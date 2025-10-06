@@ -1,6 +1,7 @@
 // import passport strategies
 // import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import bcrypt from "bcrypt";
 
 // import predefined custom error objects for error handling
 import {
@@ -37,7 +38,7 @@ export function configurePassport( passport ) {
                 }
 
                 // if user found, verify password
-                const isMatch = await user.verifyPassword( password );
+                const isMatch = await bcrypt.compare( password, user.password );
 
                 // if password does not match, report invalid password error
                 if ( !isMatch ) {
