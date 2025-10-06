@@ -10,7 +10,8 @@ import {
     reportInvalidEmailError, 
     reportInvalidPasswordFormatError, 
     reportInvalidRequestTokenError, 
-    reportInvalidUsernameError
+    reportInvalidUsernameError,
+    reportUserNotFoundError
 } from '../utils/error-utils.js'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
@@ -23,9 +24,10 @@ import Bloks from '../db/BlokSchema.js'
 // import router middleware and utilities
 import appIdAuth from '../middleware/app-id-auth.js'
 import { cloudinaryUpload } from '../utils/cloudinary-utils.js'
-import { sendVerificationEmail } from '../utils/email-utils.js'
+import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email-utils.js'
 import { generateAccessToken, generateRefreshToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
+import path from 'path'
 
 
 // create router from express
@@ -328,6 +330,7 @@ async function( req, res, next ) {
                 user: {
                     ...prepareUserResponse(user),
                     access_token: accessToken,
+                    expires_in: 30 * 60 // access token expires in 30 minutes
                 }
             }
         })
@@ -413,6 +416,7 @@ async function( req, res, next )  {
                 user: {
                     ...prepareUserResponse(user),
                     access_token: accessToken,
+                    expires_in: 30 * 60 // access token expires in 30 minutes
                 }
             }
         })
@@ -421,6 +425,172 @@ async function( req, res, next )  {
         return next(error)
     }
 })
+
+
+// POST /auth/reset-password - auth route for sending password reset email
+// expects JSON request body with 'email' field
+router.post("/reset-password",
+    [
+        body("email")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .bail()
+            .isEmail()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .normalizeEmail()
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        // check for validation errors if any
+        const errors = validationResult(req)
+
+        // report validation errors if any was found
+        if ( !errors.isEmpty() ) {
+            switch ( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_EMAIL:
+                    return reportInvalidEmailError( next )
+            }
+        }
+
+        // if no validation errors were found, proceed to handle password reset
+        try {
+            // extract email from request body
+            const { email } = req.body
+
+            // find user by email
+            const user = await Users.findOne( { email: email } )
+
+            // if user not found, report user not found error
+            if ( !user ) {
+                return reportUserNotFoundError( next )
+            }
+
+            // generate password reset token and expiry
+            const resetToken = crypto.randomBytes( 32 ).toString('hex')
+            const resetTokenExpiry = Date.now() + 5 * 60 * 1000 // token valid for 5 minutes
+
+            // update user document with reset token and expiry
+            user.reset_password_token = resetToken
+            user.reset_password_expiry = resetTokenExpiry
+
+            // send password reset email
+            await sendPasswordResetEmail( user.email, `${frontendURL}/auth/reset-password/${resetToken}`)
+
+            // save updated user document
+            await user.save()
+
+            // since no errors were found, send success response with password
+            // reset email message
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    message: 'Password reset email sent successfully'
+                }
+            })
+
+        } catch( error ) {
+            return next(error)
+        }
+    }
+)
+
+
+// POST /auth/reset-password/:token - auth route for resetting user password
+// expects 'token' param in the URL and JSON request body with 'password' field
+router.post("/reset-password/:token",
+    [
+        param("token")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
+            .bail()
+            .isHexadecimal()
+            .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
+            .bail(),
+        body("password")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
+            .bail()
+            .isLength( { min: 6 } )
+            .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        // check for validation errors if any
+        const errors = validationResult(req)
+
+        // report validation errors if any was found
+        if ( !errors.isEmpty() ) {
+            switch ( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_REQUEST_TOKEN:
+                    return reportInvalidRequestTokenError( next )
+                case ERROR_CODES.INVALID_PASSWORD_FORMAT:
+                    return reportInvalidPasswordFormatError( next )
+            }
+        }
+
+        // if no validation errors were found, proceed to handle password reset
+        try {
+            // extract token and password from request
+            const { token } = req.params
+            const { password } = req.body
+
+            // find user by reset token
+            const user = await Users.findOne( { 
+                reset_password_token: token, 
+                reset_password_expiry: { $gt: Date.now() } 
+            } )
+
+            // if user not found or token expired, report error
+            if ( !user ) {
+                return reportInvalidRequestTokenError( next )
+            }
+
+            // if user found and token valid, hash the new password
+            const hashedPassword = await bcrypt.hash( password, bcryptRounds )
+
+            // generate new access and refresh tokens for the user
+            const accessToken = generateAccessToken(user)
+            const refreshToken = generateRefreshToken(user)
+
+            // set refresh token in an HTTP-only cookie to be used in
+            // the frontend for getting new access tokens
+            res.cookie('refresh_token', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', // use secure cookies in production
+                sameSite: 'strict',
+                path: '/auth/refresh-token',
+                maxAge: 7 * 24 * 60 * 60 * 1000, // cookie valid for 7 days
+            })
+
+            // update user password
+            user.password = hashedPassword
+
+            // clear reset token and expiry
+            user.reset_password_token = undefined
+            user.reset_password_expiry = undefined
+
+            // save updated user document
+            await user.save()
+
+            // send success response
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    user: {
+                        ...prepareUserResponse(user),
+                        access_token: accessToken,
+                        expires_in: 30 * 60 // access token expires in 30 minutes
+                    }
+                }
+            })
+
+        } catch( error ) {
+            return next(error)
+        }
+    }
+)
 
 
 // export router for plug-in into server
