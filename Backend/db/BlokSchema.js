@@ -21,15 +21,11 @@ const BlokSchema = new mongoose.Schema({
         type: String
     },
     settings: {
-        type: {
-            theme: { type: String, required: true, default: "vs" },
-            font_size: { type: Number, default: 16, required: true },
-            tab_size: { type: Number, default: 4, required: true },
-            auto_complete: { type: Boolean, default: true, required: true },
-            editor_layout: { type: String, default: "top", required: true },
-        },
-        required: true
-
+        theme: { type: String, required: true, default: "vs" },
+        font_size: { type: Number, default: 16, required: true },
+        tab_size: { type: Number, default: 4, required: true },
+        auto_complete: { type: Boolean, default: true, required: true },
+        editor_layout: { type: String, default: "top", required: true },
     }
 })
 

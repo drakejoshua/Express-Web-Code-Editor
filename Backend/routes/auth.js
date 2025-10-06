@@ -4,9 +4,11 @@ import upload from '../configs/multer.js'
 import { body, param, header, validationResult } from 'express-validator'
 import { 
     ERROR_CODES, 
+    reportEmailConfirmationExpiredError, 
     reportEmailExistsError, 
     reportInvalidEmailError, 
     reportInvalidPasswordFormatError, 
+    reportInvalidRequestTokenError, 
     reportInvalidUsernameError
 } from '../utils/error-utils.js'
 import bcrypt from 'bcrypt'
@@ -20,6 +22,9 @@ import Bloks from '../db/BlokSchema.js'
 import appIdAuth from '../middleware/app-id-auth.js'
 import { cloudinaryUpload } from '../utils/cloudinary-utils.js'
 import { sendVerificationEmail } from '../utils/email-utils.js'
+import { generateAccessToken, generateRefreshToken } from '../utils/token-utils.js'
+import { prepareUserResponse } from '../utils/response-utils.js'
+import path from 'path'
 
 
 // create router from express
@@ -39,9 +44,12 @@ router.use( appIdAuth )
 // load universal data for all auth routes
 const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173'
 const bcryptRounds = parseInt(process.env.BCRYPT_ROUNDS) || 10
+const nodeEnv = process.env.NODE_ENV || 'development'
 
 
-// POST /auth/signup - 
+// POST /auth/signup - auth route for user signup with email and password
+// expects 'multipart/form-data' request with optional profile photo upload
+// request body must include 'username', 'email', and 'password' fields
 router.post("/signup",
 
     // parse 'multipart/form-data' request using multer
@@ -145,7 +153,7 @@ async function( req, res, next ) {
         await sendVerificationEmail( email, `${frontendURL}/auth/verify-email/${verifyEmailToken}`)
 
         // create new user in the database
-        await Users.create({
+        const createdUser = await Users.create({
             // personal user data
             username: username,
             email: email,
@@ -158,6 +166,14 @@ async function( req, res, next ) {
             // auth data
             verify_email_token: verifyEmailToken,
             verify_email_expiry: verifyEmailExpiry
+        })
+
+        // create default "Hello World" blok for the new user
+        await Bloks.create({
+            user_id: createdUser._id,
+            html: "<h1>Hello World</h1>",
+            css: "h1 { color: blue; }",
+            javascript: "console.log('Hello World');",
         })
 
 
@@ -175,8 +191,150 @@ async function( req, res, next ) {
     }
 })
 
+// POST /auth/verify-email - auth route for send a verification email to
+// user email address. expects JSON request body with 'email' field
+router.post("/verify-email",
+    [
+        body("email")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .bail()
+            .isEmail()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .normalizeEmail()
+            .bail()
+    ],
+async function( req, res, next ) {
+    // check for validation errors if any
+    const errors = validationResult(req)
 
+    // report validation errors if any was found
+    if ( !errors.isEmpty() ) {
+        return reportInvalidEmailError( next )
+    }
 
+    // if no validation errors were found, proceed to send verification email
+    const { email } = req.body
+
+    try {
+        // create email verification token and expiry
+        const verifyEmailToken = crypto.randomBytes( 32 ).toString('hex')
+        const verifyEmailExpiry = Date.now() + 5 * 60 * 1000 // token valid for 5 minutes
+
+        // send verification email to user email
+        await sendVerificationEmail( email, `${frontendURL}/auth/verify-email/${verifyEmailToken}`)
+
+        // get user document matching the email
+        const user = await Users.findOne({ email })
+
+        // if user not found, return error
+        if ( !user ) {
+            return reportInvalidEmailError( next )
+        }
+
+        // update user document with new verification token and expiry
+        user.verify_email_token = verifyEmailToken
+        user.verify_email_expiry = verifyEmailExpiry
+
+        // save updated user document
+        await user.save()
+
+        // since no errors, respond with success message for verification email sent
+        res.status(200).json({
+            status: 'success',
+            data: {
+                message: 'Verification email sent successfully'
+            }
+        })
+
+    } catch( error ) {
+        return next(error)
+    }
+})
+
+// GET /auth/verify-email/:token - auth route for verifying user email
+// expects 'token' param in the URL
+router.get("/verify-email/:token",
+    [
+        param("token")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
+            .bail()
+            .isHexadecimal()
+            .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
+            .bail()
+    ],
+async function( req, res, next ) {
+    // check for validation errors if any
+    const errors = validationResult(req)
+
+    // report validation errors if any was found
+    if ( !errors.isEmpty() ) {
+        return reportInvalidRequestTokenError( next )
+    }
+
+    // if no validation errors were found, proceed to verify user email
+
+    // extract email verification token from request params
+    const { token } = req.params
+
+    try {
+        // find user with matching verification token
+        const user = await Users.findOne({
+            verify_email_token: token
+        })
+
+        // if user not found, report invalid request token error
+        // since token does not match any user
+        if ( !user ) {
+            return reportInvalidRequestTokenError( next )
+        }
+
+        // if user found, check if token has expired
+        // if it has, report email confirmation expired error
+        if ( user.verify_email_expiry < Date.now() ) {
+            return reportEmailConfirmationExpiredError( next )
+        }
+
+        // generate access and refresh tokens for the user
+        // since email verification token is valid and not expired
+        const accessToken = generateAccessToken(user)
+        const refreshToken = generateRefreshToken(user)
+
+        // since user found and token valid, update user document
+        user.verify_email_token = undefined
+        user.verify_email_expiry = undefined
+        user.email_verified = true
+
+        // save updated user document
+        await user.save()
+
+        // set refresh token in HTTP-only cookie
+        res.cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            path: '/auth/refresh-token',
+            secure: nodeEnv === 'production', // use secure cookies in production
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
+        })
+
+        // since no errors, send success response with user data
+        // and access token in the response body and refresh token
+        // in HTTP-only cookie ( acccessible only by the server )
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user: {
+                    ...prepareUserResponse(user),
+                    access_token: accessToken,
+                }
+            }
+        })
+
+    } catch( error ) {
+        return next(error)
+    }
+})
 
 // export router for plug-in into server
 export default router
