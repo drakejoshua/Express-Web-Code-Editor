@@ -24,6 +24,11 @@ connectDB()
 // initialize logging middleware on server
 server.use( logger )
 
+// initialize json body parsing middleware on server
+server.use( express.json() )
+
+// initialize urlencoded body parsing middleware on server
+server.use( express.urlencoded({ extended: true }) )
 
 // connect grouped routes to server using their routers
 server.use('/auth', AuthRouter )

@@ -9,7 +9,7 @@ export const ERROR_CODES = {
     INVALID_PASSWORD_FORMAT: 'INVALID_PASSWORD_FORMAT',
     EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
-    EMAIL_EXISTS: 'EMAIL_EXISTS',
+    EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
     INVALID_USERNAME: 'INVALID_USERNAME',
     EMAIL_CONFIRMATION_EXPIRED: 'EMAIL_CONFIRMATION_EXPIRED',
     INVALID_REQUEST_TOKEN: 'INVALID_REQUEST_TOKEN',
@@ -96,9 +96,9 @@ export function reportUserNotFoundError( next ) {
 // report email already exists error - reports email
 // already exists error with 409 status code
 export function reportEmailExistsError( next ) {
-    const error = new Error("The email address provided is already in use.")
+    const error = new Error("The email address provided is already in use by another account.")
     error.statusCode = 409
-    error.errorCode = ERROR_CODES.EMAIL_EXISTS
+    error.errorCode = ERROR_CODES.EMAIL_ALREADY_EXISTS
     return next(error)
 }
 
