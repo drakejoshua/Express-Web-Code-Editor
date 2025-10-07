@@ -18,6 +18,7 @@ import {
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import passport from 'passport'
+import cookieParser from 'cookie-parser'
 
 // import database models
 import Users from '../db/UserSchema.js'
@@ -38,6 +39,10 @@ export const router = express.Router()
 // initialize appIdAuth middleware on all routes in this router
 // to protect routes and ensure only requests with valid app ID can access them
 router.use( appIdAuth )
+
+
+// initialize cookie parser middleware to parse cookies in requests
+router.use( cookieParser() )
 
 
 // router test route
