@@ -939,5 +939,35 @@ router.post("/update",
 )
 
 
+
+// POST /auth/me - auth route for getting current authenticated user profile
+// user must be authenticated with valid access token to access this route
+router.post("/me",
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    async function( req, res, next ) {
+        try {
+            // at this point, user has been authenticated so user document
+            // is obtained in req.user from passport middleware
+            const user = req.user
+
+            // send success response with user data
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    user: prepareUserResponse(user)
+                }
+            })
+
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
+
+
 // export router for plug-in into server
 export default router
