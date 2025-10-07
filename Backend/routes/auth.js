@@ -1,7 +1,7 @@
 // import router dependencies
 import express from 'express'
 import upload from '../configs/multer.js'
-import { body, param, header, validationResult } from 'express-validator'
+import { body, param, header, validationResult, cookie } from 'express-validator'
 import { 
     ERROR_CODES, 
     reportEmailConfirmationExpiredError, 
@@ -10,6 +10,7 @@ import {
     reportInvalidEmailError, 
     reportInvalidPasswordFormatError, 
     reportInvalidRequestTokenError, 
+    reportInvalidUpdateDataError, 
     reportInvalidUsernameError,
     reportMagiclinkExpiredError,
     reportPasswordResetExpiredError,
@@ -26,7 +27,7 @@ import Bloks from '../db/BlokSchema.js'
 
 // import router middleware and utilities
 import appIdAuth from '../middleware/app-id-auth.js'
-import { cloudinaryUpload } from '../utils/cloudinary-utils.js'
+import { cloudinaryDelete, cloudinaryUpload } from '../utils/cloudinary-utils.js'
 import { sendMagicLinkEmail, sendPasswordResetEmail, sendVerificationEmail } from '../utils/email-utils.js'
 import { generateAccessToken, generateRefreshToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
@@ -786,6 +787,156 @@ router.post("/signout", function( req, res, next ) {
         return next(error)
     }
 })
+
+
+// POST /auth/update - auth route for updating user profile
+// expects 'multipart/form-data' request with optional profile photo upload
+// request body may include 'username', 'email' or 'password' fields
+// user must be authenticated with valid access token to access this route
+router.post("/update",
+
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    // parse 'multipart/form-data' request using multer
+    // in order to handle the profile photo upload (if any)
+    upload.single('photo'),
+
+    // validate the username, email, and password in the
+    // incoming request data using express-validator
+    [
+        body('username')
+            .optional()
+            .isLength({ min: 3, max: 30 })
+            .withMessage( ERROR_CODES.INVALID_USERNAME )
+            .bail()
+            .isString()
+            .withMessage( ERROR_CODES.INVALID_USERNAME )
+            .bail(),
+        body('email')
+            .optional()
+            .isEmail()
+            .normalizeEmail()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .bail(),
+        body('password')
+            .optional()
+            .isLength({ min: 6 })
+            .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        // check for validation errors if any
+        const errors = validationResult(req)
+
+        // report validation errors if any was found
+        if ( !errors.isEmpty() ) {
+            switch ( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_USERNAME:
+                    return reportInvalidUsernameError( next )
+                case ERROR_CODES.INVALID_EMAIL:
+                    return reportInvalidEmailError( next )
+                case ERROR_CODES.INVALID_PASSWORD_FORMAT:
+                    return reportInvalidPasswordFormatError( next )
+            }
+        }
+
+
+        // if no validation errors were found, proceed to handle user profile update
+        try {
+            // at this point, user has been authenticated so user document
+            // is obtained in req.user from passport middleware
+            const user = req.user
+
+            // extract username, email and password from request body
+            const { username, email, password } = req.body
+
+            // extract profile photo file info from request (if any)
+            const photoFile = req.file || null
+
+            // if email and password change are requested for an oauth user,
+            // report invalid update data error
+            if ( user.provider !== "email" && ( email || password ) ) {
+                return reportInvalidUpdateDataError( next )
+            }
+
+            // since email must be unique for each user,
+            // check if signup email already exists in the database
+            // to prevent duplicate email
+            // if it does, report email already exists error
+            // else, continue with update process
+            const emailCount = await Users.countDocuments({ email: email })
+
+            if ( emailCount > 0 ) {
+                return reportEmailExistsError( next )
+            }
+
+            
+            // since profile photo upload is optional,
+            // check if profile photo was uploaded
+            // if it was, delete former photo from cloud storage (if any)
+            // then, upload the new profile photo to cloud storage
+            // and get the photo URL and public ID
+            // else, leave photoUrl and photoPublicId as empty strings
+            // and proceed with user profile update
+            let photoUrl = ""
+            let photoPublicId = ""
+
+            if ( photoFile ) {
+                // delete former photo from cloud storage if it exists
+                if ( user.profile_photo_id ) {
+                    // delete photo from cloud storage using public ID
+                    await cloudinaryDelete( user.profile_photo_id )
+                }
+
+                // upload new photo to cloud storage and get URL and public ID
+                const uploadResult = await cloudinaryUpload( photoFile.buffer )
+
+                // set photoUrl and photoPublicId from upload result
+                photoUrl = uploadResult.secure_url
+                photoPublicId = uploadResult.public_id
+            }
+
+            // get user document to be updated from database
+            const userToUpdate = await Users.findById( user._id )
+
+            // update user document fields if new values were provided
+            if ( username ) {
+                userToUpdate.username = username
+            }
+
+            if ( email ) {
+                userToUpdate.email = email
+            }
+
+            if ( password ) {
+                userToUpdate.password = await bcrypt.hash( password, bcryptRounds )
+            }
+
+            if ( photoFile ) {
+                userToUpdate.profile_photo_url = photoUrl
+                userToUpdate.profile_photo_id = photoPublicId
+            }
+
+            // save updated user document
+            await userToUpdate.save()
+
+            // since no errors, send success response with updated user data
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    user: prepareUserResponse(userToUpdate)
+                }
+            })
+
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
 
 
 // export router for plug-in into server

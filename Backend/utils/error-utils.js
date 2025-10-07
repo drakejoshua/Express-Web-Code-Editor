@@ -20,6 +20,7 @@ export const ERROR_CODES = {
     INVALID_QUERY_FILTER: 'INVALID_QUERY_FILTER',
     INVALID_QUERY_LIMIT: 'INVALID_QUERY_LIMIT',
     INVALID_AUTHENTICATION_METHOD: 'INVALID_AUTHENTICATION_METHOD',
+    INVALID_UPDATE_DATA: 'INVALID_UPDATE_DATA',
     
     // no error reporting functions for error codes below
     INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
@@ -263,4 +264,16 @@ export const invalidAuthenticationMethodError = new Error(`This signin used is n
 // authentication method error with 401 status code
 export function reportInvalidAuthenticationMethodError( next ) {
     return next(invalidAuthenticationMethodError)
+}
+
+// predefined invalid update data error - used to report
+// that user profile can't be updated due to being an OAuth user
+export const invalidUpdateDataError = new Error("User profile cannot be updated because this account is managed via google or magiclink.")
+invalidUpdateDataError.statusCode = 400
+invalidUpdateDataError.errorCode = ERROR_CODES.INVALID_UPDATE_DATA
+
+// report invalid update data error - reports that user profile can't be updated
+// due to being an OAuth user with 400 status code
+export function reportInvalidUpdateDataError(next) {
+    return next(invalidUpdateDataError)
 }
