@@ -767,22 +767,19 @@ router.get("/magiclink/:token",
 )
 
 
-// POST /auth/logout - auth route for logging out user
+// POST /auth/signout - auth route for logging out user
 // clears the refresh token cookie
-router.post("/logout", function( req, res, next ) {
+router.post("/signout", function( req, res, next ) {
     try {
         // clear the refresh token cookie by setting it to empty
-        res.clearCookie('refresh_token', {
-            httpOnly: true,
-            secure: nodeEnv === 'production', // use secure cookies in production
-            sameSite: 'strict',
-            path: '/auth/refresh-token'
-        })
+        res.clearCookie('refresh_token')
 
         // send success response
         res.status(200).json({
             status: 'success',
-            message: 'Logged out successfully'
+            data: {
+                message: 'Logged out successfully'
+            }
         })
 
     } catch (error) {
