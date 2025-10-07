@@ -9,6 +9,7 @@ import {
     reportEmailNotVerifiedError, 
     reportInvalidEmailError, 
     reportInvalidPasswordFormatError, 
+    reportInvalidRefreshTokenError, 
     reportInvalidRequestTokenError, 
     reportInvalidUpdateDataError, 
     reportInvalidUsernameError,
@@ -29,7 +30,7 @@ import Bloks from '../db/BlokSchema.js'
 import appIdAuth from '../middleware/app-id-auth.js'
 import { cloudinaryDelete, cloudinaryUpload } from '../utils/cloudinary-utils.js'
 import { sendMagicLinkEmail, sendPasswordResetEmail, sendVerificationEmail } from '../utils/email-utils.js'
-import { generateAccessToken, generateRefreshToken } from '../utils/token-utils.js'
+import { generateAccessToken, generateRefreshToken, verifyToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
 import path from 'path'
 
@@ -323,7 +324,7 @@ async function( req, res, next ) {
         // set refresh token in HTTP-only cookie
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            path: '/auth/refresh-token',
+            path: '/auth/refresh',
             secure: nodeEnv === 'production', // use secure cookies in production
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
@@ -411,7 +412,7 @@ async function( req, res, next )  {
         // set refresh token in HTTP-only cookie
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            path: '/auth/refresh-token',
+            path: '/auth/refresh',
             secure: nodeEnv === 'production', // use secure cookies in production
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
@@ -573,7 +574,7 @@ router.post("/reset-password/:token",
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production', // use secure cookies in production
                 sameSite: 'strict',
-                path: '/auth/refresh-token',
+                path: '/auth/refresh',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // cookie valid for 7 days
             })
 
@@ -744,7 +745,7 @@ router.get("/magiclink/:token",
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                path: '/auth/refresh-token',
+                path: '/auth/refresh',
                 sameSite: 'strict',
                 maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
             })
@@ -939,7 +940,6 @@ router.post("/update",
 )
 
 
-
 // POST /auth/me - auth route for getting current authenticated user profile
 // user must be authenticated with valid access token to access this route
 router.post("/me",
@@ -959,6 +959,71 @@ router.post("/me",
                 status: 'success',
                 data: {
                     user: prepareUserResponse(user)
+                }
+            })
+
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
+
+
+// POST /auth/refresh - auth route for refreshing access token
+// refresh token is expected to be sent in an HTTP-only cookie
+router.post("/refresh",
+    [
+        cookie('refresh_token')
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_REFRESH_TOKEN )
+            .isJWT()
+            .withMessage( ERROR_CODES.INVALID_REFRESH_TOKEN )
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        try {
+            // check for validation errors if any
+            const errors = validationResult(req)
+
+            // report validation errors if any was found
+            if ( !errors.isEmpty() ) {
+                return reportInvalidRefreshTokenError( next )
+            }
+
+            // at this point, refresh token is valid JWT format
+            // so, verify and decode the token to get user ID
+            const decoded = verifyToken( req.cookies.refresh_token )
+
+            // if token verification failed, report invalid refresh token error
+            if ( !decoded ) {
+                return reportInvalidRefreshTokenError( next )
+            }
+
+            // since token is valid, get user id from refresh token by
+            // verifying the token
+            const userIdFromRefreshToken = decoded.id
+
+            // get user document from database to include in response
+            const userData = await Users.findById( userIdFromRefreshToken )
+
+            // if user not found, report user not found error
+            if ( !userData ) {
+                return reportUserNotFoundError( next )
+            }
+
+            // generate new access token
+            const newAccessToken = generateAccessToken( userData )
+
+            // send success response with new access token
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    user: {
+                        ...prepareUserResponse(userData),
+                        access_token: newAccessToken,
+                        expires_in: 30 * 60 // access token expires in 30 minutes
+                    }
                 }
             })
 

@@ -21,6 +21,7 @@ export const ERROR_CODES = {
     INVALID_QUERY_LIMIT: 'INVALID_QUERY_LIMIT',
     INVALID_AUTHENTICATION_METHOD: 'INVALID_AUTHENTICATION_METHOD',
     INVALID_UPDATE_DATA: 'INVALID_UPDATE_DATA',
+    INVALID_REFRESH_TOKEN: 'INVALID_REFRESH_TOKEN',
     
     // no error reporting functions for error codes below
     INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
@@ -264,6 +265,18 @@ export const invalidAuthenticationMethodError = new Error(`This signin used is n
 // authentication method error with 401 status code
 export function reportInvalidAuthenticationMethodError( next ) {
     return next(invalidAuthenticationMethodError)
+}
+
+// predefined invalid refresh token error - used to report
+// invalid or expired refresh token error with 401 status code
+export const invalidRefreshTokenError = new Error("The refresh token provided is invalid or has expired. Please signin again.")
+invalidRefreshTokenError.statusCode = 401
+invalidRefreshTokenError.errorCode = ERROR_CODES.INVALID_REFRESH_TOKEN
+
+// report invalid refresh token error - reports invalid or expired
+// refresh token error with 401 status code
+export function reportInvalidRefreshTokenError(next) {
+    return next(invalidRefreshTokenError)
 }
 
 // predefined invalid update data error - used to report
