@@ -12,11 +12,14 @@ export const ERROR_CODES = {
     EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
     INVALID_USERNAME: 'INVALID_USERNAME',
     EMAIL_CONFIRMATION_EXPIRED: 'EMAIL_CONFIRMATION_EXPIRED',
+    MAGICLINK_EXPIRED: 'MAGICLINK_EXPIRED',
+    PASSWORD_RESET_EXPIRED: 'PASSWORD_RESET_EXPIRED',
     INVALID_REQUEST_TOKEN: 'INVALID_REQUEST_TOKEN',
     BLOK_NOT_FOUND: 'BLOK_NOT_FOUND',
     INVALID_BLOK_NAME: 'INVALID_BLOK_NAME',
     INVALID_QUERY_FILTER: 'INVALID_QUERY_FILTER',
     INVALID_QUERY_LIMIT: 'INVALID_QUERY_LIMIT',
+    INVALID_AUTHENTICATION_METHOD: 'INVALID_AUTHENTICATION_METHOD',
     
     // no error reporting functions for error codes below
     INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
@@ -146,15 +149,41 @@ export function reportInvalidUsernameError( next ) {
 
 
 // predefined email confirmation expired error - used to report
-// email confirmation token expired error with 400 status code
-export const emailConfirmationExpiredError = new Error("The email confirmation token provided has expired.")
+// email confirmation session expired error with 400 status code
+export const emailConfirmationExpiredError = new Error("The email confirmation session provided has expired.")
     emailConfirmationExpiredError.statusCode = 400
     emailConfirmationExpiredError.errorCode = ERROR_CODES.EMAIL_CONFIRMATION_EXPIRED
 
 // report email confirmation expired error - reports email
-// confirmation token expired error with 400 status code
+// confirmation session expired error with 400 status code
 export function reportEmailConfirmationExpiredError( next ) {
     return next(emailConfirmationExpiredError)
+}
+
+
+// predefined magiclink expired error - used to report
+// magiclink token expired error with 400 status code
+export const magiclinkExpiredError = new Error("The magiclink session provided has expired.")
+    magiclinkExpiredError.statusCode = 400
+    magiclinkExpiredError.errorCode = ERROR_CODES.MAGICLINK_EXPIRED
+
+// report magiclink expired error - reports magiclink
+// token expired error with 400 status code
+export function reportMagiclinkExpiredError( next ) {
+    return next(magiclinkExpiredError)
+}
+
+
+// predefined password reset expired error - used to report
+// password reset session expired error with 400 status code
+export const passwordResetExpiredError = new Error("The password reset session provided has expired.")
+    passwordResetExpiredError.statusCode = 400
+    passwordResetExpiredError.errorCode = ERROR_CODES.PASSWORD_RESET_EXPIRED
+
+// report password reset expired error - reports password
+// reset token expired error with 400 status code
+export function reportPasswordResetExpiredError( next ) {
+    return next(passwordResetExpiredError)
 }
 
 
@@ -220,4 +249,18 @@ export const invalidQueryLimitError = new Error("The query limit provided is inv
 // query limit error with 400 status code
 export function reportInvalidQueryLimitError( next ) {
     return next(invalidQueryLimitError)
+}
+
+
+// predefined invalid authentication method error - used to report
+// invalid authentication method error with 400 status code
+export const invalidAuthenticationMethodError = new Error(`This signin used is not valid 
+    for this account. Please try signing using magiclink or google.`)
+    invalidAuthenticationMethodError.statusCode = 401
+    invalidAuthenticationMethodError.errorCode = ERROR_CODES.INVALID_AUTHENTICATION_METHOD
+
+// report invalid authentication method error - reports invalid
+// authentication method error with 401 status code
+export function reportInvalidAuthenticationMethodError( next ) {
+    return next(invalidAuthenticationMethodError)
 }

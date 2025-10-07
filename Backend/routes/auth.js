@@ -11,6 +11,8 @@ import {
     reportInvalidPasswordFormatError, 
     reportInvalidRequestTokenError, 
     reportInvalidUsernameError,
+    reportMagiclinkExpiredError,
+    reportPasswordResetExpiredError,
     reportUserNotFoundError
 } from '../utils/error-utils.js'
 import bcrypt from 'bcrypt'
@@ -24,7 +26,7 @@ import Bloks from '../db/BlokSchema.js'
 // import router middleware and utilities
 import appIdAuth from '../middleware/app-id-auth.js'
 import { cloudinaryUpload } from '../utils/cloudinary-utils.js'
-import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email-utils.js'
+import { sendMagicLinkEmail, sendPasswordResetEmail, sendVerificationEmail } from '../utils/email-utils.js'
 import { generateAccessToken, generateRefreshToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
 import path from 'path'
@@ -538,13 +540,18 @@ router.post("/reset-password/:token",
 
             // find user by reset token
             const user = await Users.findOne( { 
-                reset_password_token: token, 
-                reset_password_expiry: { $gt: Date.now() } 
+                reset_password_token: token
             } )
 
-            // if user not found or token expired, report error
+            // if user not found, report error
             if ( !user ) {
                 return reportInvalidRequestTokenError( next )
+            }
+
+            // check if reset token has expired,
+            // if true, report password reset expired error
+            if ( user.reset_password_expiry < Date.now() ) {
+                return reportPasswordResetExpiredError( next )
             }
 
             // if user found and token valid, hash the new password
@@ -575,6 +582,168 @@ router.post("/reset-password/:token",
             await user.save()
 
             // send success response
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    user: {
+                        ...prepareUserResponse(user),
+                        access_token: accessToken,
+                        expires_in: 30 * 60 // access token expires in 30 minutes
+                    }
+                }
+            })
+
+        } catch( error ) {
+            return next(error)
+        }
+    }
+)
+
+
+// POST /auth/magic-link - auth route for sending magic link email
+// expects JSON request body with 'email' field
+router.post("/magiclink",
+
+    [
+        body("email")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .bail()
+            .isEmail()
+            .withMessage( ERROR_CODES.INVALID_EMAIL )
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        // check for validation errors if any
+        const errors = validationResult(req)
+
+        // report validation errors if any was found
+        if ( !errors.isEmpty() ) {
+            switch ( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_EMAIL:
+                    return reportInvalidEmailError( next )
+            }
+        }
+
+        // if no validation errors were found, proceed to send magic link
+        try {
+            // extract email from request
+            const { email } = req.body
+
+            // find user by email
+            let user = await Users.findOne( { email } )
+
+            // if user not found, create new user with a random username
+            // using magiclink as the provider
+            if ( !user ) {
+                user = await Users.create({
+                    username: `user_${Date.now()}`, // generate random username
+                    email: email,
+                    provider: "magiclink"
+                })
+            }
+
+            // generate magic link token
+            const magicLinkToken = crypto.randomBytes( 32 ).toString('hex')
+            const magicLinkExpiry = Date.now() + 5 * 60 * 1000 // token valid for 5 minutes
+
+            // send magic link email
+            await sendMagicLinkEmail( user.email, `${frontendURL}/auth/magic-link/${magicLinkToken}`)
+
+            // update user document with magic link token and expiry
+            user.magiclink_token = magicLinkToken
+            user.magiclink_expiry = magicLinkExpiry
+
+            // save updated user document
+            await user.save()
+
+            // send success response
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    message: 'Magic link sent successfully'
+                }
+            })
+
+        } catch( error ) {
+            return next(error)
+        }
+    }
+)
+
+
+// POST /auth/magiclink/:token - auth route for magic link login
+// expects 'token' param in the URL
+router.get("/magiclink/:token",
+    [
+        param("token")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
+            .bail()
+            .isHexadecimal()
+            .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
+            .bail()
+    ],  
+
+    async function( req, res, next ) {
+        // check for validation errors if any
+        const errors = validationResult(req)
+
+        // report validation errors if any was found
+        if ( !errors.isEmpty() ) {
+            return reportInvalidRequestTokenError( next )
+        }
+
+        // if no validation errors were found, proceed to handle magic link login
+        try {
+            // extract token from request params
+            const { token } = req.params
+
+            // find user by magic link token
+            const user = await Users.findOne( { 
+                magiclink_token: token,
+            } )
+
+            // if user not found or token expired, report error
+            if ( !user ) {
+                return reportInvalidRequestTokenError( next )
+            }
+
+            // check if magic link token has expired, 
+            // if true, report magic link expired error
+            if ( user.magiclink_expiry < Date.now() ) {
+                return reportMagiclinkExpiredError( next )
+            }
+            
+            // if user found and token valid, generate access and refresh tokens
+            const accessToken = generateAccessToken(user)
+            const refreshToken = generateRefreshToken(user)
+            
+            // verify user email if not already verified
+            // ( for new users using magic link )
+            if ( !user.email_verified ) {
+                user.email_verified = true
+            }
+
+            // clear magic link token and expiry
+            user.magiclink_token = undefined
+            user.magiclink_expiry = undefined
+
+            // save updated user document
+            await user.save()
+
+            // set refresh token in an HTTP-only cookie to be used in
+            // the frontend for getting new access tokens
+            res.cookie('refresh_token', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                path: '/auth/refresh-token',
+                sameSite: 'strict',
+                maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+            })
+
+            // since no errors, send success response with user data and access token
             res.status(200).json({
                 status: 'success',
                 data: {

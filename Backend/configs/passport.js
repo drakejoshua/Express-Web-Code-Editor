@@ -7,6 +7,8 @@ import bcrypt from "bcrypt";
 import {
     invalidEmailError,
     invalidPasswordError,
+    invalidAuthenticationMethodError,
+    emailNotVerifiedError
 } from "../utils/error-utils.js";
 
 // import users and bloks model
@@ -37,7 +39,19 @@ export function configurePassport( passport ) {
                     return done( invalidEmailError, false );
                 }
 
-                // if user found, verify password
+                // if user is found but doesn't use email-password auth, 
+                // report invalid authentication method error
+                if ( user.provider !== "email" ) {
+                    return done( invalidAuthenticationMethodError, false );
+                } 
+
+                // if user found but doesn't have email verified,
+                // report email not verified error
+                if ( !user.email_verified ) {
+                    return done( emailNotVerifiedError, false );
+                }
+
+                // if user found and uses email-password auth, verify password
                 const isMatch = await bcrypt.compare( password, user.password );
 
                 // if password does not match, report invalid password error
