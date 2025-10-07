@@ -1,6 +1,7 @@
 // import passport strategies
-// import passport from "passport";
+import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import bcrypt from "bcrypt";
 
 // import predefined custom error objects for error handling
@@ -66,4 +67,30 @@ export function configurePassport( passport ) {
             }
         }
     ));
+
+    // configure JWT strategy for token-based authentication
+    passport.use( new JwtStrategy(
+        {
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // extract JWT from Authorization header
+            secretOrKey: process.env.JWT_SECRET // secret key to verify JWT signature
+        },
+
+        // verify callback to extract information from JWT and 
+        // and authenticate user
+        async function( jwtPayload, done ) {
+            try {
+                // find user by ID from JWT payload
+                const user = await Users.findById( jwtPayload.id );
+
+                // if user not found, return false
+                if ( !user ) {
+                    return done( null, false );
+                }
+
+                // if user found, return user object
+                return done( null, user );
+            } catch( err ) {
+                return done( null, false )
+            }
+    }))
 }
