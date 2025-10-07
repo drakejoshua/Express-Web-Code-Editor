@@ -33,6 +33,7 @@ import { sendMagicLinkEmail, sendPasswordResetEmail, sendVerificationEmail } fro
 import { generateAccessToken, generateRefreshToken, verifyToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
 import path from 'path'
+import { stat } from 'fs'
 
 
 // create router from express
@@ -1027,6 +1028,49 @@ router.post("/refresh",
                 }
             })
 
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
+
+
+// POST /auth/api-key - auth route for generating API key for user
+// user must be authenticated with valid access token to access this route
+router.post("/api-key",
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    async function( req, res, next ) {
+        try {
+            // at this point, user has been authenticated so user document
+            // is obtained in req.user from passport middleware
+            const user = req.user
+
+            // generate new API key
+            const apiKey = crypto.randomBytes( 32 ).toString('hex')
+
+            // get user document to be updated from database
+            const userToUpdate = await Users.findById( user._id )
+
+            // update user document with new API key
+            userToUpdate.api_key = apiKey
+
+            // save updated user document
+            await userToUpdate.save()
+
+            // since no errors, send success response with new API key
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    user: {
+                        ...prepareUserResponse(userToUpdate),
+                        api_key: apiKey
+                    }
+                }
+            })
         } catch( err ) {
             return next( err )
         }
