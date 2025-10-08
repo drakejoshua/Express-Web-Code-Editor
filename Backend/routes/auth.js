@@ -758,7 +758,7 @@ router.get("/magiclink/:token",
                 secure: process.env.NODE_ENV === 'production',
                 path: '/auth/refresh',
                 sameSite: 'strict',
-                maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             })
 
             // since no errors, send success response with user data and access token
@@ -778,6 +778,49 @@ router.get("/magiclink/:token",
         }
     }
 )
+
+
+// GET /auth/google - auth route to initiate Google OAuth2 login
+// redirects user to Google OAuth2 consent screen
+router.get('/google', 
+    // use passport to initiate authentication using Google and
+    // take users to Google OAuth consent screen
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+
+// GET /auth/google/callback - auth route for handling Google OAuth2 callback
+// handles the OAuth2 response from Google and logs in the user
+router.get('/google/callback',
+    // use passport to handle Google OAuth callback
+    passport.authenticate('google', { session: false } ),
+
+    async function( req, res, next ) {
+        try {
+            // at this point, user has been authenticated so user document
+            // is obtained in req.user from passport middleware
+            const user = req.user
+
+            // generate access and refresh tokens
+            const accessToken = generateAccessToken(user)
+            const refreshToken = generateRefreshToken(user)
+
+            // set refresh token in HTTP-only cookie
+            res.cookie('refresh_token', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                path: '/auth/refresh'
+            })
+
+            // redirect user to frontend app with access token
+            res.redirect(`${frontendURL}/auth/google/${accessToken}`)
+        } catch( error ) {
+            return next(error)
+        }
+    }
+);
 
 
 // POST /auth/signout - auth route for logging out user
