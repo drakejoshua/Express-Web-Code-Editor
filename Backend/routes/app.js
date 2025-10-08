@@ -1,8 +1,8 @@
 // import route dependencies
 import express from 'express'
 import passport from 'passport'
-import { body, query, validationResult } from 'express-validator'
-import { ERROR_CODES, reportInvalidQueryFilterError, reportInvalidQueryLimitError } from '../utils/error-utils.js'
+import { body, query, param, validationResult } from 'express-validator'
+import { ERROR_CODES, reportBlokNotFoundError, reportInvalidBlokNameError, reportInvalidQueryFilterError, reportInvalidQueryLimitError } from '../utils/error-utils.js'
 
 // import router middleware
 import appIdAuth from '../middleware/app-id-auth.js'
@@ -113,6 +113,72 @@ router.get('/bloks',
 )
 
 
+// GET /app/bloks/:id - get a specific code blok by its ID for the currently 
+// authenticated user
+router.get("/bloks/:id",
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    // validate the blok ID in the request parameters
+    // ensuring it is a valid MongoDB ObjectId using express-validator
+    [
+        param("id")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+            .bail()
+            .isMongoId()
+            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+    ],
+
+    async function( req, res, next ) {
+        // get validation errors if any
+        const errors = validationResult( req )
+
+        // check for any validation errors and report
+        // them if any
+        if ( !errors.isEmpty() ) {
+            switch( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_BLOK_ID:
+                    return reportInvalidBlokIdError( next )
+            }
+        }
+
+        // extract the blok ID from the request parameters
+        const blokId = req.params.id
+
+        // extract passport's authenticated user data from the request
+        const user = req.user
+
+        // since no validation errors, proceed to get the specific blok
+        // for the authenticated user
+        try {
+            // find the blok by ID and ensure it belongs to the authenticated user
+            const blok = await Bloks.findOne({
+                _id: blokId,
+                user_id: user._id
+            })
+
+            // if blok not found, report error
+            if ( !blok ) {
+                return reportBlokNotFoundError( next )
+            }
+
+            // since no errors occurred, send success response with blok data
+            res.json({
+                status: "success",
+                data: {
+                    blok: prepareBlokResponse( blok )
+                }
+            })
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
+
+
 // POST /app/bloks - creates a new code blok for currently authenticated user
 // expects JSON body with required name field and optional html, css and js fields
 router.post("/bloks",
@@ -142,7 +208,7 @@ router.post("/bloks",
         if ( !errors.isEmpty() ) {
             switch( errors.array()[0].msg ) {
                 case ERROR_CODES.INVALID_BLOK_NAME:
-                    return next( new Error( ERROR_CODES.INVALID_BLOK_NAME ) )
+                    return reportInvalidBlokNameError( next )
             }
         }
 

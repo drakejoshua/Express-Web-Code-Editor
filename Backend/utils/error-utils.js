@@ -17,6 +17,7 @@ export const ERROR_CODES = {
     INVALID_REQUEST_TOKEN: 'INVALID_REQUEST_TOKEN',
     BLOK_NOT_FOUND: 'BLOK_NOT_FOUND',
     INVALID_BLOK_NAME: 'INVALID_BLOK_NAME',
+    INVALID_BLOK_ID: 'INVALID_BLOK_ID',
     INVALID_QUERY_FILTER: 'INVALID_QUERY_FILTER',
     INVALID_QUERY_LIMIT: 'INVALID_QUERY_LIMIT',
     INVALID_AUTHENTICATION_METHOD: 'INVALID_AUTHENTICATION_METHOD',
@@ -225,6 +226,18 @@ export const invalidBlokNameError = new Error("The blok name provided is invalid
 // name error with 400 status code
 export function reportInvalidBlokNameError( next ) {
     return next(invalidBlokNameError)
+}
+
+// predefined invalid blok id error - used to report
+// invalid blok id error with 400 status code
+export const invalidBlokIdError = new Error("The blok id provided is invalid.")
+    invalidBlokIdError.statusCode = 400
+    invalidBlokIdError.errorCode = ERROR_CODES.INVALID_BLOK_ID
+
+// report invalid blok id error - reports invalid blok
+// id error with 400 status code
+export function reportInvalidBlokIdError( next ) {
+    return next(invalidBlokIdError)
 }
 
 
