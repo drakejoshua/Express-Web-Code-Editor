@@ -2,7 +2,7 @@
 import express from 'express'
 import passport from 'passport'
 import { body, query, param, validationResult } from 'express-validator'
-import { ERROR_CODES, reportBlokNotFoundError, reportInvalidBlokNameError, reportInvalidQueryFilterError, reportInvalidQueryLimitError } from '../utils/error-utils.js'
+import { ERROR_CODES, reportBlokNotFoundError, reportInvalidBlokDataError, reportInvalidBlokIdError, reportInvalidBlokNameError, reportInvalidQueryFilterError, reportInvalidQueryLimitError } from '../utils/error-utils.js'
 
 // import router middleware
 import appIdAuth from '../middleware/app-id-auth.js'
@@ -10,6 +10,7 @@ import appIdAuth from '../middleware/app-id-auth.js'
 // import Bloks mongoose database model 
 import Bloks from '../db/BlokSchema.js'
 import { prepareBlokResponse } from '../utils/response-utils.js'
+import { BLOK_LAYOUTS, BLOK_THEMES } from '../utils/blok-utils.js'
 
 // create router from express
 const router = express.Router()
@@ -130,6 +131,7 @@ router.get("/bloks/:id",
             .bail()
             .isMongoId()
             .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+            .bail()
     ],
 
     async function( req, res, next ) {
@@ -245,6 +247,161 @@ router.post("/bloks",
 )
 
 
+// PUT /app/bloks/:id - updates an existing code blok by its ID for the currently
+// authenticated user
+// expects JSON body with optional name, html, css, js and settings
+// fields to update
+router.put("/bloks/:id",
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    // validate the blok ID in the request parameters
+    // ensuring it is a valid MongoDB ObjectId
+    // and validate the optional name, html, css, js and settings in the
+    // incoming request data using express-validator
+    [
+        param("id")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+            .bail()
+            .isMongoId()
+            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+            .bail(),
+        body("name")
+            .optional()
+            .isString()
+            .withMessage( ERROR_CODES.INVALID_BLOK_NAME )
+            .bail(),
+        body("settings")
+            .optional()
+            .isObject()
+            .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
+            .bail(),
+        body("html")
+            .optional()
+            .isString()
+            .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
+            .bail(),
+        body("css")
+            .optional()
+            .isString()
+            .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
+            .bail(),
+        body("javascript")
+            .optional()
+            .isString()
+            .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        // get validation errors if any
+        const errors = validationResult( req )
+
+        // check for any validation errors and report
+        // them if any
+        if ( !errors.isEmpty() ) {
+            switch( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_BLOK_ID:
+                    return reportInvalidBlokIdError( next )
+                case ERROR_CODES.INVALID_BLOK_NAME:
+                    return reportInvalidBlokNameError( next )
+                case ERROR_CODES.INVALID_BLOK_DATA:
+                    return reportInvalidBlokDataError( next )
+            }
+        }
+
+        // extract the blok ID from the request parameters
+        const blokId = req.params.id
+
+        // extract the blok data to update from the request body
+        const { name, html, css, javascript, settings } = req.body
+
+        // extract passport's authenticated user data from the request
+        const user = req.user
+
+        // since no validation errors, proceed to update the specific blok
+        // for the authenticated user
+        try {
+            // get the existing blok to update from the database
+            const blok = await Bloks.findOne({
+                _id: blokId,
+                user_id: user._id
+            })
+
+            // if blok not found, report error
+            if ( !blok ) {
+                return reportBlokNotFoundError( next )
+            }
+
+            // update the blok fields that are provided in the request
+            // body
+
+            if ( name ) {
+                blok.name = name    // update name if provided
+            }
+            if ( html ) {
+                blok.html = html    // update html if provided
+            }
+            if ( css ) {
+                blok.css = css      // update css if provided
+            }
+            if ( javascript ) {
+                blok.javascript = javascript    // update javascript if provided
+            }
+
+            // update settings if provided and valid
+            // only allow updating specific settings fields
+            if ( BLOK_THEMES.includes( settings.theme ) ) {
+                blok.settings.theme = settings.theme    // update theme if provided and valid
+            }
+            
+            if (
+                settings.font_size &&
+                Number.isInteger( settings.font_size ) &&
+                settings.font_size >= 8 &&
+                settings.font_size <= 36
+            ) {
+                blok.settings.font_size = settings.font_size    // update font size if provided and valid
+            }
+
+            if (
+                settings.tab_size &&
+                Number.isInteger( settings.tab_size ) &&
+                settings.tab_size >= 2 &&
+                settings.tab_size <= 8
+            ) {
+                blok.settings.tab_size = settings.tab_size    // update tab size if provided and valid
+            }
+
+            if ( typeof settings.auto_complete === "boolean" ) {
+                blok.settings.auto_complete = settings.auto_complete    // update auto complete if provided and valid
+            }
+
+            if (
+                settings.editor_layout &&
+                BLOK_LAYOUTS.includes( settings.editor_layout )
+            ) {
+                blok.settings.editor_layout = settings.editor_layout    // update editor layout if provided and valid
+            }
+
+            // save the updated blok back to the database
+            await blok.save()
+
+            // send success response with updated blok data
+            res.status(200).json({
+                status: "success",
+                data: {
+                    blok: prepareBlokResponse( blok )
+                }
+            })
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
 
 
 // export router for plug-in into server
