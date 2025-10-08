@@ -26,7 +26,7 @@ router.use( appIdAuth )
 
 
 // GET /app/bloks?limit={limit}&filter={filter} - get list of code bloks for the
-// authenticated app, with optional limit and filter query parameters
+// currently authenticated user, with optional limit and filter query parameters
 router.get('/bloks', 
     // authenticate user using passport JWT strategy
     // { session: false } option disables session creation
@@ -110,6 +110,72 @@ router.get('/bloks',
             return next( err )
         }
     } 
+)
+
+
+// POST /app/bloks - creates a new code blok for currently authenticated user
+// expects JSON body with required name field and optional html, css and js fields
+router.post("/bloks",
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    // validate the name, html, css and js in the
+    // incoming request data using express-validator
+    [
+        body("name")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_BLOK_NAME )
+            .bail()
+            .isString()
+            .withMessage( ERROR_CODES.INVALID_BLOK_NAME )
+            .bail()
+    ],
+
+    async function( req, res, next ) {
+        // get validation errors if any
+        const errors = validationResult( req )
+
+        // check for any validation errors and report
+        // them if any
+        if ( !errors.isEmpty() ) {
+            switch( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_BLOK_NAME:
+                    return next( new Error( ERROR_CODES.INVALID_BLOK_NAME ) )
+            }
+        }
+
+        // extract the blok data from the request body
+        const { name, html, css, javascript } = req.body
+
+        // extract passport's authenticated user data from the request
+        const user = req.user
+
+        // since no validation errors, proceed to create
+        // a new blok for the authenticated user
+        try {
+            // create new blok document using the Bloks mongoose model
+            const newBlok = await Bloks.create({
+                user_id: user._id,
+                name: name,
+                html: html || "",
+                css: css || "",
+                javascript: javascript || ""
+            })
+
+            // since no errors occurred, send success response with created
+            // blok data
+            res.status(201).json({
+                status: "success",
+                data: {
+                    blok: prepareBlokResponse( newBlok )
+                }
+            })
+        } catch( err ) {
+            return next( err )
+        }
+    }
 )
 
 
