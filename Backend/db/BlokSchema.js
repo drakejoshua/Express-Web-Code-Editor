@@ -11,6 +11,10 @@ const BlokSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         required: true
     },
+    name: {
+        type: String, 
+        required: true
+    },
     html: {
         type: String
     },

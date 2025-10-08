@@ -184,6 +184,7 @@ async function( req, res, next ) {
         // create default "Hello World" blok for the new user
         await Bloks.create({
             user_id: createdUser._id,
+            name: "First Code Blok",
             html: "<h1>Hello World</h1>",
             css: "h1 { color: blue; }",
             javascript: "console.log('Hello World');",
@@ -649,6 +650,15 @@ router.post("/magiclink",
                     username: `user_${Date.now()}`, // generate random username
                     email: email,
                     provider: "magiclink"
+                })
+
+                // create default "Hello World" blok for the new user
+                await Bloks.create({
+                    user_id: user._id,
+                    name: "First Code Blok",
+                    html: "<h1>Hello World</h1>",
+                    css: "h1 { color: blue; }",
+                    javascript: "console.log('Hello World');",
                 })
             }
 
