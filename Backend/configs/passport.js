@@ -2,6 +2,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import bcrypt from "bcrypt";
 
 // import predefined custom error objects for error handling
@@ -93,4 +94,52 @@ export function configurePassport( passport ) {
                 return done( null, false )
             }
     }))
+
+    // configure google strategy for Google OAuth authentication
+    passport.use( new GoogleStrategy(
+        // set the Google OAuth credentials
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID, // Google OAuth client ID
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Google OAuth client secret
+            callbackURL: process.env.GOOGLE_CALLBACK_URL, // URL to redirect after authentication
+        },
+
+        // verify callback to handle Google OAuth response
+        async function( accessToken, refreshToken, profile, done ) {
+            try {
+                // extract user information from Google profile
+                const email = profile.emails[0].value;
+                const username = profile.displayName;
+                const profile_photo_url = profile.photos[0].value;
+
+                // check if user already exists in database
+                let user = await Users.findOne({ email: email });
+
+                // if user does not exist, create a new user
+                if ( !user ) {
+                    user = await Users.create({
+                        username: username,
+                        email: email,
+                        provider: "google",
+                        email_verified: true,
+                        profile_photo_url: profile_photo_url
+                    });
+
+                    // create a default blok for the new user
+                    await Bloks.create({
+                        user_id: user._id,
+                        name: "My First Blok",
+                        html: "<!-- Welcome to Express Web Code Editor! -->\n<h1>Hello, world!</h1>",
+                        css: "/* Start styling your blok! */\nbody { font-family: Arial, sans-serif; }",
+                        javascript: "// Start adding JavaScript to your blok!\nconsole.log('Hello, world!');"
+                    });
+                }
+
+                // return user object
+                return done( null, user );
+            } catch( err ) {
+                return done( err, false );
+            }
+        }
+    ));
 }
