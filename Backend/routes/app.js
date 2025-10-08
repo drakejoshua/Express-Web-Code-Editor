@@ -404,5 +404,57 @@ router.put("/bloks/:id",
 )
 
 
+// DELETE /app/bloks/:id - deletes a specific code blok by its ID for the currently
+// authenticated user
+router.delete("/bloks/:id",
+    // authenticate user using passport JWT strategy
+    // { session: false } option disables session creation
+    // since we are using token-based authentication
+    passport.authenticate('jwt', { session: false }),
+
+    // validate the blok ID in the request parameters
+    // ensuring it is a valid MongoDB ObjectId using express-validator
+    [
+        param("id")
+            .exists()
+            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+            .bail()
+            .isMongoId()
+            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
+            .bail()
+    ],
+
+    // handle request to delete a specific blok
+    async (req, res, next) => {
+        // extract the blok ID from the request parameters
+        const blokId = req.params.id
+
+        // extract passport's authenticated user data from the request
+        const user = req.user
+
+        try {
+            // find the blok to delete from the database
+            const blok = await Bloks.findOne({
+                _id: blokId,
+                user_id: user._id
+            })
+
+            // if blok not found, report error
+            if ( !blok ) {
+                return reportBlokNotFoundError( next )
+            }
+
+            // delete the blok from the database
+            await blok.remove()
+
+            // send delete success response
+            res.status(204).send()
+        } catch( err ) {
+            return next( err )
+        }
+    }
+)
+
+
 // export router for plug-in into server
 export default router
