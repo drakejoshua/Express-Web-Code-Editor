@@ -41,7 +41,7 @@ export const router = express.Router()
 
 // initialize appIdAuth middleware on all routes in this router
 // to protect routes and ensure only requests with valid app ID can access them
-router.use( appIdAuth )
+// router.use( appIdAuth )
 
 
 // initialize cookie parser middleware to parse cookies in requests
@@ -64,6 +64,9 @@ const nodeEnv = process.env.NODE_ENV || 'development'
 // expects 'multipart/form-data' request with optional profile photo upload
 // request body must include 'username', 'email', and 'password' fields
 router.post("/signup",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
 
     // parse 'multipart/form-data' request using multer
     // in order to handle the profile photo upload (if any)
@@ -208,6 +211,10 @@ async function( req, res, next ) {
 // POST /auth/verify-email - auth route for send a verification email to
 // user email address. expects JSON request body with 'email' field
 router.post("/verify-email",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         body("email")
             .exists()
@@ -269,6 +276,10 @@ async function( req, res, next ) {
 // GET /auth/verify-email/:token - auth route for verifying user email
 // expects 'token' param in the URL
 router.get("/verify-email/:token",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         param("token")
             .exists()
@@ -356,6 +367,9 @@ async function( req, res, next ) {
 // expects JSON request body with 'email' and 'password' fields
 router.post("/signin", 
 
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     // for user login, validate the email and password in the
     // incoming request data using express-validator
     [
@@ -441,6 +455,10 @@ async function( req, res, next )  {
 // POST /auth/reset-password - auth route for sending password reset email
 // expects JSON request body with 'email' field
 router.post("/reset-password",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         body("email")
             .exists()
@@ -510,6 +528,10 @@ router.post("/reset-password",
 // POST /auth/reset-password/:token - auth route for resetting user password
 // expects 'token' param in the URL and JSON request body with 'password' field
 router.post("/reset-password/:token",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         param("token")
             .exists()
@@ -613,6 +635,9 @@ router.post("/reset-password/:token",
 // expects JSON request body with 'email' field
 router.post("/magiclink",
 
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         body("email")
             .exists()
@@ -694,6 +719,10 @@ router.post("/magiclink",
 // POST /auth/magiclink/:token - auth route for magic link login
 // expects 'token' param in the URL
 router.get("/magiclink/:token",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         param("token")
             .exists()
@@ -825,22 +854,26 @@ router.get('/google/callback',
 
 // POST /auth/signout - auth route for logging out user
 // clears the refresh token cookie
-router.post("/signout", function( req, res, next ) {
-    try {
-        // clear the refresh token cookie by setting it to empty
-        res.clearCookie('refresh_token')
+router.post("/signout", 
+    // check for app id using appIdAuth middleware
+    appIdAuth,
 
-        // send success response
-        res.status(200).json({
-            status: 'success',
-            data: {
-                message: 'Logged out successfully'
-            }
-        })
+    function( req, res, next ) {
+        try {
+            // clear the refresh token cookie by setting it to empty
+            res.clearCookie('refresh_token')
 
-    } catch (error) {
-        return next(error)
-    }
+            // send success response
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    message: 'Logged out successfully'
+                }
+            })
+
+        } catch (error) {
+            return next(error)
+        }
 })
 
 
@@ -849,6 +882,9 @@ router.post("/signout", function( req, res, next ) {
 // request body may include 'username', 'email' or 'password' fields
 // user must be authenticated with valid access token to access this route
 router.post("/update",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
 
     // authenticate user using passport JWT strategy
     // { session: false } option disables session creation
@@ -997,6 +1033,10 @@ router.post("/update",
 // POST /auth/me - auth route for getting current authenticated user profile
 // user must be authenticated with valid access token to access this route
 router.post("/me",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     // authenticate user using passport JWT strategy
     // { session: false } option disables session creation
     // since we are using token-based authentication
@@ -1026,6 +1066,10 @@ router.post("/me",
 // POST /auth/refresh - auth route for refreshing access token
 // refresh token is expected to be sent in an HTTP-only cookie
 router.post("/refresh",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     [
         cookie('refresh_token')
             .exists()
@@ -1091,6 +1135,10 @@ router.post("/refresh",
 // POST /auth/api-key - auth route for generating API key for user
 // user must be authenticated with valid access token to access this route
 router.post("/api-key",
+
+    // check for app id using appIdAuth middleware
+    appIdAuth,
+
     // authenticate user using passport JWT strategy
     // { session: false } option disables session creation
     // since we are using token-based authentication
