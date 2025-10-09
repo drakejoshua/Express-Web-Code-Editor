@@ -394,24 +394,33 @@ router.post("/signin",
             .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
     ],
 
+    // middleware to check for validation errors and report
+    // them before proceeding to passport authentication
+    function ( req, res, next ) {
+        // check for validation errors if any
+        const errors = validationResult(req)
+
+        // report validation errors if any was found
+        if ( !errors.isEmpty() ) {
+            switch ( errors.array()[0].msg ) {
+                case ERROR_CODES.INVALID_EMAIL:
+                    return reportInvalidEmailError( next )
+                case ERROR_CODES.INVALID_PASSWORD_FORMAT:
+                    return reportInvalidPasswordFormatError( next )
+            }
+        }   
+
+        // if no validation errors were found, proceed to
+        // passport authentication
+        next()
+    },
+
     // authenticate user using passport local strategy
     // { session: false } option disables session creation
     // since we are using token-based authentication
     passport.authenticate('local', { session: false }),
 
 async function( req, res, next )  {
-    // check for validation errors if any
-    const errors = validationResult(req)
-
-    // report validation errors if any was found
-    if ( !errors.isEmpty() ) {
-        switch ( errors.array()[0].msg ) {
-            case ERROR_CODES.INVALID_EMAIL:
-                return reportInvalidEmailError( next )
-            case ERROR_CODES.INVALID_PASSWORD_FORMAT:
-                return reportInvalidPasswordFormatError( next )
-        }
-    }   
 
     // if no validation errors were found, proceed to handle user login
     try {
