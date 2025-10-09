@@ -2,7 +2,8 @@
 import express from 'express'
 import passport from 'passport'
 import { configurePassport } from './configs/passport.js'
-
+import cors from 'cors'
+import helmet from 'helmet'
 
 
 // import server routers
@@ -22,6 +23,12 @@ const server = express()
 
 // connect server to database
 connectDB()
+
+// initialize helmet middleware on server for security
+server.use( helmet() )
+
+// initialize cors middleware on server for cross-origin requests
+server.use( cors() )
 
 // initialize passport middleware on server
 server.use( passport.initialize() )
