@@ -1,7 +1,7 @@
 // import route dependencies
 import express from 'express'
 import passport from 'passport'
-import { query, validationResult } from 'express-validator'
+import { param, query, validationResult } from 'express-validator'
 
 // import database models
 import Bloks from '../db/BlokSchema.js'
@@ -13,7 +13,7 @@ import {
     reportInvalidQueryFilterError,
     reportInvalidBlokIdError,
     reportBlokNotFoundError
-} from '../utils/error-utils'
+} from '../utils/error-utils.js'
 import { prepareBlokResponse } from '../utils/response-utils.js'
 
 
@@ -27,7 +27,7 @@ const router = express.Router()
 // })
 
 
-// GET /app/bloks?limit={limit}&filter={filter} - get list of code bloks for the
+// GET /api/bloks?limit={limit}&filter={filter} - get list of code bloks for the
 // current api user, with optional limit and filter query parameters
 router.get('/bloks', 
     // authenticate user using passport custom api-key strategy
@@ -115,13 +115,13 @@ router.get('/bloks',
 )
 
 
-// GET /app/bloks/:id - get a specific code blok by its ID for the currently 
+// GET /api/bloks/:id - get a specific code blok by its ID for the currently 
 // authenticated user
 router.get("/bloks/:id",
     // authenticate user using passport JWT strategy
     // { session: false } option disables session creation
     // since we are using token-based authentication
-    passport.authenticate('jwt', { session: false }),
+    passport.authenticate('api-key', { session: false }),
 
     // validate the blok ID in the request parameters
     // ensuring it is a valid MongoDB ObjectId using express-validator

@@ -1,7 +1,7 @@
 // import router dependencies
 import express from 'express'
 import upload from '../configs/multer.js'
-import { body, param, header, validationResult, cookie } from 'express-validator'
+import { body, param, validationResult, cookie } from 'express-validator'
 import { 
     ERROR_CODES, 
     reportEmailConfirmationExpiredError, 
@@ -32,8 +32,6 @@ import { cloudinaryDelete, cloudinaryUpload } from '../utils/cloudinary-utils.js
 import { sendMagicLinkEmail, sendPasswordResetEmail, sendVerificationEmail } from '../utils/email-utils.js'
 import { generateAccessToken, generateRefreshToken, verifyToken } from '../utils/token-utils.js'
 import { prepareUserResponse } from '../utils/response-utils.js'
-import path from 'path'
-import { stat } from 'fs'
 
 
 // create router from express
@@ -77,6 +75,7 @@ router.post("/signup",
     [
         body("username")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_USERNAME )
             .bail()
             .isLength({ min: 3, max: 30 })
@@ -87,6 +86,7 @@ router.post("/signup",
             .bail(),
         body("email")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_EMAIL )
             .bail()
             .isEmail()
@@ -95,6 +95,7 @@ router.post("/signup",
             .bail(),
         body("password")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
             .bail()
             .isLength({ min: 6 })
@@ -218,6 +219,7 @@ router.post("/verify-email",
     [
         body("email")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_EMAIL )
             .bail()
             .isEmail()
@@ -283,6 +285,7 @@ router.get("/verify-email/:token",
     [
         param("token")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
             .bail()
             .isHexadecimal()
@@ -375,6 +378,7 @@ router.post("/signin",
     [
         body("email")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_EMAIL )
             .bail()
             .isEmail()
@@ -383,6 +387,7 @@ router.post("/signin",
             .bail(),
         body("password")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
             .bail()
             .isLength({ min: 6 })
@@ -462,6 +467,7 @@ router.post("/reset-password",
     [
         body("email")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_EMAIL )
             .bail()
             .isEmail()
@@ -535,6 +541,7 @@ router.post("/reset-password/:token",
     [
         param("token")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
             .bail()
             .isHexadecimal()
@@ -542,6 +549,7 @@ router.post("/reset-password/:token",
             .bail(),
         body("password")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
             .bail()
             .isLength( { min: 6 } )
@@ -641,6 +649,7 @@ router.post("/magiclink",
     [
         body("email")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_EMAIL )
             .bail()
             .isEmail()
@@ -726,6 +735,7 @@ router.get("/magiclink/:token",
     [
         param("token")
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_REQUEST_TOKEN )
             .bail()
             .isHexadecimal()
@@ -904,16 +914,19 @@ router.post("/update",
             .withMessage( ERROR_CODES.INVALID_USERNAME )
             .bail()
             .isString()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_USERNAME )
             .bail(),
         body('email')
             .optional()
             .isEmail()
+            .notEmpty()
             .normalizeEmail()
             .withMessage( ERROR_CODES.INVALID_EMAIL )
             .bail(),
         body('password')
             .optional()
+            .notEmpty()
             .isLength({ min: 6 })
             .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
             .bail()
@@ -1073,6 +1086,7 @@ router.post("/refresh",
     [
         cookie('refresh_token')
             .exists()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_REFRESH_TOKEN )
             .isJWT()
             .withMessage( ERROR_CODES.INVALID_REFRESH_TOKEN )

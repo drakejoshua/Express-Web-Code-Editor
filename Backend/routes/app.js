@@ -199,6 +199,7 @@ router.post("/bloks",
             .withMessage( ERROR_CODES.INVALID_BLOK_NAME )
             .bail()
             .isString()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_NAME )
             .bail()
     ],
@@ -274,6 +275,7 @@ router.put("/bloks/:id",
         body("name")
             .optional()
             .isString()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_NAME )
             .bail(),
         body("settings")
@@ -284,16 +286,19 @@ router.put("/bloks/:id",
         body("html")
             .optional()
             .isString()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
             .bail(),
         body("css")
             .optional()
             .isString()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
             .bail(),
         body("javascript")
             .optional()
             .isString()
+            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
             .bail()
     ],
@@ -356,34 +361,34 @@ router.put("/bloks/:id",
 
             // update settings if provided and valid
             // only allow updating specific settings fields
-            if ( BLOK_THEMES.includes( settings.theme ) ) {
+            if ( BLOK_THEMES.includes( settings?.theme ) ) {
                 blok.settings.theme = settings.theme    // update theme if provided and valid
             }
             
             if (
-                settings.font_size &&
+                settings?.font_size &&
                 Number.isInteger( settings.font_size ) &&
-                settings.font_size >= 8 &&
-                settings.font_size <= 36
+                settings?.font_size >= 8 &&
+                settings?.font_size <= 36
             ) {
                 blok.settings.font_size = settings.font_size    // update font size if provided and valid
             }
 
             if (
-                settings.tab_size &&
-                Number.isInteger( settings.tab_size ) &&
-                settings.tab_size >= 2 &&
-                settings.tab_size <= 8
+                settings?.tab_size &&
+                Number.isInteger( settings?.tab_size ) &&
+                settings?.tab_size >= 2 &&
+                settings?.tab_size <= 8
             ) {
                 blok.settings.tab_size = settings.tab_size    // update tab size if provided and valid
             }
 
-            if ( typeof settings.auto_complete === "boolean" ) {
+            if ( typeof settings?.auto_complete === "boolean" ) {
                 blok.settings.auto_complete = settings.auto_complete    // update auto complete if provided and valid
             }
 
             if (
-                settings.editor_layout &&
+                settings?.editor_layout &&
                 BLOK_LAYOUTS.includes( settings.editor_layout )
             ) {
                 blok.settings.editor_layout = settings.editor_layout    // update editor layout if provided and valid
@@ -428,6 +433,14 @@ router.delete("/bloks/:id",
 
     // handle request to delete a specific blok
     async (req, res, next) => {
+        // check for validation error if any
+        const errors = validationResult( req )
+
+        // report validation error if any was found
+        if ( !errors.isEmpty() ) {
+            return reportInvalidBlokIdError( next )
+        }
+
         // extract the blok ID from the request parameters
         const blokId = req.params.id
 
@@ -436,18 +449,15 @@ router.delete("/bloks/:id",
 
         try {
             // find the blok to delete from the database
-            const blok = await Bloks.findOne({
+            const blok = await Bloks.deleteOne({
                 _id: blokId,
                 user_id: user._id
             })
 
             // if blok not found, report error
-            if ( !blok ) {
+            if ( blok.deletedCount == 0 ) {
                 return reportBlokNotFoundError( next )
             }
-
-            // delete the blok from the database
-            await blok.remove()
 
             // send delete success response
             res.status(204).send()

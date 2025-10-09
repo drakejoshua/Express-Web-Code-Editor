@@ -23,6 +23,7 @@ export function prepareUserResponse( user ) {
 export function prepareBlokResponse( blok ) {
     return {
         id: blok._id,
+        name: blok.name,
         user_id: blok.user_id,
         html: blok.html || "",
         css: blok.css || "",
