@@ -9,11 +9,13 @@ import appIdAuth from '../middleware/app-id-auth.js'
 
 // import Bloks mongoose database model 
 import Bloks from '../db/BlokSchema.js'
+
+// import utility functions and constants
 import { prepareBlokResponse } from '../utils/response-utils.js'
 import { BLOK_LAYOUTS, BLOK_THEMES } from '../utils/blok-utils.js'
 
 // create router from express
-const router = express.Router()
+export const router = express.Router()
 
 // initialize appIdAuth middleware on all routes in this router
 // to protect routes and ensure only requests with valid app ID can access them
