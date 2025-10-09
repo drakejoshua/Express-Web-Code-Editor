@@ -25,6 +25,7 @@ export const ERROR_CODES = {
     INVALID_UPDATE_DATA: 'INVALID_UPDATE_DATA',
     INVALID_REFRESH_TOKEN: 'INVALID_REFRESH_TOKEN',
     INVALID_API_KEY: 'INVALID_API_KEY',
+    RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
     
     // no error reporting functions for error codes below
     INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
@@ -331,4 +332,17 @@ invalidApiKeyError.errorCode = ERROR_CODES.INVALID_API_KEY
 // due to being an OAuth user with 400 status code
 export function reportInvalidApiKeyError(next) {
     return next(invalidApiKeyError)
+}
+
+
+// predefined rate limit exceeded error - used to report
+// that user profile can't be updated due to being an OAuth user
+export const rateLimitExceededError = new Error("API Rate limit exceeded. Try again after some time")
+rateLimitExceededError.statusCode = 429
+rateLimitExceededError.errorCode = ERROR_CODES.RATE_LIMIT_EXCEEDED
+
+// report rate limit exceeded error - reports that user profile can't be updated
+// due to being an OAuth user with 400 status code
+export function reportRateLimitExceededError(next) {
+    return next(rateLimitExceededError)
 }

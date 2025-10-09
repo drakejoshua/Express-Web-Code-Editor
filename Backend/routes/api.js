@@ -2,6 +2,7 @@
 import express from 'express'
 import passport from 'passport'
 import { param, query, validationResult } from 'express-validator'
+import rateLimit from 'express-rate-limit'
 
 // import database models
 import Bloks from '../db/BlokSchema.js'
@@ -12,10 +13,20 @@ import {
     reportInvalidQueryLimitError, 
     reportInvalidQueryFilterError,
     reportInvalidBlokIdError,
-    reportBlokNotFoundError
+    reportBlokNotFoundError,
+    rateLimitExceededError
 } from '../utils/error-utils.js'
 import { prepareBlokResponse } from '../utils/response-utils.js'
 
+
+// configure rate limiting for API routes
+const apiRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs,
+    handler: function( req, res, next, options ) {
+        return next( rateLimitExceededError )
+    }
+})
 
 // create router from express
 const router = express.Router()
@@ -25,6 +36,10 @@ const router = express.Router()
 // router.get('/hello', function( req, res ) {
 //     res.send("hello world: api")
 // })
+
+// initialize api router to use rate-limiting middleware to 
+// prevent api overuse
+router.use( apiRateLimiter )
 
 
 // GET /api/bloks?limit={limit}&filter={filter} - get list of code bloks for the
