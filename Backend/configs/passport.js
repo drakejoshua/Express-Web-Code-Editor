@@ -3,6 +3,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as CustomStrategy } from "passport-custom";
 import bcrypt from "bcrypt";
 
 // import predefined custom error objects for error handling
@@ -10,7 +11,8 @@ import {
     invalidEmailError,
     invalidPasswordError,
     invalidAuthenticationMethodError,
-    emailNotVerifiedError
+    emailNotVerifiedError,
+    invalidApiKeyError
 } from "../utils/error-utils.js";
 
 // import users and bloks model
@@ -142,4 +144,30 @@ export function configurePassport( passport ) {
             }
         }
     ));
+
+    // configure custom api-key strategy for API key authentication
+    passport.use( "api-key", new CustomStrategy( async function( req, done ) {
+        try {
+            // extract api-key from request headers
+            const apiKey = req.headers["x-api-key"];
+
+            // if api-key header is missing, return false
+            if ( !apiKey ) {
+                return done( invalidApiKeyError, false );
+            }
+
+            // find user by api-key
+            const user = await Users.findOne( { api_key: apiKey } );
+
+            // if user not found, return false
+            if ( !user ) {
+                return done( invalidApiKeyError, false );
+            }
+
+            // if user found, return user object
+            return done( null, user );
+        } catch( err ) {
+            return done( err, false );
+        }
+    }))
 }

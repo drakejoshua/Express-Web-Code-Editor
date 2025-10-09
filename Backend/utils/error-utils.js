@@ -24,6 +24,7 @@ export const ERROR_CODES = {
     INVALID_AUTHENTICATION_METHOD: 'INVALID_AUTHENTICATION_METHOD',
     INVALID_UPDATE_DATA: 'INVALID_UPDATE_DATA',
     INVALID_REFRESH_TOKEN: 'INVALID_REFRESH_TOKEN',
+    INVALID_API_KEY: 'INVALID_API_KEY',
     
     // no error reporting functions for error codes below
     INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
@@ -317,4 +318,17 @@ invalidUpdateDataError.errorCode = ERROR_CODES.INVALID_UPDATE_DATA
 // due to being an OAuth user with 400 status code
 export function reportInvalidUpdateDataError(next) {
     return next(invalidUpdateDataError)
+}
+
+
+// predefined invalid api key error - used to report
+// that user profile can't be updated due to being an OAuth user
+export const invalidApiKeyError = new Error("Invalid API key provided.")
+invalidApiKeyError.statusCode = 401
+invalidApiKeyError.errorCode = ERROR_CODES.INVALID_API_KEY
+
+// report invalid api key error - reports that user profile can't be updated
+// due to being an OAuth user with 400 status code
+export function reportInvalidApiKeyError(next) {
+    return next(invalidApiKeyError)
 }
