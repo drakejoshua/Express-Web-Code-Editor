@@ -11,6 +11,7 @@ import Signup from "./routes/Signup";
 import Google from "./routes/Google";
 import Create from "./routes/Create";
 import Home from "./routes/Home";
+import Magiclink from './routes/Magiclink'
 
 
 export const router = createBrowserRouter([
@@ -52,7 +53,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/auth/magiclink",
-        element: <Settings />
+        element: <Magiclink />
     },
     {
         path: "/create",
