@@ -12,7 +12,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             flex-col 
             items-center 
             gap-5 
-            bg-gray-950/30 
+            bg-gray-900 dark:bg-gray-950/80 
             p-10 py-14 
             rounded-xl
         `}
@@ -54,6 +54,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
                 text-xl 
                 font-medium 
                 text-center
+                text-white
             '
         >
             { status.heading }
@@ -73,8 +74,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             to={ status.redirect } 
             className='
                 status-card__btn
-                bg-blue-800 
-                hover:bg-blue-700 
+                bg-blue-600 hover:bg-blue-500 dark:bg-blue-800 hover:dark:bg-blue-700 
                 transition-colors
                 p-2 px-6 
                 rounded-lg 
@@ -82,6 +82,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
                 flex 
                 items-center 
                 gap-2
+                text-white 
             '
         >
             { status.redirect_content }

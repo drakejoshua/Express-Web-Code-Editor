@@ -9,10 +9,14 @@ import RouteContainer from '../components/RouteContainer';
 import Logo from '../components/Logo';
 import StatusCard from '../components/StatusCard';
 import { Helmet } from 'react-helmet-async'
+import { FaArrowLeft, FaMoon, FaRegSun } from 'react-icons/fa6';
+import { useThemeProvider } from '../providers/ThemeProvider.jsx'
 
 
 // google oauth component
 export default function Google() {
+    const { theme, toggleTheme } = useThemeProvider();
+
     return (
         <>
             <Helmet>
@@ -25,8 +29,8 @@ export default function Google() {
                     google 
                     h-screen 
                     w-full 
-                    bg-gray-900 
-                    text-white 
+                    bg-neutral-100 dark:bg-gray-900 
+                    dark:text-white 
                     overflow-auto
                 '
             >
@@ -34,7 +38,7 @@ export default function Google() {
                 <RouteContainer>
                     <Logo/>
 
-                    <StatusCard
+                    {/* <StatusCard
                         status={{
                             heading: 'Authenticating your Google account...',
                             text: `
@@ -43,9 +47,9 @@ export default function Google() {
                             `,
                             type: "loading"
                         }}
-                    />
+                    /> */}
                     
-                    {/* <StatusCard
+                    <StatusCard
                         status={{
                             heading: 'There was an issue authenticating your Google account.',
                             text: `
@@ -62,7 +66,7 @@ export default function Google() {
                                 Go Back to Signin
                             </>
                         }}
-                    /> */}
+                    />
                     
                     {/* <StatusCard
                         status={{
@@ -80,6 +84,41 @@ export default function Google() {
                         }}
                     /> */}
                 </RouteContainer>
+
+                <button 
+                    className='
+                        google--theme-toggle
+                        fixed
+                        top-4
+                        right-4
+                        flex
+                        gap-2
+                        items-center
+                        bg-gray-300 dark:bg-gray-700
+                        p-3 px-4.5
+                        rounded-lg
+                    '
+                    onClick={ () => toggleTheme() }
+                >
+                    { theme == 'dark' && <FaRegSun 
+                        className="
+                            google--theme-toggle__icon
+                        "
+                    /> }
+                    
+                    { theme == 'light' && <FaMoon 
+                        className="
+                            google--theme-toggle__icon
+                        "
+                    /> }
+
+                    <span 
+                        className="
+                            google--theme-toggle__text
+                        ">
+                        Toggle Theme
+                    </span>
+                </button>
             </div>
         </>
     )

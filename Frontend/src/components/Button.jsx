@@ -4,8 +4,7 @@ const Button = React.forwardRef( function( { children, className, ...props }, re
   return (
     <button 
         className={ `
-            bg-blue-800 
-            hover:bg-blue-700 
+            bg-blue-600 hover:bg-blue-500 dark:bg-blue-800 hover:dark:bg-blue-700 
             transition-colors
             p-2 px-6 
             rounded-lg 
@@ -13,6 +12,7 @@ const Button = React.forwardRef( function( { children, className, ...props }, re
             flex 
             items-center 
             gap-2
+            text-white 
         ` + className }
         ref={ref}
 

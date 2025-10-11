@@ -14,9 +14,24 @@ const Logo = React.forwardRef( function( { className, ...props }, ref ) {
 
         { ...props }
     >
-        <AiOutlineCode className='brand-logo__icon text-4xl'/>
+        <AiOutlineCode 
+            className='
+                brand-logo__icon 
+                text-4xl
+                text-blue-800
+                dark:text-white
+            '
+        />
 
-        <span className='brand-logo__text text-xl font-medium font-mono'>
+        <span 
+            className='
+                brand-logo__text 
+                text-xl 
+                font-medium 
+                font-mono
+                text-black dark:text-white
+            '
+        >
             CodeBloks
         </span>
     </div>
