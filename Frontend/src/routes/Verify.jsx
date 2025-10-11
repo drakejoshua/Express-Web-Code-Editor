@@ -28,7 +28,7 @@ export default function Verify() {
 
             <div 
                 className='
-                    google 
+                    verify 
                     h-screen 
                     w-full 
                     bg-neutral-100 dark:bg-gray-900 
@@ -91,7 +91,7 @@ export default function Verify() {
 
                 <button 
                     className='
-                        google--theme-toggle
+                        verify--theme-toggle
                         fixed
                         top-4
                         right-4
@@ -106,19 +106,19 @@ export default function Verify() {
                 >
                     { theme == 'dark' && <FaRegSun 
                         className="
-                            google--theme-toggle__icon
+                            verify--theme-toggle__icon
                         "
                     /> }
                     
                     { theme == 'light' && <FaMoon 
                         className="
-                            google--theme-toggle__icon
+                            verify--theme-toggle__icon
                         "
                     /> }
 
                     <span 
                         className="
-                            google--theme-toggle__text
+                            verify--theme-toggle__text
                         ">
                         Toggle Theme
                     </span>
