@@ -35,6 +35,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
                         status-card__loading-spinner
                         animate-spin 
                         text-3xl
+                        text-white
                     '
                 />,
 
