@@ -47,6 +47,7 @@ export default function Google() {
                             `,
                             type: "loading"
                         }}
+                        className="mt-8"
                     /> */}
                     
                     <StatusCard
@@ -66,6 +67,7 @@ export default function Google() {
                                 Go Back to Signin
                             </>
                         }}
+                        className="mt-8"
                     />
                     
                     {/* <StatusCard
@@ -82,6 +84,7 @@ export default function Google() {
                                 Go to Dashboard
                             </>
                         }}
+                        className="mt-8"
                     /> */}
                 </RouteContainer>
 

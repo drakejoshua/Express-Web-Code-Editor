@@ -7,7 +7,7 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
     return (
         <div 
             className={`
-                reset-password--form__password-field--input-ctn
+                password-input-ctn
                 flex
                 gap-2
                 items-center
@@ -18,11 +18,12 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
                 bg-gray-600 dark:bg-gray-300
                 text-white dark:text-black
                 font-medium
-            ` + className }
+                ${ className || '' }
+            ` }
         >
             <input
                 className='
-                    reset-password--form__password-field--input
+                    password-input
                     flex-grow
                     outline-none
                     bg-transparent
@@ -38,7 +39,7 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
 
             <button
                 className='
-                    reset-password--form__password-field--toggle
+                    password-toggle
                 '
                 onClick={() => setIsPasswordVisible( !isPasswordVisible )}
                 type="button"
@@ -47,14 +48,14 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
                     {
                         visible: <FaRegEye
                             className='
-                                reset-password--form__password-field--toggle-icon
+                                password-toggle-icon
                                 text-xl
                             '
                         />,
                     
                         hidden: <FaRegEyeSlash
                             className='
-                                reset-password--form__password-field--toggle-icon
+                                password-toggle-icon
                                 text-xl
                             '
                         />

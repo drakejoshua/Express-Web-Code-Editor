@@ -6,7 +6,7 @@ import Button from './Button'
 const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
   return (
     <div 
-        className={ className ? className : `
+        className={`
             status-card
             flex 
             flex-col 
@@ -15,6 +15,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             bg-gray-900 dark:bg-gray-950/80 
             p-10 py-14 
             rounded-xl
+            ${ className || ''}
         `}
         ref={ref}
 

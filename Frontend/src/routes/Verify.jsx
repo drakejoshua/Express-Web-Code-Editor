@@ -49,6 +49,7 @@ export default function Verify() {
                             `,
                             type: "loading"
                         }}
+                        className="mt-8"
                     /> */}
                     
                     <StatusCard
@@ -70,6 +71,7 @@ export default function Verify() {
                                 Try Again
                             </>
                         }}
+                        className="mt-8"
                     />
                     
                     {/* <StatusCard
@@ -86,6 +88,7 @@ export default function Verify() {
                                 Go to Dashboard
                             </>
                         }}
+                        className="mt-8"
                     /> */}
                 </RouteContainer>
 

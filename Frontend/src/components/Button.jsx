@@ -14,7 +14,8 @@ const Button = React.forwardRef( function( { children, className, ...props }, re
             justify-center
             gap-2
             text-white 
-        ` + className }
+            ${ className ? className : `` }
+        ` }
         ref={ref}
 
         {...props}

@@ -4,11 +4,12 @@ import { AiOutlineCode } from 'react-icons/ai'
 const Logo = React.forwardRef( function( { className, ...props }, ref ) {
   return (
     <div 
-        className={ className ? className : `
+        className={`
             brand-logo 
             flex 
             items-center 
             gap-2
+            ${ className || '' }
         `}
         ref={ref}
 

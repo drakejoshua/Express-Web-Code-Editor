@@ -48,6 +48,7 @@ export default function Magiclink() {
                             `,
                             type: "loading"
                         }}
+                        className="mt-8"
                     /> */}
                     
                     <StatusCard
@@ -67,6 +68,7 @@ export default function Magiclink() {
                                 Go Back to Signin
                             </>
                         }}
+                        className="mt-8"
                     />
                     
                     {/* <StatusCard
@@ -83,6 +85,7 @@ export default function Magiclink() {
                                 Go to Dashboard
                             </>
                         }}
+                        className="mt-8"
                     /> */}
                 </RouteContainer>
 
