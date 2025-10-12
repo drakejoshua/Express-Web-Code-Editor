@@ -8,7 +8,6 @@ export default function RouteContainer({ children, className }) {
             flex 
             flex-col 
             items-center 
-            gap-10 
             p-5 pt-16
         `}
     >

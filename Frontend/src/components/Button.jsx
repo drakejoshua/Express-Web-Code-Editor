@@ -11,6 +11,7 @@ const Button = React.forwardRef( function( { children, className, ...props }, re
             font-medium 
             flex 
             items-center 
+            justify-center
             gap-2
             text-white 
         ` + className }
