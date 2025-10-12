@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6'
 
 const PasswordInput = React.forwardRef( function({ value, onChange, className, ...props}, ref ) {
-    const [ visibility, setVisibility ] = useState(false);
+    const [ isPasswordVisible, setIsPasswordVisible ] = useState(false);
 
     return (
         <div 
@@ -28,7 +28,7 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
                     bg-transparent
                 '
                 ref={ref}
-                type={ visibility == 'hidden' ? 'password' : 'text' }
+                type={ isPasswordVisible ? 'text' : 'password' }
                 minLength={6}
                 required
                 value={ value }
@@ -40,7 +40,7 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
                 className='
                     reset-password--form__password-field--toggle
                 '
-                onClick={() => setVisibility( visibility == "hidden" ? "visible" : "hidden" )}
+                onClick={() => setIsPasswordVisible( !isPasswordVisible )}
                 type="button"
             >
                 {
@@ -58,7 +58,7 @@ const PasswordInput = React.forwardRef( function({ value, onChange, className, .
                                 text-xl
                             '
                         />
-                    }[ visibility ? "visible" : "hidden" ]
+                    }[ isPasswordVisible ? "visible" : "hidden" ]
                 }
             </button>
         </div>
