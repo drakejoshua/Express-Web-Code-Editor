@@ -28,6 +28,7 @@ import Logo from '../components/Logo'
 import Button from '../components/Button'
 import PasswordInput from '../components/PasswordInput'
 import { Helmet } from 'react-helmet-async'
+import PasswordField from '../components/PasswordField'
 
 export default function ResetPassword() {
     const { theme, toggleTheme } = useThemeProvider();
@@ -90,97 +91,24 @@ export default function ResetPassword() {
                         '
                     >
                         {/* new password */}
-                        <Form.Field
-                            className='
-                                reset-password--form__password-field
-                                flex 
-                                flex-col
-                                gap-2
-                            '
-                        >
-                            <Form.Label 
-                                className='
-                                    reset-password--form__password-field--label
-                                    font-medium
-                                '
-                            >
-                                New Password
-                            </Form.Label>
+                        <PasswordField
+                            label="New Password"
+                            name="new-password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            emptyValidationMessage="Please enter your new password"
+                            shortValidationMessage="The password can't be lower than 6 characters"
+                        />
 
-                            <Form.Control asChild>
-                                <PasswordInput
-                                    value={ newPassword }
-                                    onChange={ ( e ) => setNewPassword( e.target.value ) }
-                                    required
-                                    minLength={6}
-                                />
-                            </Form.Control>
-                            
-
-                            {/* validation - no value */}
-                            <Form.Message
-                                className='
-                                    reset-password--form__password-field--message
-                                    flex
-                                    gap-2
-                                    items-center
-                                '
-                                match="valueMissing"
-                            >
-                                <FaTriangleExclamation/>
-                                
-                                <span>
-                                    Please enter your new password
-                                </span>
-                            </Form.Message>
-
-                            {/* validation - too short */}
-                            <Form.Message
-                                className='
-                                    reset-password--form__password-field--message
-                                    flex
-                                    gap-2
-                                    items-center
-                                '
-                                match="tooShort"
-                            >
-                                <FaTriangleExclamation/>
-                                
-                                <span>
-                                    The password can't be lower than 6 characters
-                                </span>
-                            </Form.Message>
-                        </Form.Field>
-                        
-                        
                         {/* confirm new password */}
-                        <Form.Field
-                            className='
-                                reset-password--form__confirm-password-field
-                                flex 
-                                flex-col
-                                gap-2
-                            '
+                        <PasswordField
+                            label="Confirm New Password"
+                            value={confirmPassword}
+                            name="confirm-password"
+                            emptyValidationMessage="Please confirm your new password"
+                            shortValidationMessage="The password can't be lower than 6 characters"
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         >
-                            <Form.Label 
-                                className='
-                                    reset-password--form__confirm-password-field--label
-                                    font-medium
-                                '
-                            >
-                                Confirm New Password
-                            </Form.Label>
-
-                            <Form.Control asChild>
-                                <PasswordInput
-                                    value={ confirmPassword }
-                                    onChange={ ( e ) => setConfirmPassword( e.target.value ) }
-                                    required
-                                    minLength={6}
-                                />
-                            </Form.Control>
-                            
-
                             {/* validation - password mismatch */}
                             <Form.Message
                                 className='
@@ -197,7 +125,7 @@ export default function ResetPassword() {
                                     Your passwords don't match each other
                                 </span>
                             </Form.Message>
-                        </Form.Field>
+                        </PasswordField>
 
                         {/* submit button */}
                         <Button 
