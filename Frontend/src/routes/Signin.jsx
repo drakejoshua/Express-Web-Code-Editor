@@ -5,10 +5,11 @@ import Button from '../components/Button'
 import Logo from '../components/Logo'
 import { 
     Carousel,
-    CarouselAutoplayControl,
     CarouselItem,
     CarouselScroller,
-    CarouselButton
+    CarouselButton,
+    CarouselTabs,
+    CarouselTab
 } from 'react-aria-carousel'
 import { useEffect, useRef, useState } from 'react'
 import hljs from 'highlight.js'
@@ -87,7 +88,7 @@ export default function Signin() {
                 signin
                 min-h-screen
                 flex
-                bg-neutral-50 dark:bg-gray-900 
+                bg-white dark:bg-gray-900 
                 dark:text-white 
             '
         >
@@ -106,6 +107,7 @@ export default function Signin() {
                 <h1 className='
                     signin--form__heading
                     font-medium
+                    text-gray-900
                     text-3xl
                     mt-9
                 '>
@@ -241,11 +243,12 @@ export default function Signin() {
                     signin--carousel
                     w-2/3
                     h-screen
-                    bg-amber-100
+                    bg-neutral-100
                     p-16 px-20
                 '
             >
                 <CarouselButton dir='next' ref={nextButtonRef}/>
+
                 <CarouselScroller
                     className='
                         signin--carousel__scroller
@@ -272,6 +275,7 @@ export default function Signin() {
                                 signin--carousel__scroller--item-heading
                                 font-bold
                                 text-4xl
+                                text-gray-900
                                 leading-12
                                 w-3/4
                                 text-center
@@ -375,6 +379,7 @@ export default function Signin() {
                                 signin--carousel__scroller--item-heading
                                 font-bold
                                 text-4xl
+                                text-gray-900
                                 leading-12
                                 w-3/4
                                 text-center
@@ -462,6 +467,28 @@ export default function Signin() {
                         </div>
                     </CarouselItem>
                 </CarouselScroller>
+
+                <CarouselTabs
+                    className='
+                        flex
+                        gap-2
+                        justify-center
+                        mt-4
+                    '
+                >
+                    {(page) => <CarouselTab 
+                            key={page.index} 
+                            index={page.index} 
+                            className={`
+                                h-3
+                                w-3
+                                rounded-full
+                                bg-gray-700 ${page.isSelected ? 'bg-gray-950' : ''}
+                                cursor-pointer
+                            `}
+                        />
+                    }
+                </CarouselTabs>
             </Carousel>
         </div>
     )
