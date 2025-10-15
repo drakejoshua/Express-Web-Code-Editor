@@ -1,8 +1,12 @@
+// import component dependencies
 import { Form } from 'radix-ui'
 import React from 'react'
 import { FaTriangleExclamation } from 'react-icons/fa6'
 
+
+// define EmailField component
 const EmailField = React.forwardRef(({
+    // extract key props and provide default values
     className,
     label,
     name,
@@ -13,31 +17,34 @@ const EmailField = React.forwardRef(({
     children
 }, ref) => {
   return (
+    // form field wrapper
     <Form.Field 
         name={name}
         ref={ref}
         className={`
-            signin--form__email-field
+            email-field
             flex 
             flex-col
             gap-2
             ${className}
         `}
     >
+        {/* form field label */}
         <Form.Label 
             className='
-                signin--form__email-field--label
+                email-field__label
                 font-medium
             '
         >
             {label}
         </Form.Label>
 
+        {/* form field input */}
         <Form.Control asChild>
             <input 
                 type="email" 
                 className='
-                    signin--form__email-field--input
+                    email-field__input
                     border-2
                     border-gray-600 dark:border-gray-300
                     rounded-sm
@@ -53,32 +60,35 @@ const EmailField = React.forwardRef(({
             />
         </Form.Control>
 
+        {/* validation - no value */}
         { emptyValidationMessage && <Form.Message 
             className='
-                signin--form__email-field--message
+                email-field__message
                 flex
                 gap-2
                 items-center
             ' 
             match="typeMismatch"
         >
-            <FaTriangleExclamation className='signin--form__email-field--icon' />
+            <FaTriangleExclamation className='email-field__icon' />
             {emptyValidationMessage}
         </Form.Message>}
 
+        {/* validation - invalid email */}
         { invalidValidationMessage && <Form.Message 
             className='
-                signin--form__email-field--message
+                email-field__message
                 flex
                 gap-2
                 items-center
             ' 
             match="typeMismatch"
         >
-            <FaTriangleExclamation className='signin--form__email-field--icon' />
+            <FaTriangleExclamation className='email-field__icon' />
             {invalidValidationMessage}
         </Form.Message>}
 
+        {/* other content or validation messages */}
         { children }
     </Form.Field>
   )
