@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import hljs from 'highlight.js'
 import "highlight.js/styles/vs2015.css"
+import EmailField from '../components/EmailField'
 
 
 
@@ -87,6 +88,7 @@ export default function Signin() {
         <div className='
                 signin
                 min-h-screen
+                overflow-auto
                 flex
                 bg-white dark:bg-gray-900 
                 dark:text-white 
@@ -125,56 +127,12 @@ export default function Signin() {
                 </p>
 
                 {/* email */}
-                <Form.Field 
-                    name='email'
-                    className='
-                        signin--form__email-field
-                        flex 
-                        flex-col
-                        gap-2
-                    '
-                >
-                    <Form.Label 
-                        className='
-                            signin--form__email-field--label
-                            font-medium
-                        '
-                    >
-                        Email
-                    </Form.Label>
-
-                    <Form.Control asChild>
-                        <input 
-                            type="email" 
-                            className='
-                                signin--form__email-field--input
-                                border-2
-                                border-gray-600 dark:border-gray-300
-                                rounded-sm
-                                py-2 px-3
-                                bg-gray-600 dark:bg-gray-300
-                                text-white dark:text-black
-                                font-medium
-                                outline-none
-                            ' 
-                            required
-                        />
-                    </Form.Control>
-
-                    <Form.Message 
-                        className='
-                            signin--form__email-field--message
-                            flex
-                            gap-2
-                            items-center
-                        ' 
-                        match="typeMismatch"
-                    >
-                        <FaTriangleExclamation className='signin--form__email-field--icon' />
-                        Please enter your email
-                    </Form.Message>
-
-                </Form.Field>
+                <EmailField
+                    label="Email"
+                    name="email"
+                    emptyValidationMessage="Please enter your email"
+                    invalidValidationMessage="Please enter a valid email"
+                />
                 
                 {/* password */}
                 <PasswordField
@@ -242,7 +200,8 @@ export default function Signin() {
                 className='
                     signin--carousel
                     w-2/3
-                    h-screen
+                    self-stretch 
+                    overflow-auto
                     bg-neutral-100
                     p-16 px-20
                 '
