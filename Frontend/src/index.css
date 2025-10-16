@@ -2,3 +2,20 @@
 
 /* add dark mode customizations */
 @custom-variant dark (&:where(.dark, .dark *));
+
+
+/* add brand specific styles */
+@theme {
+  --brand-light-bg: theme(colors.neutral.100);
+  --brand-dark-bg: theme(colors.gray.900);
+  --brand-text-light: theme(colors.gray.900);
+
+  --brand-light-accent-blue: theme(colors.blue.600);
+  --brand-light-accent-blue-hover: theme(colors.blue.500);
+  --brand-dark-accent-blue: theme(colors.blue.800);
+  --brand-dark-accent-blue-hover: theme(colors.blue.700);
+  --brand-logo-blue: theme(colors.blue.800);
+
+  --brand-light-accent-black: theme(colors.gray.600);
+  --brand-dark-accent-black: theme(colors.gray.300);
+}

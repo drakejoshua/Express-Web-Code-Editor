@@ -19,7 +19,7 @@ import {
 const Carousel = React.forwardRef(({
     className,
     ...props
-}, ref) => {
+}) => {
 
     // ref and state to manage typing effect in code example
     const typedElement = useRef(null);
