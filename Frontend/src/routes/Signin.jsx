@@ -8,6 +8,8 @@ import Carousel from '../components/Carousel'
 import RouteThemeToggle from '../components/RouteThemeToggle'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import GoogleBtn from '../components/GoogleBtn'
+import MagiclinkBtn from '../components/MagiclinkBtn'
 
 
 export default function Signin() {
@@ -123,28 +125,18 @@ export default function Signin() {
                     </Button>
 
                     {/* sign in with google */}
-                    <button
+                    <GoogleBtn
                         className='
-                            signin--form__google-btn
-                            mt-4
-                            w-full
-                            flex
-                            items-center
-                            justify-center
-                            gap-3.5
-                            p-2.5
-                            rounded-md
-                            text-white
-                            bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 hover:dark:bg-gray-500
+                            mt-8
                         '
-                    >
-                        <FaGoogle className='
-                            signin--form__google-btn--icon
-                            text-xl
-                        '/>
+                    />
 
-                        Sign in with Google
-                    </button>
+                    {/* sign in with email */}
+                    <MagiclinkBtn
+                        className='
+                            mt-3
+                        '
+                    />
                 </Form.Root>
 
                 {/* signin carousel */}
