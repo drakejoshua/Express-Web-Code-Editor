@@ -7,6 +7,7 @@ import EmailField from '../components/EmailField'
 import Carousel from '../components/Carousel'
 import RouteThemeToggle from '../components/RouteThemeToggle'
 import { Helmet } from 'react-helmet-async'
+import { Link } from 'react-router-dom'
 
 
 export default function Signin() {
@@ -15,7 +16,7 @@ export default function Signin() {
             <Helmet>
                 <title> Sign In - Codebloks </title>
                 <meta name="description" content="Sign in to your Codebloks account 
-                to access the Express Web Code Editor and start coding!" />
+                to access the coding playground and start coding!" />
             </Helmet>
         
             <div className='
@@ -63,7 +64,19 @@ export default function Signin() {
                         leading-6
                         text-center xl:text-left
                     '>
-                        Welcome back! Please enter your details to sign in to your account.
+                        Welcome back! 
+                        Please enter your details to sign in to your account.
+
+                        Don't have an account? 
+                        <Link 
+                            to="/auth/signup" 
+                            className='
+                                text-blue-900 dark:text-blue-100
+                                hover:underline
+                            '
+                        >
+                            Sign up
+                        </Link>
                     </p>
 
                     {/* email */}
