@@ -23,15 +23,13 @@ import {
     FaRegSun, 
     FaTriangleExclamation 
 } from 'react-icons/fa6'
-import { useThemeProvider } from '../providers/ThemeProvider'
 import Logo from '../components/Logo'
 import Button from '../components/Button'
-import PasswordInput from '../components/PasswordInput'
 import { Helmet } from 'react-helmet-async'
 import PasswordField from '../components/PasswordField'
+import RouteThemeToggle from '../components/RouteThemeToggle'
 
 export default function ResetPassword() {
-    const { theme, toggleTheme } = useThemeProvider();
 
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -140,40 +138,7 @@ export default function ResetPassword() {
                     </Form.Root>
 
                     {/* theme toggle */}
-                    <button 
-                        className='
-                            reset-password--theme-toggle
-                            fixed
-                            top-4
-                            right-4
-                            flex
-                            gap-2
-                            items-center
-                            bg-gray-300 dark:bg-gray-700
-                            p-3 px-4.5
-                            rounded-lg
-                        '
-                        onClick={ () => toggleTheme() }
-                    >
-                        { theme == 'dark' && <FaRegSun 
-                            className="
-                                reset-password--theme-toggle__icon
-                            "
-                        /> }
-                        
-                        { theme == 'light' && <FaMoon 
-                            className="
-                                reset-password--theme-toggle__icon
-                            "
-                        /> }
-
-                        <span 
-                            className="
-                                reset-password--theme-toggle__text
-                            ">
-                            Toggle Theme
-                        </span>
-                    </button>
+                    <RouteThemeToggle/>
                 </RouteContainer>
             </div>
         </>

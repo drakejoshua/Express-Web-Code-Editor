@@ -12,12 +12,11 @@ import Logo from '../components/Logo';
 import StatusCard from '../components/StatusCard';
 import { Helmet } from 'react-helmet-async'
 import { FaArrowLeft, FaArrowRotateLeft, FaMoon, FaRegSun } from 'react-icons/fa6';
-import { useThemeProvider } from '../providers/ThemeProvider.jsx'
+import RouteThemeToggle from '../components/RouteThemeToggle.jsx';
 
 
 // email verify component
 export default function Verify() {
-    const { theme, toggleTheme } = useThemeProvider();
 
     return (
         <>
@@ -92,40 +91,7 @@ export default function Verify() {
                     /> */}
                 </RouteContainer>
 
-                <button 
-                    className='
-                        verify--theme-toggle
-                        fixed
-                        top-4
-                        right-4
-                        flex
-                        gap-2
-                        items-center
-                        bg-gray-300 dark:bg-gray-700
-                        p-3 px-4.5
-                        rounded-lg
-                    '
-                    onClick={ () => toggleTheme() }
-                >
-                    { theme == 'dark' && <FaRegSun 
-                        className="
-                            verify--theme-toggle__icon
-                        "
-                    /> }
-                    
-                    { theme == 'light' && <FaMoon 
-                        className="
-                            verify--theme-toggle__icon
-                        "
-                    /> }
-
-                    <span 
-                        className="
-                            verify--theme-toggle__text
-                        ">
-                        Toggle Theme
-                    </span>
-                </button>
+                <RouteThemeToggle/>
             </div>
         </>
     )
