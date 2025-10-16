@@ -7,16 +7,14 @@ import EmailField from '../components/EmailField'
 import Carousel from '../components/Carousel'
 
 
-
-
 export default function Signin() {
-
     return (
         <div className='
                 signin
                 min-h-screen
                 overflow-auto
                 flex
+                justify-center
                 bg-white dark:bg-gray-900 
                 dark:text-white 
             '
@@ -25,12 +23,16 @@ export default function Signin() {
             <Form.Root 
                 className='
                     signin--form
-                    w-1/3
-                    p-10 py-16
+                    w-2/3 lg:w-2/4 xl:w-1/3 min-w-[320px]
+                    p-4 py-12 xl:p-10 xl:py-16
                 '
             >
                 {/* Form Logo */}
-                <Logo/>
+                <Logo
+                    className='
+                        justify-center xl:justify-start
+                    '
+                />
 
                 {/* heading */}
                 <h1 className='
@@ -39,6 +41,7 @@ export default function Signin() {
                     text-gray-900
                     text-3xl
                     mt-9
+                    text-center xl:text-left
                 '>
                     Sign in to your account
                 </h1>
@@ -49,6 +52,7 @@ export default function Signin() {
                     mt-4 mb-8
                     text-lg
                     leading-6
+                    text-center xl:text-left
                 '>
                     Welcome back! Please enter your details to sign in to your account.
                 </p>
@@ -124,6 +128,7 @@ export default function Signin() {
             {/* signin carousel */}
             <Carousel
                 className='
+                    hidden xl:block
                     w-2/3
                     self-stretch 
                     overflow-auto
