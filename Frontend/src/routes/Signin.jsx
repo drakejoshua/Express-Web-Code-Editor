@@ -5,6 +5,7 @@ import Button from '../components/Button'
 import Logo from '../components/Logo'
 import EmailField from '../components/EmailField'
 import Carousel from '../components/Carousel'
+import RouteThemeToggle from '../components/RouteThemeToggle'
 
 
 export default function Signin() {
@@ -38,7 +39,7 @@ export default function Signin() {
                 <h1 className='
                     signin--form__heading
                     font-medium
-                    text-gray-900
+                    text-gray-900 dark:text-white
                     text-3xl
                     mt-9
                     text-center xl:text-left
@@ -81,7 +82,7 @@ export default function Signin() {
                     signin--form__forgot-password
                     mt-4
                     font-medium
-                    text-blue-900
+                    text-blue-900 dark:text-blue-100
                     hover:underline
                     block
                     text-right
@@ -113,7 +114,7 @@ export default function Signin() {
                         p-2.5
                         rounded-md
                         text-white
-                        bg-gray-800 hover:bg-gray-700
+                        bg-gray-800 hover:bg-gray-700 dark:bg-gray-600 hover:dark:bg-gray-500
                     '
                 >
                     <FaGoogle className='
@@ -134,6 +135,9 @@ export default function Signin() {
                     overflow-auto
                 '
             />
+
+            {/* theme toggle */}
+            <RouteThemeToggle />
         </div>
     )
 }

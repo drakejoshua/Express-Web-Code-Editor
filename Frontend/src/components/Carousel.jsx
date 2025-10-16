@@ -99,7 +99,7 @@ const Carousel = React.forwardRef(({
         mouseDragging
         className={`
             carousel
-            bg-neutral-100
+            bg-neutral-100 dark:bg-neutral-950
             p-16 px-20
             ${className}
         `}
@@ -136,7 +136,7 @@ const Carousel = React.forwardRef(({
                         carousel__scroller--item-heading
                         font-bold
                         text-4xl
-                        text-gray-900
+                        text-gray-900 dark:text-white
                         leading-12
                         w-3/4
                         text-center
@@ -242,7 +242,7 @@ const Carousel = React.forwardRef(({
                         carousel__scroller--item-heading
                         font-bold
                         text-4xl
-                        text-gray-900
+                        text-gray-900 dark:text-white
                         leading-12
                         w-3/4
                         text-center
@@ -354,6 +354,7 @@ const Carousel = React.forwardRef(({
                         w-3
                         rounded-full
                         bg-gray-700 ${page.isSelected ? 'bg-gray-950' : ''}
+                        dark:bg-neutral-400 ${page.isSelected ? 'dark:bg-white' : ''}
                         cursor-pointer
                     `}
                 />
