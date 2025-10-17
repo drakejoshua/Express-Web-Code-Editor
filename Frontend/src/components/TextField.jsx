@@ -4,16 +4,15 @@ import React from 'react'
 import { FaTriangleExclamation } from 'react-icons/fa6'
 
 
-// define EmailField component
-const EmailField = React.forwardRef(({
+// define TextField component
+const TextField = React.forwardRef(({
     // extract key props and provide default values
     className,
     label,
     name,
     value,
     onChange,
-    emptyValidationMessage = "Please enter your email",
-    invalidValidationMessage = "Please enter a valid email",
+    emptyValidationMessage,
     children
 }, ref) => {
   return (
@@ -22,7 +21,7 @@ const EmailField = React.forwardRef(({
         name={name}
         ref={ref}
         className={`
-            email-field
+            text-field
             flex 
             flex-col
             gap-2
@@ -32,7 +31,7 @@ const EmailField = React.forwardRef(({
         {/* form field label */}
         <Form.Label 
             className='
-                email-field__label
+                text-field__label
                 font-medium
             '
         >
@@ -42,9 +41,9 @@ const EmailField = React.forwardRef(({
         {/* form field input */}
         <Form.Control asChild>
             <input 
-                type="email" 
+                type="text" 
                 className='
-                    email-field__input
+                    text-field__input
                     border-2
                     border-gray-600 dark:border-gray-300
                     rounded-sm
@@ -55,37 +54,23 @@ const EmailField = React.forwardRef(({
                     outline-none
                 ' 
                 required
-                value={ value }
-                onChange={ onChange }
+                value={ value || '' }
+                onChange={ onChange || (() => {}) }
             />
         </Form.Control>
 
         {/* validation - no value */}
         { emptyValidationMessage && <Form.Message 
             className='
-                email-field__message
+                text-field__message
                 flex
                 gap-2
                 items-center
             ' 
             match="valueMissing"
         >
-            <FaTriangleExclamation className='email-field__icon' />
+            <FaTriangleExclamation className='text-field__icon' />
             {emptyValidationMessage}
-        </Form.Message>}
-
-        {/* validation - invalid email */}
-        { invalidValidationMessage && <Form.Message 
-            className='
-                email-field__message
-                flex
-                gap-2
-                items-center
-            ' 
-            match="typeMismatch"
-        >
-            <FaTriangleExclamation className='email-field__icon' />
-            {invalidValidationMessage}
         </Form.Message>}
 
         {/* other content or validation messages */}
@@ -95,4 +80,4 @@ const EmailField = React.forwardRef(({
 })
 
 
-export default EmailField
+export default TextField
