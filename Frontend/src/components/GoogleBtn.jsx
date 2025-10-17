@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaGoogle } from 'react-icons/fa6'
 
-const GoogleBtn = React.forwardRef(({ className, ...props}, ref) => {
+const GoogleBtn = React.forwardRef(({ className, text, ...props}, ref) => {
   return (
     <button
         className={`
@@ -26,7 +26,7 @@ const GoogleBtn = React.forwardRef(({ className, ...props}, ref) => {
             text-xl
         '/>
 
-        Sign in with Google
+        { text }
     </button>
   )
 })

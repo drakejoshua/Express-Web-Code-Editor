@@ -129,6 +129,7 @@ export default function Signin() {
                         className='
                             mt-8
                         '
+                        text="Sign in with Google"
                     />
 
                     {/* sign in with email */}
@@ -136,6 +137,7 @@ export default function Signin() {
                         className='
                             mt-3
                         '
+                        text="Sign in with Email"
                     />
                 </Form.Root>
 

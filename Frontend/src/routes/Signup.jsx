@@ -100,28 +100,15 @@ export default function Signup() {
                         "
                     />
 
-                    {/* forgot password link */}
-                    <a href="#" className='
-                        signup--form__forgot-password
-                        mt-4
-                        font-medium
-                        text-blue-900 dark:text-blue-100
-                        hover:underline
-                        block
-                        text-right
-                    '>
-                        Forgot password?
-                    </a>
-
                     {/* submit button */}
                     <Button 
                         type="submit"
                         className='
                             w-full
-                            mt-6
+                            mt-8
                         '
                     >
-                        Sign in
+                        Sign up
                     </Button>
 
                     {/* sign in with google */}
@@ -129,6 +116,7 @@ export default function Signup() {
                         className='
                             mt-8
                         '
+                        text="Sign up with Google"
                     />
 
                     {/* sign in with email */}
@@ -136,6 +124,7 @@ export default function Signup() {
                         className='
                             mt-3
                         '
+                        text="Sign up with email"
                     />
                 </Form.Root>
 

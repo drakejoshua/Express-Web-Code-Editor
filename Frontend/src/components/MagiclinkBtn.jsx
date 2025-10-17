@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaEnvelope, FaGoogle } from 'react-icons/fa6'
 
-const MagiclinkBtn = React.forwardRef(({ className, ...props}, ref) => {
+const MagiclinkBtn = React.forwardRef(({ className, text, ...props}, ref) => {
   return (
     <button
         className={`
@@ -26,7 +26,7 @@ const MagiclinkBtn = React.forwardRef(({ className, ...props}, ref) => {
             text-xl
         '/>
 
-        Sign in using Email
+        { text }
     </button>
   )
 })
