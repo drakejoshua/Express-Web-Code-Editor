@@ -1,5 +1,4 @@
 import { Form } from 'radix-ui'
-import { FaGoogle } from 'react-icons/fa6'
 import PasswordField from '../components/PasswordField'
 import Button from '../components/Button'
 import Logo from '../components/Logo'
@@ -10,9 +9,23 @@ import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import GoogleBtn from '../components/GoogleBtn'
 import MagiclinkBtn from '../components/MagiclinkBtn'
+import {
+    Carousel as CarouselRoot,
+    CarouselButton,
+    CarouselTabs,
+    CarouselTab,
+    CarouselScroller,
+    CarouselItem,
+    useCarousel
+} from 'react-aria-carousel'
 
 
 export default function Signup() {
+    const [assignScrollerRef, carousel] = useCarousel()
+
+    const { pages } = carousel
+
+
     return (
         <>
             <Helmet>
@@ -82,15 +95,15 @@ export default function Signup() {
                     </p>
 
                     {/* email */}
-                    <EmailField
+                    {/* <EmailField
                         label="Email"
                         name="email"
                         emptyValidationMessage="Please enter your email"
                         invalidValidationMessage="Please enter a valid email"
-                    />
+                    /> */}
                     
                     {/* password */}
-                    <PasswordField
+                    {/* <PasswordField
                         label="Password"
                         name="password"
                         emptyValidationMessage="Please enter your password"
@@ -98,7 +111,110 @@ export default function Signup() {
                         className="
                             mt-3.5
                         "
-                    />
+                    /> */}
+
+                    {/* multi step carousel fields */}
+                    <CarouselRoot
+                        mouseDragging
+                    >
+                        <CarouselTabs
+                            className='
+                                flex
+                            '
+                        >
+                            {( page ) => (
+                                <>
+                                    <CarouselTab 
+                                        key={page.index}
+                                        className={`
+                                            w-3 h-3
+                                            rounded-full
+                                            bg-gray-600 dark:bg-gray-300
+                                            ${page.isSelected ? 'bg-blue-900 dark:bg-blue-100' : ''}
+                                            transition-all
+                                        `}
+                                    />
+                                
+                                    <div 
+                                        className="
+                                            signup--form__carousel-indicator
+                                            flex-grow
+                                            h-0.5
+                                            bg-gray-300 dark:bg-gray-600
+                                        "
+                                    ></div>
+                                </>
+                            )}
+                        </CarouselTabs>
+
+                        {/* hidden previous button */}
+                        <CarouselButton dir="prev" />
+
+                        {/* hidden next button */}
+                        <CarouselButton dir="next" />
+
+                        <CarouselScroller
+                            className='
+                                flex
+                                overflow-x-auto
+                                scroll-smooth
+                                snap-mandatory
+                                snap-x
+                            '
+                        >
+                            <CarouselItem
+                                className='
+                                    flex-[0_0_100%]
+                                    snap-start
+                                '
+                            >
+                                <h1>
+                                    Email Field Here
+                                </h1>
+                            </CarouselItem>
+
+                            <CarouselItem
+                                className='
+                                    flex-[0_0_100%]
+                                    snap-start
+                                '
+                            >
+                                <h1>
+                                    username Field Here
+                                </h1>
+                            </CarouselItem>
+                            <CarouselItem
+                                className='
+                                    flex-[0_0_100%]
+                                    snap-start
+                                '
+                            >
+                                <h1>
+                                    username Field Here
+                                </h1>
+                            </CarouselItem>
+                            <CarouselItem
+                                className='
+                                    flex-[0_0_100%]
+                                    snap-start
+                                '
+                            >
+                                <h1>
+                                    photo Field Here
+                                </h1>
+                            </CarouselItem>
+                            <CarouselItem
+                                className='
+                                    flex-[0_0_100%]
+                                    snap-start
+                                '
+                            >
+                                <h1>
+                                    password Field Here
+                                </h1>
+                            </CarouselItem>
+                        </CarouselScroller>
+                    </CarouselRoot>
 
                     {/* submit button */}
                     <Button 
