@@ -11,7 +11,7 @@ import GoogleBtn from '../components/GoogleBtn'
 import MagiclinkBtn from '../components/MagiclinkBtn'
 import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
 import TextField from '../components/TextField'
-import { Fragment, useRef, useState } from 'react'
+import { forwardRef, Fragment, useRef, useState } from 'react'
 
 
 export default function Signup() {
@@ -63,6 +63,22 @@ export default function Signup() {
 }
 
 
+const PreviousButton = forwardRef(({children, className, ...props }, ref) => {
+    return <Button 
+                type="button"
+                className={`
+                    flex-grow
+                    bg-gray-600 hover:bg-gray-500
+                    dark:bg-gray-600 hover:dark:bg-gray-500
+                    ${ className || "" }
+                `}
+                {...props}
+            >
+                { children }
+            </Button>
+})
+
+
 function MultiStepForm({ onSubmit = () => {} }) {
     const { handleNext, handlePrev, slides } = useCarousel()
 
@@ -98,6 +114,8 @@ function MultiStepForm({ onSubmit = () => {} }) {
     function handleSubmit(e) {
         // prevent default form submission behaviour
         e.preventDefault();
+
+        alert("Form Submitted!")
 
         // final step submit
         onSubmit();
@@ -161,14 +179,17 @@ function MultiStepForm({ onSubmit = () => {} }) {
             >
                 {({ index, isSelected, activeIndex }) => {
                     return (
-                        <Fragment key={index}>
+                        <>
                             <SimpleCarousel.Tab
                                 index={index}
+                                disabled
                                 className={`
                                     w-4
                                     h-4
                                     rounded-full
-                                    ${ index <= activeIndex ? 'bg-gray-600' : 'bg-gray-300'}
+                                    ${ index <= activeIndex ? 
+                                        'bg-blue-600 dark:bg-blue-500' : 
+                                        'bg-gray-300'}
                                 `}
                             />
 
@@ -177,10 +198,13 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                     signup--form__indicator
                                     h-1
                                     flex-grow
-                                    ${index < activeIndex ? 'bg-gray-600' : 'bg-gray-300'}
+                                    ${index < activeIndex ? 
+                                        'bg-blue-600 dark:bg-blue-500' : 
+                                        'bg-gray-300'}
                                 `}
+                                key={index}
                             ></div>}
-                        </Fragment>
+                        </>
                     )
                 }}
             </SimpleCarousel.Tabs>
@@ -257,17 +281,11 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
-                            <Button 
-                                type="button"
-                                className='
-                                    flex-grow
-                                    bg-gray-600
-                                    hover:bg-gray-500
-                                '
+                            <PreviousButton 
                                 onClick={ handlePrev }
                             >
                                 Previous
-                            </Button>
+                            </PreviousButton>
 
                             <Button 
                                 type="button"
@@ -293,7 +311,6 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 flex 
                                 flex-col
                                 gap-2
-                                max-w-full
                             `}
                         >
                             <Form.Label
@@ -302,7 +319,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                     font-medium
                                 '
                             >
-                                Upload Profile Picture
+                                Upload Profile Picture ( optional )
                             </Form.Label>
 
                             <Form.Control asChild>
@@ -319,6 +336,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                         text-white dark:text-black
                                         font-medium
                                         outline-none
+                                        w-full
                                     '
                                     onChange={ (e) => setSelectedFile( e.target.files[0] )}
                                 />
@@ -348,17 +366,11 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
-                            <Button 
-                                type="button"
-                                className='
-                                    flex-grow
-                                    bg-gray-600
-                                    hover:bg-gray-500
-                                '
+                            <PreviousButton 
                                 onClick={ handlePrev }
                             >
                                 Previous
-                            </Button>
+                            </PreviousButton>
 
                             <Button 
                                 type="button"
@@ -394,17 +406,11 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
-                            <Button 
-                                type="button"
-                                className='
-                                    flex-grow
-                                    bg-gray-600
-                                    hover:bg-gray-500
-                                '
+                            <PreviousButton 
                                 onClick={ handlePrev }
                             >
                                 Previous
-                            </Button>
+                            </PreviousButton>
 
                             <Button 
                                 type="submit"
