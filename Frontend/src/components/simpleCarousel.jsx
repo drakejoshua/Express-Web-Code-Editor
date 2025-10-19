@@ -1,9 +1,28 @@
-import React, { useState } from 'react'
+import React, { 
+    useContext, 
+    useEffect,  
+    useState,
+    createContext,
+    forwardRef
+} from 'react'
 
-export default function SimpleCarousel() {
+    
+const CarouselContext = createContext();
+
+export function useCarousel() {
+    const context = useContext(CarouselContext);
+    if (!context) {
+        throw new Error('useCarousel must be used within a CarouselRoot');
+    }
+
+    return context;
+}
+
+
+const CarouselRoot = forwardRef(({ className, children, ...props }, ref) => {
     const [ slideIndex, setSlideIndex ] = useState(0);
 
-    const [ slides, setSlides ] = useState([1,2,3]);
+    const [ slides, setSlides ] = useState([]);
 
     function handleNext() {
         setSlideIndex((prevIndex) => 
@@ -23,128 +42,172 @@ export default function SimpleCarousel() {
         }
     }
 
+    function registerSlides( count ) {
+        setSlides( ( prevSlides ) => {
+            if ( prevSlides.length === count ) {
+                return prevSlides;
+            }
+
+            return Array.from({ length: count });
+        });
+    }
+
+    return (
+        <CarouselContext.Provider value={{ 
+            slideIndex, 
+            goToSlide,
+            handleNext,
+            handlePrev,
+            registerSlides,
+            slides
+        }}>
+            <div 
+                className={`
+                    carousel 
+                    ${className || ""}
+                `}
+                ref={ref}
+                {...props}
+            >
+                { children }
+            </div>
+        </CarouselContext.Provider>
+    )
+})
+
+const CarouselScroller = forwardRef(({ children, className, ...props }, ref) => {
+    return <div className={`carousel__scroller ${className || ""}`} ref={ref} {...props}>{ children }</div>;
+})
+
+const CarouselTrack = forwardRef(({ children, className, style, ...props }, ref) => {
+    const { slideIndex, registerSlides } = useCarousel();
+    const itemCount = React.Children.count(children);
+
+    useEffect(() => {
+        registerSlides(itemCount);
+    }, [itemCount]);
+
+    return <div 
+                className={`
+                    carousel__track 
+                    ${className || ""}
+                `} 
+                ref={ref} 
+                {...props}
+                style={{
+                    ...(style || {}),
+                    transform: `translateX(-${slideIndex * 100}%)`
+                }}
+            >
+                { children }
+            </div>
+})
+
+const CarouselItem = forwardRef(({ children, className, ...props }, ref) => {
+    return (
+        <div
+            className={`
+                    carousel__track--item
+                    ${className || ""}
+                `}
+            ref={ref}
+            {...props}
+        >
+            {children}
+        </div>
+    );
+});
+
+const CarouselButton = forwardRef(({ direction, onClick, className, children, ...props }, ref) => {
+    const { handleNext, handlePrev } = useCarousel();
+
+    function handleClick(e) {
+        if (direction === 'next') {
+            handleNext();
+        } else if (direction === 'prev') {
+            handlePrev();
+        }
+        
+        if (onClick) {
+            onClick(e);
+            return;
+        }
+
+    }
+
+    return (
+        <button
+            ref={ref}
+            className={`carousel__btn ${className || ''}`}
+            onClick={handleClick}
+            {...props}
+        >
+            { children}
+        </button>
+    );
+});
+
+const CarouselTabs = forwardRef(({ children, className, ...props }, ref) => {
+    const { slides, slideIndex } = useCarousel();
+
     return (
         <div 
-            className='
-                carousel
-            '
+            className={`
+                carousel__tabs
+                ${className || ''}
+            `}
+            ref={ref}
+            {...props}
         >
-            <div 
-                className='
-                    carousel__scroller
-                    overflow-x-auto
-                    scroll-smooth
-                    snap-x 
-                    snap-mandatory
-                    h-[80vh]
-                '
-            >
-                <div 
-                    className={`
-                        carousel__track 
-                        flex
-                        transition-transform
-                        duration-500
-                        ease-in-out
-                    `}
-                    style={{
-                        transform: `translateX(-${slideIndex * 100}%)`
-                    }}
-                >
-                    <div 
-                        className="
-                            carousel__track--item
-                            flex-[0_0_100%]
-                            snap-start
-                        "
-                    >
-                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVpbGRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop" alt="Image 1" 
-                        className='block'/>
-                    </div>
-                    <div 
-                        className="
-                            carousel__track--item
-                            flex-[0_0_100%]
-                            snap-start
-                        "
-                    >
-                        <img src="https://images.unsplash.com/photo-1471039497385-b6d6ba609f9c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJ1aWxkaW5nfGVufDB8fDB8fHww&auto=format&fit=crop" alt="Image 1" 
-                        className='block'/>
-                    </div>
-                    <div 
-                        className="
-                            carousel__track--item
-                            flex-[0_0_100%]
-                            snap-start
-                        "
-                    >
-                        <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fGJ1aWxkaW5nfGVufDB8fDB8fHww&auto=format&fit=crop" alt="Image 1" 
-                        className='block'/>
-                    </div>
-                </div>
-            </div>
-
-            <button 
-                className="
-                    carousel__btn--prev
-                    absolute
-                    top-1/2
-                    translate-y-1/2
-                    left-4
-                    bg-white
-                    px-2
-                    py-1
-                    rounded
-                "
-                onClick={ handlePrev }
-            >
-                prev
-            </button>
-
-            <button 
-                className="
-                    carousel__btn--next
-                    absolute
-                    top-1/2
-                    translate-y-1/2
-                    right-4
-                    bg-white
-                    px-2
-                    py-1
-                    rounded
-                "
-                onClick={ handleNext }
-            >
-                next
-            </button>
-
-            <div 
-                className="
-                    carousel__tabs
-                    flex
-                    justify-center
-                    gap-2
-                    mt-4
-                "
-            >
-                {
-                    slides.map((slide, index) => {
-                        return (
-                            <button 
-                                className={`
-                                    carousel__tabs--tab
-                                    w-4
-                                    h-4
-                                    rounded-full
-                                    ${slideIndex === index ? 'bg-gray-600' : 'bg-gray-300'}
-                                `}
-                                onClick={ () => goToSlide( index ) }
-                            ></button>
-                        )
-                    })
+            { 
+                typeof children === 'function'
+                ? slides.map((slide, index) => {
+                const slideInfo = {
+                    index,
+                    isSelected: index === slideIndex
                 }
-                
-            </div>
+                    
+                return (children(slideInfo));
+                }) 
+                : children
+            }
         </div>
-    )
+    );
+})
+
+const CarouselTab = forwardRef(({ index, onClick, className, children, ...props }, ref) => {
+    const { goToSlide } = useCarousel();
+
+    function handleClick(e) {
+        goToSlide(index);
+
+        if (onClick) {
+            onClick( e);
+        }
+    }
+
+    return (
+        <button 
+            className={`
+                carousel__tabs--tab 
+                ${className || ''}
+            `} 
+            ref={ref} 
+            {...props}
+            onClick={ handleClick }
+        >
+            { children }
+        </button>
+    );
+})
+
+
+export const SimpleCarousel = {
+    Root: CarouselRoot,
+    Scroller: CarouselScroller,
+    Track: CarouselTrack,
+    Item: CarouselItem,
+    Button: CarouselButton,
+    Tabs: CarouselTabs,
+    Tab: CarouselTab,
 }
