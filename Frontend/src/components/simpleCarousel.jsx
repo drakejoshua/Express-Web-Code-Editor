@@ -3,7 +3,7 @@ import React, {
     useEffect,  
     useState,
     createContext,
-    forwardRef
+    forwardRef,
 } from 'react'
 
     
@@ -26,13 +26,13 @@ const CarouselRoot = forwardRef(({ className, children, ...props }, ref) => {
 
     function handleNext() {
         setSlideIndex((prevIndex) => 
-            prevIndex === slides.length - 1 ? 0 : prevIndex + 1
+            prevIndex === slides.length - 1 ? prevIndex : prevIndex + 1
         );
     }
 
     function handlePrev() {
         setSlideIndex((prevIndex) => 
-            prevIndex === 0 ? slides.length - 1 : prevIndex - 1
+            prevIndex === 0 ? prevIndex : prevIndex - 1
         );
     }
 
@@ -164,7 +164,8 @@ const CarouselTabs = forwardRef(({ children, className, ...props }, ref) => {
                 ? slides.map((slide, index) => {
                 const slideInfo = {
                     index,
-                    isSelected: index === slideIndex
+                    isSelected: index === slideIndex,
+                    activeIndex: slideIndex
                 }
                     
                 return (children(slideInfo));

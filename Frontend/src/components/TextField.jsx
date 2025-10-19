@@ -19,7 +19,6 @@ const TextField = React.forwardRef(({
     // form field wrapper
     <Form.Field 
         name={name}
-        ref={ref}
         className={`
             text-field
             flex 
@@ -42,6 +41,7 @@ const TextField = React.forwardRef(({
         <Form.Control asChild>
             <input 
                 type="text" 
+                ref={ref}
                 className='
                     text-field__input
                     border-2
@@ -54,8 +54,8 @@ const TextField = React.forwardRef(({
                     outline-none
                 ' 
                 required
-                value={ value || '' }
-                onChange={ onChange || (() => {}) }
+                value={ value }
+                onChange={ onChange }
             />
         </Form.Control>
 

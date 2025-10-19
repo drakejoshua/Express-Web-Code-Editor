@@ -20,7 +20,6 @@ const EmailField = React.forwardRef(({
     // form field wrapper
     <Form.Field 
         name={name}
-        ref={ref}
         className={`
             email-field
             flex 
@@ -43,6 +42,7 @@ const EmailField = React.forwardRef(({
         <Form.Control asChild>
             <input 
                 type="email" 
+                ref={ref}
                 className='
                     email-field__input
                     border-2

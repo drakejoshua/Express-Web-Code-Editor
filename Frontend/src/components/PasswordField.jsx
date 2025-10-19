@@ -16,18 +16,17 @@ const PasswordField = React.forwardRef(({
     return (
         <Form.Field
             className={`
-                reset-password--form__password-field
+                password-field
                 flex 
                 flex-col
                 gap-2
                 ${className}
             `}
-            ref={ref}
             name={name}
         >
             <Form.Label 
                 className='
-                    reset-password--form__password-field--label
+                    password-field__label
                     font-medium
                 '
             >
@@ -36,6 +35,7 @@ const PasswordField = React.forwardRef(({
 
             <Form.Control asChild>
                 <PasswordInput
+                    ref={ref}
                     value={ value }
                     onChange={ onChange }
                     required
@@ -47,7 +47,7 @@ const PasswordField = React.forwardRef(({
             {/* validation - no value */}
             { emptyValidationMessage && <Form.Message
                 className='
-                    reset-password--form__password-field--message
+                    password-field__message
                     flex
                     gap-2
                     items-center
@@ -64,7 +64,7 @@ const PasswordField = React.forwardRef(({
             {/* validation - too short */}
             { shortValidationMessage && <Form.Message
                 className='
-                    reset-password--form__password-field--message
+                    password-field__message
                     flex
                     gap-2
                     items-center
