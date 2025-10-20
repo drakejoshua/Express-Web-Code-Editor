@@ -1,8 +1,13 @@
+// import component dependencies
 import React from 'react'
 
+
+// define Button component using React.forwardRef
+// to pass refs to the button element
 const Button = React.forwardRef( function( { children, className, ...props }, ref ) {
   return (
     <button 
+        // apply default and custom classes
         className={ `
             bg-blue-600 hover:bg-blue-500 dark:bg-blue-800 hover:dark:bg-blue-700 
             transition-colors
@@ -16,8 +21,10 @@ const Button = React.forwardRef( function( { children, className, ...props }, re
             text-white 
             ${ className ? className : `` }
         ` }
+        // pass down the ref to the button element
         ref={ref}
 
+        // spread any additional props to the button element
         {...props}
     >
         { children }
@@ -25,5 +32,6 @@ const Button = React.forwardRef( function( { children, className, ...props }, re
   )
 })
 
-
+// export Button component for use in other parts 
+// of the application
 export default Button
