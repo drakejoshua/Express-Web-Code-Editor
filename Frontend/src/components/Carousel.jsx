@@ -1,3 +1,11 @@
+// Carousel.jsx
+// This component defines a carousel that showcases
+// the code editing and live preview features of the application on
+// the signup and signin routes.
+// It's built using react-aria-carousel and includes
+// a typing effect for the code example using highlight.js.
+
+
 // import component dependencies
 import React from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -96,7 +104,7 @@ const Carousel = React.forwardRef(({
   return (
     // carousel root component wrapping the entire carousel
     <CarouselRoot
-        mouseDragging
+        mouseDragging 
         className={`
             carousel
             bg-neutral-100 dark:bg-neutral-950
@@ -225,7 +233,7 @@ const Carousel = React.forwardRef(({
             </CarouselItem>
 
 
-            {/* carousel item for live preview */}
+            {/* carousel item for live iframe preview */}
             <CarouselItem 
                 index={1}
                 className='
@@ -365,5 +373,6 @@ const Carousel = React.forwardRef(({
 })
 
 
-
+// export Carousel component for use in other parts
+// of the application
 export default Carousel

@@ -1,3 +1,8 @@
+// Button.jsx
+// This component defines the blue button that is used
+// as the major CTA for actions across the application.
+
+
 // import component dependencies
 import React from 'react'
 
