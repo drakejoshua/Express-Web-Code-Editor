@@ -1,3 +1,9 @@
+// EmailField.jsx
+// This component defines the email input field with built-in validation 
+// messages for empty and invalid email formats used for email inputs
+// in forms across the application.
+
+
 // import component dependencies
 import { Form } from 'radix-ui'
 import React from 'react'
