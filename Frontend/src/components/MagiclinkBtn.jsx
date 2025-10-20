@@ -1,3 +1,10 @@
+// MagiclinkBtn.jsx
+// This component defines a button for magic link email
+// authentication used in signup and signin forms across
+// the application.
+
+
+
 // import component dependencies
 import React from 'react'
 import { FaEnvelope } from 'react-icons/fa6'

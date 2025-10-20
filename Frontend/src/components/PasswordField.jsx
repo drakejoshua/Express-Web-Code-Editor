@@ -1,3 +1,12 @@
+// PasswordField.jsx
+// This component defines a password input field with
+// built-in validation messages for empty and short
+// passwords used in forms across the application.
+// It leverages a custom PasswordInput component and radix-ui
+// for form handling.
+
+
+
 // import component dependencies
 import React from 'react'
 import { Form } from 'radix-ui'
