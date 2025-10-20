@@ -1,9 +1,19 @@
+// Logo.jsx
+// This component defines the brand logo used across
+// the application, for instance, in the signin/signup forms.
+
+
+
+// import component dependencies
 import React from 'react'
 import { AiOutlineCode } from 'react-icons/ai'
 
+
+// define Logo component
 const Logo = React.forwardRef( function( { className, ...props }, ref ) {
   return (
     <div 
+        // apply default and custom classes
         className={`
             brand-logo 
             flex 
@@ -11,8 +21,11 @@ const Logo = React.forwardRef( function( { className, ...props }, ref ) {
             gap-2
             ${ className || '' }
         `}
+
+        // pass down the ref to the div element
         ref={ref}
 
+        // spread any additional props to the div element
         { ...props }
     >
         <AiOutlineCode 
@@ -40,4 +53,6 @@ const Logo = React.forwardRef( function( { className, ...props }, ref ) {
 })
 
 
+// export Logo component for use in other parts
+// of the application
 export default Logo
