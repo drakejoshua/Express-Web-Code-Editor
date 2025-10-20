@@ -1,20 +1,25 @@
-import React, { Children } from 'react'
+// import component dependencies
+import React from 'react'
 import { Form } from 'radix-ui'
 import { FaTriangleExclamation } from 'react-icons/fa6'
 import PasswordInput from './PasswordInput'
 
+
+// define PasswordField component
 const PasswordField = React.forwardRef(({ 
     className, 
     label, 
     name,
     value, 
     onChange,
+    // default validation messages
     emptyValidationMessage = "Please enter your password",
     shortValidationMessage = "The password can't be lower than 6 characters",
     children
  }, ref) => {
     return (
         <Form.Field
+            // apply default and custom classes
             className={`
                 password-field
                 flex 
@@ -34,6 +39,7 @@ const PasswordField = React.forwardRef(({
             </Form.Label>
 
             <Form.Control asChild>
+                {/* use PasswordInput component as <input> */}
                 <PasswordInput
                     ref={ref}
                     value={ value }
@@ -85,4 +91,6 @@ const PasswordField = React.forwardRef(({
 })
 
 
+// export PasswordField component for use in other parts
+// of the application
 export default PasswordField
