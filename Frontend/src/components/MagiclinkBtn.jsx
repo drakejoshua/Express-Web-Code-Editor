@@ -1,9 +1,13 @@
+// import component dependencies
 import React from 'react'
-import { FaEnvelope, FaGoogle } from 'react-icons/fa6'
+import { FaEnvelope } from 'react-icons/fa6'
 
+
+// define MagiclinkBtn component
 const MagiclinkBtn = React.forwardRef(({ className, text, ...props}, ref) => {
   return (
     <button
+        // apply default and custom classes
         className={`
             magiclink-btn
             w-full
@@ -18,7 +22,11 @@ const MagiclinkBtn = React.forwardRef(({ className, text, ...props}, ref) => {
             dark:bg-gray-600 hover:dark:bg-gray-500
             ${className}
         `}
+
+        // pass down the ref to the button element
         ref={ref}
+
+        // spread any additional props to the button element
         {...props}
     >
         <FaEnvelope className='
@@ -32,4 +40,6 @@ const MagiclinkBtn = React.forwardRef(({ className, text, ...props}, ref) => {
 })
 
 
+// export MagiclinkBtn component for use in other parts
+// of the application
 export default MagiclinkBtn
