@@ -1,11 +1,14 @@
+// import component dependencies
 import React from 'react'
 import { FaCircleCheck, FaSpinner, FaTriangleExclamation } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import Button from './Button'
 
+// define StatusCard component
 const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
   return (
     <div 
+        // apply default and custom classes
         className={`
             status-card
             flex 
@@ -22,6 +25,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
         {...props}
     >
         {
+            // render icon based on status type: success, loading, or error
             {
                 success: <FaCircleCheck
                     className='
@@ -50,6 +54,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             }[ status.type ]
         }
       
+        {/* status section - heading */}
         <h1 
             className='
                 status-card__heading 
@@ -62,6 +67,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             { status.heading }
         </h1>
 
+        {/* status section - description text */}
         <p 
             className='
                 status-card__text 
@@ -72,6 +78,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             { status.text }
         </p>
 
+        {/* status section - redirect link if available */}
         { status.redirect && <Link
             to={ status.redirect } 
             className='
@@ -90,6 +97,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
             { status.redirect_content }
         </Link>}
 
+        {/* status section - action button if available */}
         { status.action && <Button 
             onClick={ status.action }
         >
@@ -99,4 +107,7 @@ const StatusCard = React.forwardRef(({ className, status, ...props }, ref) => {
   )
 })
 
+
+// export StatusCard component for use in other parts
+// of the application
 export default StatusCard
