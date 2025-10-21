@@ -1,3 +1,9 @@
+// PasswordInput.jsx
+// This component defines a password input field with
+// a toggle button to show or hide the password.
+// It is used in forms across the application.
+
+
 // import component dependencies
 import React, { useState } from 'react'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6'
