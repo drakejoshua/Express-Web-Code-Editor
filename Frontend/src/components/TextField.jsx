@@ -1,3 +1,11 @@
+// TextField.jsx
+// This component defines a text input field with
+// built-in validation messages for empty inputs
+// used in forms across the application.
+// It leverages radix-ui for form validation handling.
+
+
+
 // import component dependencies
 import { Form } from 'radix-ui'
 import React from 'react'
@@ -80,4 +88,6 @@ const TextField = React.forwardRef(({
 })
 
 
+// export TextField component for use in other parts
+// of the application
 export default TextField
