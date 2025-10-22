@@ -19,6 +19,7 @@ import Button from '../components/Button'
 import { useThemeProvider } from '../providers/ThemeProvider'
 import NavMenuBlok from '../components/NavMenuBlok'
 import UserAvatar from '../components/UserAvatar'
+import SearchInput from '../components/SearchInput'
 
 
 export default function Dashboard() {
@@ -80,31 +81,7 @@ export default function Dashboard() {
                         >
                             <Logo className='dashboard--header__menu-logo' />
 
-                            <div 
-                                className="
-                                    dashboard--filter-bar__search-input-ctn
-                                    bg-neutral-200
-                                    rounded-lg
-                                    flex
-                                    p-2 px-4
-                                    items-center
-                                    gap-3
-                                "
-                            >
-                                <FaMagnifyingGlass className='dashboard--filter-bar__search-icon' />
-
-                                <input 
-                                    type="text" 
-                                    className='
-                                        dashboard--filter-bar__search-input
-                                        placeholder-shown:capitalize
-                                        outline-none
-                                        font-medium
-                                        flex-grow
-                                    '
-                                    placeholder='search your bloks...'
-                                />
-                            </div>
+                            <SearchInput />
 
                             <div 
                                 className="
@@ -140,7 +117,7 @@ export default function Dashboard() {
                                     dashboard--header__menu-close-btn
                                     absolute
                                     right-5 
-                                    text-gray-900
+                                    text-gray-900 dark:text-white
                                     text-2xl
                                 "
                             >
@@ -251,6 +228,7 @@ export default function Dashboard() {
                                             text-ellipsis
                                             overflow-hidden
                                             whitespace-nowrap
+                                            dark:text-white
                                         "
                                     >
                                         Joshua Mabawonku
@@ -260,7 +238,7 @@ export default function Dashboard() {
                                     className="
                                             dashboard--header__profile-email
                                             inline-block
-                                            text-gray-600
+                                            text-gray-600 dark:text-gray-300
                                             text-ellipsis
                                             overflow-hidden
                                             whitespace-nowrap
@@ -271,18 +249,24 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <div className="dashboard--header__profile-options-list mt-2">
+                            <div 
+                                className="
+                                    dashboard--header__profile-options-list 
+                                    mt-2
+                                    *:flex
+                                    *:items-center
+                                    *:gap-2
+                                    *:dark:text-white
+                                    *:hover:bg-neutral-300 *:hover:dark:bg-gray-700
+                                    *:p-2 *:px-3
+                                    *:outline-none
+                                    *:rounded-md
+                                    *:capitalize
+                                "
+                            >
                                 <DropdownMenu.Item 
                                     className='
                                         dashboard--header__profile-option
-                                        flex
-                                        items-center
-                                        gap-2
-                                        hover:bg-neutral-300
-                                        p-2 px-3
-                                        outline-none
-                                        rounded-md
-                                        capitalize
                                     '
                                 >
                                     <FaArrowsRotate className="dashboard--header__option-icon" /> 
@@ -295,14 +279,6 @@ export default function Dashboard() {
                                 <DropdownMenu.Item 
                                     className='
                                         dashboard--header__profile-option
-                                        flex
-                                        items-center
-                                        gap-2
-                                        hover:bg-neutral-300
-                                        p-2 px-3
-                                        outline-none
-                                        rounded-md
-                                        capitalize
                                     '
                                 >
                                     <FaArrowRightFromBracket className="dashboard--header__option-icon" /> 
@@ -326,32 +302,11 @@ export default function Dashboard() {
                     mt-2
                 "
             >
-                <div 
+                <SearchInput 
                     className="
-                        dashboard--filter-bar__search-input-ctn
-                        bg-neutral-200
                         flex-grow
-                        rounded-lg
-                        flex
-                        p-2 px-4
-                        items-center
-                        gap-3
                     "
-                >
-                    <FaMagnifyingGlass className='dashboard--filter-bar__search-icon' />
-
-                    <input 
-                        type="text" 
-                        className='
-                            dashboard--filter-bar__search-input
-                            placeholder-shown:capitalize
-                            outline-none
-                            font-medium
-                            flex-grow
-                        '
-                        placeholder='search something...'
-                    />
-                </div>
+                />
 
                 <Button>
                     <FaPlus className='dashboard--filter-bar__add-btn-icon' />
