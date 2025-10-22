@@ -19,11 +19,13 @@ export default function Magiclink() {
 
     return (
         <>
+            {/* add page title and meta info using react-helmet library */}
             <Helmet>
                 <title>Magiclink - CodeBloks</title>
                 <meta name="description" content="Authenticate your account using Magiclink" />
             </Helmet>
 
+            {/* root container */}
             <div 
                 className='
                     magiclink 
@@ -34,10 +36,12 @@ export default function Magiclink() {
                     overflow-auto
                 '
             >
-                
+                {/* route container for maintaining a standard, centered layout */}
                 <RouteContainer>
+                    {/* brand logo */}
                     <Logo/>
 
+                    {/* status card - loading */}
                     {/* <StatusCard
                         status={{
                             heading: 'Authenticating your account via magiclink...',
@@ -50,6 +54,7 @@ export default function Magiclink() {
                         className="mt-8"
                     /> */}
                     
+                    {/* status card - error */}
                     <StatusCard
                         status={{
                             heading: 'There was an issue authenticating your account via magiclink.',
@@ -70,6 +75,7 @@ export default function Magiclink() {
                         className="mt-8"
                     />
                     
+                    {/* status card - success */}
                     {/* <StatusCard
                         status={{
                             heading: 'Successfully authenticated via magiclink!',
@@ -88,6 +94,7 @@ export default function Magiclink() {
                     /> */}
                 </RouteContainer>
 
+                {/* theme toggle button for switching between light and dark mode */}
                 <RouteThemeToggle/>
             </div>
         </>

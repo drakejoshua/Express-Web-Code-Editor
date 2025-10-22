@@ -35,7 +35,7 @@ export default function Google() {
                     overflow-auto
                 '
             >
-                {/* route container to maintaining a standard, centered layout */}
+                {/* route container for maintaining a standard, centered layout */}
                 <RouteContainer>
                     {/* brand logo */}
                     <Logo/>
