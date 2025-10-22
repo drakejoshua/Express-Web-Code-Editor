@@ -1,5 +1,5 @@
 // import provider dependencies
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 import useTheme from '../hooks/useTheme.js'
 
 // create context for sharing theme state and toggle function
@@ -16,13 +16,14 @@ function ThemeProvider({ children }) {
     // from local storage
     const [ theme, toggleTheme ] = useTheme("codebloks-app-theme")
 
+    useEffect( function() {
+        document.body.classList.toggle("dark", theme == "dark")
+    }, [ theme ])
+
     return (
         // provide theme state and toggle function to children components
         <ThemeContext.Provider value={ { theme, toggleTheme } }>
-            {/* add tailwind "dark" class to root div for toggling dark mode */}
-            <div className={ ( theme == "dark" ) ? "dark" : "" }>
                 { children }
-            </div>
         </ThemeContext.Provider>
     )
 }
