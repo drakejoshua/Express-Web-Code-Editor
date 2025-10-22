@@ -20,11 +20,13 @@ export default function Verify() {
 
     return (
         <>
+            {/* add page title and meta info using react-helmet library */}
             <Helmet>
                 <title>Confirm Your Email - CodeBloks</title>
                 <meta name="description" content="Confirm the email for your account" />
             </Helmet>
 
+            {/* root container */}
             <div 
                 className='
                     verify 
@@ -35,10 +37,12 @@ export default function Verify() {
                     overflow-auto
                 '
             >
-                
+                {/* route container for maintaining a standard, centered layout */}
                 <RouteContainer>
+                    {/* brand logo */}
                     <Logo/>
 
+                    {/* status card for email confirmation loading state */}
                     {/* <StatusCard
                         status={{
                             heading: 'Confirming your Email address...',
@@ -50,7 +54,8 @@ export default function Verify() {
                         }}
                         className="mt-8"
                     /> */}
-                    
+
+                    {/* status card for email confirmation error state */}
                     <StatusCard
                         status={{
                             heading: 'There was an issue confirming your email address.',
@@ -73,6 +78,7 @@ export default function Verify() {
                         className="mt-8"
                     />
                     
+                    {/* status card for email confirmation success state */}
                     {/* <StatusCard
                         status={{
                             heading: 'Email Confirmed Successfully!',
@@ -91,6 +97,7 @@ export default function Verify() {
                     /> */}
                 </RouteContainer>
 
+                {/* theme toggle button for switching between light and dark mode */}
                 <RouteThemeToggle/>
             </div>
         </>
