@@ -18,11 +18,13 @@ export default function Google() {
 
     return (
         <>
+            {/* add page title and meta info using react-helmet library */}
             <Helmet>
                 <title>Google OAuth - CodeBloks</title>
                 <meta name="description" content="Authenticate your google account" />
             </Helmet>
 
+            {/* root container */}
             <div 
                 className='
                     google 
@@ -33,10 +35,12 @@ export default function Google() {
                     overflow-auto
                 '
             >
-                
+                {/* route container to maintaining a standard, centered layout */}
                 <RouteContainer>
+                    {/* brand logo */}
                     <Logo/>
 
+                    {/* status card - loading */}
                     {/* <StatusCard
                         status={{
                             heading: 'Authenticating your Google account...',
@@ -49,6 +53,7 @@ export default function Google() {
                         className="mt-8"
                     /> */}
                     
+                    {/* status card - error */}
                     <StatusCard
                         status={{
                             heading: 'There was an issue authenticating your Google account.',
@@ -69,6 +74,7 @@ export default function Google() {
                         className="mt-8"
                     />
                     
+                    {/* status card - success */}
                     {/* <StatusCard
                         status={{
                             heading: 'Successfully authenticated with Google!',
@@ -87,6 +93,7 @@ export default function Google() {
                     /> */}
                 </RouteContainer>
 
+                {/* theme toggle button for switching between light and dark mode */}
                 <RouteThemeToggle/>
             </div>
         </>
