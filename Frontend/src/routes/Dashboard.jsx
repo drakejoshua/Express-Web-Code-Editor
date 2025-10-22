@@ -14,10 +14,11 @@ import {
     FaXmark 
 } from 'react-icons/fa6'
 import Logo from '../components/Logo'
-import { Avatar, Dialog, DropdownMenu } from 'radix-ui'
+import { Dialog, DropdownMenu } from 'radix-ui'
 import Button from '../components/Button'
 import { useThemeProvider } from '../providers/ThemeProvider'
 import NavMenuBlok from '../components/NavMenuBlok'
+import UserAvatar from '../components/UserAvatar'
 
 
 export default function Dashboard() {
@@ -205,47 +206,11 @@ export default function Dashboard() {
 
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger asChild>
-                        <Avatar.Root 
-                            className='
-                                dashboard--header__avatar-ctn
-                                h-10
-                                w-10
-                                rounded-full
-                                overflow-hidden
-                                bg-blue-600 dark:bg-white
+                        <UserAvatar 
+                            className="
                                 ml-4
-                            '
-                        >
-                            <Avatar.Image 
-                                src={'https://imagesunsplash.com/photo-1598096969068-7f52cac10c83?ixlib=rb-4.1.0'
-                                +'&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Ym95JTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D'}
-                                className='
-                                    dashboard--header__avatar-photo
-                                    h-full
-                                    w-full
-                                    object-cover
-                                '
-                            />
-                            
-                            <Avatar.Fallback 
-                                delayMs={3000}
-                                className='
-                                    h-full
-                                    w-full
-                                    flex
-                                    justify-center
-                                    items-center
-                                '
-                            >
-                                <FaUser 
-                                    className='
-                                        dashboard--header__avatar-icon
-                                        text-xl
-                                        text-white dark:text-gray-900
-                                    '
-                                />
-                            </Avatar.Fallback>
-                        </Avatar.Root>
+                            "
+                        />
                     </DropdownMenu.Trigger>
 
                     <DropdownMenu.Portal>
@@ -256,7 +221,7 @@ export default function Dashboard() {
                                 dashboard--header__profile-dropdown
                                 p-3.5
                                 rounded-md
-                                bg-neutral-100 dark:bg-neutral-800
+                                bg-neutral-100 dark:bg-gray-600
                                 w-[30vh] min-w-[250px] max-w-[350px]
                             '
                         >
@@ -268,46 +233,7 @@ export default function Dashboard() {
                                     gap-3
                                 "
                             >
-                                <Avatar.Root    
-                                    className='
-                                        dashboard--header__avatar-ctn
-                                        h-10
-                                        w-10
-                                        rounded-full
-                                        overflow-hidden
-                                        bg-blue-600 dark:bg-white
-                                    '
-                                >
-                                    <Avatar.Image 
-                                        src={'https://imagesunsplash.com/photo-1598096969068-7f52cac10c83?ixlib=rb-4.1.0'
-                                        +'&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Ym95JTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D'}
-                                        className='
-                                            dashboard--header__avatar-photo
-                                            h-full
-                                            w-full
-                                            object-cover
-                                        '
-                                    />
-                                    
-                                    <Avatar.Fallback 
-                                        delayMs={3000}
-                                        className='
-                                            h-full
-                                            w-full
-                                            flex
-                                            justify-center
-                                            items-center
-                                        '
-                                    >
-                                        <FaUser 
-                                            className='
-                                                dashboard--header__avatar-icon
-                                                text-xl
-                                                text-white dark:text-gray-900
-                                            '
-                                        />
-                                    </Avatar.Fallback>
-                                </Avatar.Root>
+                                <UserAvatar />
 
                                 <div 
                                     className='
