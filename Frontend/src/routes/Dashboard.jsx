@@ -35,7 +35,7 @@ export default function Dashboard() {
                 text-gray-900 dark:text-white
                 bg-white dark:bg-gray-900
                 overflow-auto
-                px-6 pb-12
+                px-2.5 lg:px-6 pb-12
             '
         >
             <div
@@ -43,7 +43,7 @@ export default function Dashboard() {
                     dashboard--header
                     flex
                     items-center
-                    py-2
+                    pt-8 lg:py-2
                 "
             >
                 <Dialog.Root>
@@ -52,6 +52,7 @@ export default function Dashboard() {
                             className='
                                 dashboard--header__menu-trigger-icon
                                 text-2xl
+                                outline-none
                             ' 
                         />
                     </Dialog.Trigger>
@@ -77,7 +78,7 @@ export default function Dashboard() {
                                 flex
                                 flex-col
                                 gap-6
-                                w-1/5 min-w-[200px] max-w-[350px]
+                                w-1/5 min-w-[300px] max-w-[350px]
                             '
                         >
                             <Logo className='dashboard--header__menu-logo' />
@@ -146,14 +147,14 @@ export default function Dashboard() {
                         flex 
                         flex-col
                         items-start
-                        ml-8
+                        ml-3 lg:ml-8
                     "
                 >
                     <Logo 
                         className='
                             dashboard--header__logo
-                            scale-[0.7]
-                            origin-left
+                            lg:scale-[0.7]
+                            lg:origin-left
                         ' 
                     />
 
@@ -164,6 +165,7 @@ export default function Dashboard() {
                             font-mono
                             text-2xl
                             -mt-1
+                            hidden lg:block
                         "
                     >
                         Welcome, Joshua
@@ -300,20 +302,25 @@ export default function Dashboard() {
                     flex
                     items-center
                     gap-2
-                    mt-2
+                    mt-4 lg:mt-2
                 "
             >
                 <SearchInput 
                     className="
-                        flex-grow
+                        flex-1
+                        min-w-0
                     "
                 />
 
-                <Button>
+                <Button
+                    className="
+                        
+                    "
+                >
                     <FaPlus className='dashboard--filter-bar__add-btn-icon' />
 
                     <span className="dashboard--filter-bar__add-btn-text">
-                        Create Blok
+                        New Blok
                     </span>
                 </Button>
             </div>
@@ -328,8 +335,8 @@ export default function Dashboard() {
                     className="
                         dashboard--blok-list-ctn__blok-list
                         grid
-                        grid-cols-3
-                        gap-10
+                        grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+                        gap-6 lg:gap-10
                     "
                 >
                     <Blok 

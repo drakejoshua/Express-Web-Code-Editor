@@ -23,7 +23,7 @@ export default function Blok({ id, name, iframeContent }) {
             className="
                 dashboard--blok-list__blok-preview
                 w-full
-                min-h-[180px] max-h-[250px]
+                min-h-[200px] max-h-[250px]
                 pointer-events-none
                 select-none
             "

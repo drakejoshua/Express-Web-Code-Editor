@@ -25,7 +25,8 @@ export default function SearchInput({ className, ...props }) {
                 placeholder-shown:capitalize
                 outline-none
                 font-medium
-                flex-grow
+                flex-1
+                min-w-0
             '
             placeholder='search your bloks...'
             { ...props }
