@@ -29,18 +29,23 @@ import { Helmet } from 'react-helmet-async'
 import PasswordField from '../components/PasswordField'
 import RouteThemeToggle from '../components/RouteThemeToggle'
 
+
+// reset password component
 export default function ResetPassword() {
 
+    // state for new password and confirm password fields
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
     return (
         <>
+            {/* add page title and meta info using react-helmet library */}
             <Helmet>
                 <title>Reset Password - CodeBloks</title>
                 <meta name="description" content="Reset your account password" />
             </Helmet>
 
+            {/* root container */}
             <div
                 className='
                     reset-password 
@@ -51,9 +56,12 @@ export default function ResetPassword() {
                     overflow-auto
                 '
             >
+                {/* route container for maintaining a standard, centered layout */}
                 <RouteContainer>
+                    {/* brand logo */}
                     <Logo/>
 
+                    {/* page heading */}
                     <h1 
                         className='
                             reset-password--heading
@@ -66,6 +74,7 @@ export default function ResetPassword() {
                         Reset Your Password
                     </h1>
 
+                    {/* page description */}
                     <p 
                         className='
                             reset-password--text
@@ -78,6 +87,7 @@ export default function ResetPassword() {
                         Make sure to choose a strong password that you haven't used before.
                     </p>
 
+                    {/* reset password form */}
                     <Form.Root 
                         className='
                             reset-password--form
@@ -88,7 +98,7 @@ export default function ResetPassword() {
                             gap-2
                         '
                     >
-                        {/* new password */}
+                        {/* new password input */}
                         <PasswordField
                             label="New Password"
                             name="new-password"
@@ -98,7 +108,7 @@ export default function ResetPassword() {
                             shortValidationMessage="The password can't be lower than 6 characters"
                         />
 
-                        {/* confirm new password */}
+                        {/* confirm new password input with custom validation passed as children */}
                         <PasswordField
                             label="Confirm New Password"
                             value={confirmPassword}
@@ -125,7 +135,7 @@ export default function ResetPassword() {
                             </Form.Message>
                         </PasswordField>
 
-                        {/* submit button */}
+                        {/* form submit button */}
                         <Button 
                             type='submit'
                             className="
@@ -137,7 +147,7 @@ export default function ResetPassword() {
                         </Button>
                     </Form.Root>
 
-                    {/* theme toggle */}
+                    {/* theme toggle button for switching between light and dark mode */}
                     <RouteThemeToggle/>
                 </RouteContainer>
             </div>
