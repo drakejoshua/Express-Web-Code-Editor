@@ -1,5 +1,16 @@
+// Signin route
+// handles user signin functionality with a signin form.
+// The form collects user email and password to authenticate
+// users and redirect them to the dashboard upon successful signin.
+// it displays appropriate validation messages for invalid inputs and responses.
+// includes a link to trigger password reset flow if user forgets their password.
+// It also provides options for third-party signin methods like Google
+// and Magic Link. 
+
+
+
+// import route dependencies
 import { Form } from 'radix-ui'
-import { FaGoogle } from 'react-icons/fa6'
 import PasswordField from '../components/PasswordField'
 import Button from '../components/Button'
 import Logo from '../components/Logo'
@@ -12,15 +23,18 @@ import GoogleBtn from '../components/GoogleBtn'
 import MagiclinkBtn from '../components/MagiclinkBtn'
 
 
+// define signin route component
 export default function Signin() {
     return (
         <>
+            {/* add page title and meta info using react-helmet library */}
             <Helmet>
                 <title> Sign In - Codebloks </title>
                 <meta name="description" content="Sign in to your Codebloks account 
                 to access the coding playground and start coding!" />
             </Helmet>
         
+            {/* signin route root container */}
             <div className='
                     signin
                     min-h-screen
@@ -46,7 +60,7 @@ export default function Signin() {
                         '
                     />
 
-                    {/* heading */}
+                    {/* Form heading */}
                     <h1 className='
                         signin--form__heading
                         font-medium
@@ -58,7 +72,7 @@ export default function Signin() {
                         Sign in to your account
                     </h1>
 
-                    {/* text */}
+                    {/* Form text */}
                     <p className='
                         signin--form__text
                         mt-4 mb-8
@@ -81,7 +95,7 @@ export default function Signin() {
                         </Link>
                     </p>
 
-                    {/* email */}
+                    {/* EmailField for collecting user email */}
                     <EmailField
                         label="Email"
                         name="email"
@@ -89,7 +103,7 @@ export default function Signin() {
                         invalidValidationMessage="Please enter a valid email"
                     />
                     
-                    {/* password */}
+                    {/* PasswordField for collecting user password */}
                     <PasswordField
                         label="Password"
                         name="password"
@@ -100,7 +114,7 @@ export default function Signin() {
                         "
                     />
 
-                    {/* forgot password link */}
+                    {/* forgot password link to trigger password reset dialog */}
                     <a href="#" className='
                         signin--form__forgot-password
                         mt-4
@@ -113,7 +127,7 @@ export default function Signin() {
                         Forgot password?
                     </a>
 
-                    {/* submit button */}
+                    {/* Form submit/signin button */}
                     <Button 
                         type="submit"
                         className='
