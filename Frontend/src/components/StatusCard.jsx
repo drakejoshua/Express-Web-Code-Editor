@@ -1,3 +1,12 @@
+// StatusCard.jsx
+// This component displays a status card with an icon, heading, text,
+// and optional redirect link or action button based on the provided status prop.
+// It supports different status types like success, loading, and error.
+// It uses the link component from react-router-dom for navigation, custom Button component for actions.
+// and reacts-icons for status icons.
+
+
+
 // import component dependencies
 import React from 'react'
 import { FaCircleCheck, FaSpinner, FaTriangleExclamation } from 'react-icons/fa6'
