@@ -1,7 +1,9 @@
-import { SimpleCarousel } from './simpleCarousel'
+import { SimpleCarousel, useCarousel } from './simpleCarousel'
 
 
-export default function MultiStepTabs({ slides = [], className }) {
+export default function MultiStepTabs({ className }) {
+    const { slides } = useCarousel()
+
     return (
         <SimpleCarousel.Tabs
             className={`

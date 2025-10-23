@@ -27,6 +27,10 @@ import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
 import TextField from '../components/TextField'
 import { forwardRef, useRef, useState } from 'react'
 import MultiStepTabs from '../components/MultiStepTabs'
+import FinishButton from '../components/FinishButton'
+import StepActions from '../components/StepActions'
+import PreviousButton from '../components/PreviousButton'
+import NextButton from '../components/NextButton'
 
 
 // define signup route component
@@ -79,26 +83,6 @@ export default function Signup() {
         </>
     )
 }
-
-
-// previous button component for multi-step form
-// handles styling, ref forwarding and previous slide navigation in the
-// multi-step form navigation
-const PreviousButton = forwardRef(({children, className, ...props }, ref) => {
-    return <Button 
-                type="button"
-                className={`
-                    flex-grow
-                    bg-gray-600 hover:bg-gray-500
-                    dark:bg-gray-600 hover:dark:bg-gray-500
-                    ${ className || "" }
-                `}
-                {...props}
-                ref={ref}
-            >
-                { children }
-            </Button>
-})
 
 
 // multi-step signup form component
@@ -248,25 +232,16 @@ function MultiStepForm({ onSubmit = () => {} }) {
                         />
 
                         {/* form actions container */}
-                        <div 
-                            className='
-                                form-actions-ctn
-                                flex
-                                gap-2
-                                mt-4
-                            '
+                        <StepActions
+                            className="mt-4"
                         >
-                            {/* <Button> for next step */}
-                            <Button 
-                                type="button"
-                                className='
-                                    flex-grow
-                                '
-                                onClick={ moveToEmailSlide}
+                            {/* <NextButton> for next step */}
+                            <NextButton
+                                onClick={ moveToEmailSlide }
                             >
                                 Next
-                            </Button>
-                        </div>
+                            </NextButton>
+                        </StepActions>
                     </SimpleCarousel.Item>
 
                     {/* email step */}
@@ -286,13 +261,8 @@ function MultiStepForm({ onSubmit = () => {} }) {
                         />
 
                         {/* form actions container */}
-                        <div 
-                            className='
-                                form-actions-ctn
-                                flex
-                                gap-2
-                                mt-4
-                            '
+                        <StepActions
+                            className="mt-4"
                         >
                             {/* <PreviousButton> for previous step */}
                             <PreviousButton 
@@ -301,17 +271,13 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Previous
                             </PreviousButton>
 
-                            {/* <Button> for next step */}
-                            <Button 
-                                type="button"
-                                className='
-                                    flex-grow
-                                '
+                            {/* <NextButton> for next step */}
+                            <NextButton
                                 onClick={ moveToPasswordSlide }
                             >
                                 Next
-                            </Button>
-                        </div>
+                            </NextButton>
+                        </StepActions>
                     </SimpleCarousel.Item>
 
                     {/* image upload step */}
@@ -396,16 +362,12 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Previous
                             </PreviousButton>
 
-                            {/* <Button> for next step */}
-                            <Button 
-                                type="button"
-                                className='
-                                    flex-grow
-                                '
-                                onClick={ handleNext}
+                            {/* <NextButton> for next step */}
+                            <NextButton
+                                onClick={ handleNext }
                             >
                                 Next
-                            </Button>
+                            </NextButton>
                         </div>
                     </SimpleCarousel.Item>
 
@@ -426,13 +388,8 @@ function MultiStepForm({ onSubmit = () => {} }) {
                         />
 
                         {/* form actions container */}
-                        <div 
-                            className='
-                                form-actions-ctn
-                                flex
-                                gap-2
-                                mt-4
-                            '
+                        <StepActions
+                            className="mt-4"
                         >
                             {/* <PreviousButton> for previous step */}
                             <PreviousButton 
@@ -441,16 +398,11 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Previous
                             </PreviousButton>
 
-                            {/* submit <Button> for final form submission */}
-                            <Button 
-                                type="submit"
-                                className='
-                                    flex-grow
-                                '
-                            >
+                            {/* <FinishButton> for final form submission */}
+                            <FinishButton>
                                 Create Account
-                            </Button>
-                        </div>
+                            </FinishButton>
+                        </StepActions>
                     </SimpleCarousel.Item>
                 </SimpleCarousel.Track>
             </SimpleCarousel.Scroller>
