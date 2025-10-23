@@ -1,3 +1,17 @@
+// Signup route
+// handles user signup with a multi-step form using a carousel for navigation
+// The form collects username, email, profile picture and password in steps
+// Each step validates its inputs before allowing navigation to the next step
+// The final step submits the collected data to create a new user account.
+// The route also includes a display carousel showcasing code examples and live previews.
+// Theme toggle is provided for switching between light and dark modes.
+// The route sends users data to the backend for account creation upon form submission,
+// displaying appropriate success or error messages based on the response and redirects
+// users to the dashboard upon successful signup.
+
+
+
+// import route dependencies
 import { Form } from 'radix-ui'
 import PasswordField from '../components/PasswordField'
 import Button from '../components/Button'
@@ -11,20 +25,21 @@ import GoogleBtn from '../components/GoogleBtn'
 import MagiclinkBtn from '../components/MagiclinkBtn'
 import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
 import TextField from '../components/TextField'
-import { forwardRef, Fragment, useRef, useState } from 'react'
+import { forwardRef, useRef, useState } from 'react'
 
 
+// define signup route component
 export default function Signup() {
-
-
     return (
         <>
+            {/* add page title and meta description using react-helmet library */}
             <Helmet>
                 <title> Sign Up - Codebloks </title>
                 <meta name="description" content="Sign up for a Codebloks account 
                 to access the coding playground and start coding!" />
             </Helmet>
         
+            {/* signup route root container */}
             <div className='
                     signup
                     min-h-screen
@@ -42,10 +57,12 @@ export default function Signup() {
                         p-4 py-12 xl:p-10 xl:py-16
                     "
                 >
+                    {/* use custom MultiStepForm component to prevent issues with accessing */}
+                    {/* carousel context from within the form */}
                     <MultiStepForm/>
                 </SimpleCarousel.Root>
 
-                {/* signin carousel */}
+                {/* signin display carousel( code example and live preview ) */}
                 <Carousel
                     className='
                         hidden xl:block
@@ -63,6 +80,9 @@ export default function Signup() {
 }
 
 
+// previous button component for multi-step form
+// handles styling, ref forwarding and previous slide navigation in the
+// multi-step form navigation
 const PreviousButton = forwardRef(({children, className, ...props }, ref) => {
     return <Button 
                 type="button"
@@ -73,44 +93,60 @@ const PreviousButton = forwardRef(({children, className, ...props }, ref) => {
                     ${ className || "" }
                 `}
                 {...props}
+                ref={ref}
             >
                 { children }
             </Button>
 })
 
 
+// multi-step signup form component
+// handles form steps, validation and submission with carousel integration
 function MultiStepForm({ onSubmit = () => {} }) {
+    // get carousel navigation handlers and slides state from carousel context
     const { handleNext, handlePrev, slides } = useCarousel()
 
+    // refs for form fields
     const passwordFieldRef = useRef(null)
     const usernameFieldRef = useRef(null)
     const emailFieldRef = useRef(null)
 
+    // state for selected profile picture file ( used to show preview )
     const [ selectedFile, setSelectedFile ] = useState(null)
 
+    // validateUsernameField() - validates the username field using its ref
+    // and reports any validation messages if invalid
     function validateUsernameField() {
         if (usernameFieldRef.current) {
             return usernameFieldRef.current.reportValidity()
         }
     }
+
+    // validateEmailField() - validates the email field using its ref
+    // and reports any validation messages if invalid
     function validateEmailField() {
         if (emailFieldRef.current) {
             return emailFieldRef.current.reportValidity()
         }
     }
 
+    // moveToEmailSlide() - validates username field and moves to email slide if 
+    // username is valid
     function moveToEmailSlide() {
         if ( validateUsernameField() ) {
             return handleNext();
         }
     }
 
+    // moveToPasswordSlide() - validates email field and moves to password slide if
+    // email is valid
     function moveToPasswordSlide() {
         if ( validateEmailField() ) {
             return handleNext();
         }
     }
 
+    // handleSubmit() - handles final form submission
     function handleSubmit(e) {
         // prevent default form submission behaviour
         e.preventDefault();
@@ -121,6 +157,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
         onSubmit();
     }
 
+    // render component
     return <Form.Root 
             className='
                 signup--form
@@ -134,7 +171,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                 '
             />
 
-            {/* heading */}
+            {/* form heading */}
             <h1 className='
                 signup--form__heading
                 font-medium
@@ -146,7 +183,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                 Sign up for an account
             </h1>
 
-            {/* text */}
+            {/* form text */}
             <p className='
                 signup--form__text
                 mt-4 mb-8
@@ -169,6 +206,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                 </Link>
             </p>
 
+            {/* multi-step form indicators for progress and navigation */}
             <SimpleCarousel.Tabs
                 className="
                     flex
@@ -180,6 +218,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                 {({ index, isSelected, activeIndex }) => {
                     return (
                         <>
+                            {/* form step indicator using <SimpleCarousel.Tab> */}
                             <SimpleCarousel.Tab
                                 index={index}
                                 disabled
@@ -193,6 +232,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 `}
                             />
 
+                            {/* form step connector lines, show progress between steps */}
                             { index < slides.length - 1 && <div 
                                 className={`
                                     signup--form__indicator
@@ -209,6 +249,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                 }}
             </SimpleCarousel.Tabs>
 
+            {/* form steps parent container */}
             <SimpleCarousel.Scroller
                 className="
                     overflow-x-hidden
@@ -218,6 +259,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                     mt-3.5
                 "
             >
+                {/* form steps track */}
                 <SimpleCarousel.Track
                     className="
                         flex
@@ -226,12 +268,14 @@ function MultiStepForm({ onSubmit = () => {} }) {
                         ease-in-out
                     "
                 >
+                    {/* username step */}
                     <SimpleCarousel.Item
                         className="
                             flex-[0_0_100%]
                             snap-start
                         "
                     >
+                        {/* TextField for username */}
                         <TextField
                             ref={usernameFieldRef}
                             label="Username"
@@ -239,6 +283,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             emptyValidationMessage="Please enter your username"
                         />
 
+                        {/* form actions container */}
                         <div 
                             className='
                                 form-actions-ctn
@@ -247,6 +292,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
+                            {/* <Button> for next step */}
                             <Button 
                                 type="button"
                                 className='
@@ -259,12 +305,14 @@ function MultiStepForm({ onSubmit = () => {} }) {
                         </div>
                     </SimpleCarousel.Item>
 
+                    {/* email step */}
                     <SimpleCarousel.Item
                         className="
                             flex-[0_0_100%]
                             snap-start
                         "
                     >
+                        {/* EmailField for email */}
                         <EmailField
                             ref={emailFieldRef}
                             label="Email"
@@ -273,6 +321,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             invalidValidationMessage="Please enter a valid email"
                         />
 
+                        {/* form actions container */}
                         <div 
                             className='
                                 form-actions-ctn
@@ -281,12 +330,14 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
+                            {/* <PreviousButton> for previous step */}
                             <PreviousButton 
                                 onClick={ handlePrev }
                             >
                                 Previous
                             </PreviousButton>
 
+                            {/* <Button> for next step */}
                             <Button 
                                 type="button"
                                 className='
@@ -298,13 +349,15 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             </Button>
                         </div>
                     </SimpleCarousel.Item>
-                    
+
+                    {/* image upload step */}
                     <SimpleCarousel.Item
                         className="
                             flex-[0_0_100%]
                             snap-start
                         "
                     >
+                        {/* custom form field for file upload */}
                         <Form.Field
                             className={`
                                 form__file-field
@@ -313,6 +366,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 gap-2
                             `}
                         >
+                            {/* image upload field label */}
                             <Form.Label
                                 className='
                                     form__file-label
@@ -322,6 +376,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Upload Profile Picture ( optional )
                             </Form.Label>
 
+                            {/* file input */}
                             <Form.Control asChild>
                                 <input 
                                     type="file" 
@@ -338,11 +393,13 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                         outline-none
                                         w-full
                                     '
+                                    // handle file selection and set selected file state to show preview
                                     onChange={ (e) => setSelectedFile( e.target.files[0] )}
                                 />
                             </Form.Control>
                         </Form.Field>
 
+                        {/* show image preview if selectedFile state is not null */}
                         { selectedFile && 
                             <img
                                 className='
@@ -354,10 +411,12 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                     object-center
                                     block
                                 '
+                                // display preview from url using URL.createObjectURL()
                                 src={ URL.createObjectURL( selectedFile )}
                             />
                         }
 
+                        {/* form actions container */}
                         <div 
                             className='
                                 form-actions-ctn
@@ -366,12 +425,14 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
+                            {/* <PreviousButton> for previous step */}
                             <PreviousButton 
                                 onClick={ handlePrev }
                             >
                                 Previous
                             </PreviousButton>
 
+                            {/* <Button> for next step */}
                             <Button 
                                 type="button"
                                 className='
@@ -384,12 +445,14 @@ function MultiStepForm({ onSubmit = () => {} }) {
                         </div>
                     </SimpleCarousel.Item>
 
+                    {/* password step */}
                     <SimpleCarousel.Item
                         className="
                             flex-[0_0_100%]
                             snap-start
                         "
                     >
+                        {/* PasswordField for password */}
                         <PasswordField
                             ref={passwordFieldRef}
                             label="Password"
@@ -398,6 +461,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             shortValidationMessage="The password can't be lower than 6 characters"
                         />
 
+                        {/* form actions container */}
                         <div 
                             className='
                                 form-actions-ctn
@@ -406,12 +470,14 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 mt-4
                             '
                         >
+                            {/* <PreviousButton> for previous step */}
                             <PreviousButton 
                                 onClick={ handlePrev }
                             >
                                 Previous
                             </PreviousButton>
 
+                            {/* submit <Button> for final form submission */}
                             <Button 
                                 type="submit"
                                 className='
