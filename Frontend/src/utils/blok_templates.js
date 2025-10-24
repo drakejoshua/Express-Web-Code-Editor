@@ -9,6 +9,7 @@ import waitlistImage from '../assets/blok_examples/soon.png';
 export const blokTemplates = [
     {
         name: "Black & White Portfolio",
+        value: "portfolio",
         description: "A sleek and modern portfolio template with a black and white color scheme, perfect for showcasing your work.",
         image: portfolioImage,
         html: "",
@@ -17,6 +18,7 @@ export const blokTemplates = [
     },
     {
         name: "Business Consulting",
+        value: "business_consulting",
         description: "A professional and polished template designed for business consulting services, featuring a clean layout and modern design elements.",
         image: businessConsultingImage,
         html: "",
@@ -25,6 +27,7 @@ export const blokTemplates = [
     },
     {
         name: "Gamer",
+        value: "gamer",
         description: "A dynamic and engaging template tailored for gamers, with bold colors and interactive features to showcase gaming content.",
         image: gamerImage,
         html: "",
@@ -33,6 +36,7 @@ export const blokTemplates = [
     },
     {
         name: "Kiya Fashion",
+        value: "fashion",
         description: "A stylish and trendy fashion template, perfect for fashion bloggers and online stores, featuring a chic design and user-friendly layout.",
         image: fashionImage,
         html: "",
@@ -41,6 +45,7 @@ export const blokTemplates = [
     },
     {
         name: "Parallax",
+        value: "parallax",
         description: "A visually stunning template that utilizes parallax scrolling effects to create an immersive user experience.",
         image: parallaxImage,
         html: "",
@@ -49,6 +54,7 @@ export const blokTemplates = [
     },
     {
         name: "Personal Trainer",
+        value: "personal_trainer",
         description: "A fitness-focused template designed for personal trainers, featuring a clean layout and motivational design elements.",
         image: personalTrainerImage,
         html: "",
@@ -57,6 +63,7 @@ export const blokTemplates = [
     },
     {
         name: "Coming Soon / Waitlist",
+        value: "waitlist",
         description: "A simple and effective coming soon template, perfect for building anticipation and collecting email addresses for your upcoming project.",
         image: waitlistImage,
         html: "",
