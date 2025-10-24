@@ -1,9 +1,14 @@
+// import component dependencies
 import { forwardRef } from "react"
 import Button from "./Button"
 
+
+// define FinishButton component
 const FinishButton = forwardRef(({children, className, ...props }, ref) => {
     return <Button 
                 type="submit"
+
+                // apply default and custom classes to the button
                 className={`
                     flex-grow
                     ${ className || "" }
@@ -16,4 +21,6 @@ const FinishButton = forwardRef(({children, className, ...props }, ref) => {
 })
 
 
+// export FinishButton component for use in 
+// other parts of the application
 export default FinishButton
