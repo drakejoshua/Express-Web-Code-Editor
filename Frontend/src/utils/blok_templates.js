@@ -1,3 +1,12 @@
+// blok_templates.js
+// This module defines and exports an array of blok templates used 
+// throughout the application.
+// Each template includes metadata such as name, value, description, 
+// image, and placeholders for HTML, CSS, and JS code
+
+
+
+
 // import template images
 import portfolioImage from '../assets/blok_examples/blackandwhiteportfolio.png';
 import businessConsultingImage from '../assets/blok_examples/business-consulting.png';
