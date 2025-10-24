@@ -1,3 +1,4 @@
+// import template images
 import portfolioImage from '../assets/blok_examples/blackandwhiteportfolio.png';
 import businessConsultingImage from '../assets/blok_examples/business-consulting.png';
 import gamerImage from '../assets/blok_examples/gamer.png';
@@ -6,6 +7,9 @@ import parallaxImage from '../assets/blok_examples/parallax.png';
 import personalTrainerImage from '../assets/blok_examples/personaltrainer.png';
 import waitlistImage from '../assets/blok_examples/soon.png';
 
+
+// define and export blok templates array
+// Each template object contains metadata and placeholders for HTML, CSS, and JS code
 export const blokTemplates = [
     {
         name: "Black & White Portfolio",
