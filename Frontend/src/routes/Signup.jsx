@@ -31,6 +31,7 @@ import FinishButton from '../components/FinishButton'
 import StepActions from '../components/StepActions'
 import PreviousButton from '../components/PreviousButton'
 import NextButton from '../components/NextButton'
+import Step from '../components/Step'
 
 
 // define signup route component
@@ -217,12 +218,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                     "
                 >
                     {/* username step */}
-                    <SimpleCarousel.Item
-                        className="
-                            flex-[0_0_100%]
-                            snap-start
-                        "
-                    >
+                    <Step>
                         {/* TextField for username */}
                         <TextField
                             ref={usernameFieldRef}
@@ -242,10 +238,10 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Next
                             </NextButton>
                         </StepActions>
-                    </SimpleCarousel.Item>
+                    </Step>
 
                     {/* email step */}
-                    <SimpleCarousel.Item
+                    <Step
                         className="
                             flex-[0_0_100%]
                             snap-start
@@ -278,10 +274,10 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Next
                             </NextButton>
                         </StepActions>
-                    </SimpleCarousel.Item>
+                    </Step>
 
                     {/* image upload step */}
-                    <SimpleCarousel.Item
+                    <Step
                         className="
                             flex-[0_0_100%]
                             snap-start
@@ -369,10 +365,10 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Next
                             </NextButton>
                         </div>
-                    </SimpleCarousel.Item>
+                    </Step>
 
                     {/* password step */}
-                    <SimpleCarousel.Item
+                    <Step
                         className="
                             flex-[0_0_100%]
                             snap-start
@@ -403,7 +399,7 @@ function MultiStepForm({ onSubmit = () => {} }) {
                                 Create Account
                             </FinishButton>
                         </StepActions>
-                    </SimpleCarousel.Item>
+                    </Step>
                 </SimpleCarousel.Track>
             </SimpleCarousel.Scroller>
 
