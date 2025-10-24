@@ -1,1 +1,66 @@
-export
+import portfolioImage from '../assets/blok_examples/blackandwhiteportfolio.png';
+import businessConsultingImage from '../assets/blok_examples/business-consulting.png';
+import gamerImage from '../assets/blok_examples/gamer.png';
+import fashionImage from '../assets/blok_examples/kiyafashion.png';
+import parallaxImage from '../assets/blok_examples/parallax.png';
+import personalTrainerImage from '../assets/blok_examples/personaltrainer.png';
+import waitlistImage from '../assets/blok_examples/soon.png';
+
+export const blokTemplates = [
+    {
+        name: "Black & White Portfolio",
+        description: "A sleek and modern portfolio template with a black and white color scheme, perfect for showcasing your work.",
+        image: portfolioImage,
+        html: "",
+        css: "",
+        js: ""
+    },
+    {
+        name: "Business Consulting",
+        description: "A professional and polished template designed for business consulting services, featuring a clean layout and modern design elements.",
+        image: businessConsultingImage,
+        html: "",
+        css: "",
+        js: ""
+    },
+    {
+        name: "Gamer",
+        description: "A dynamic and engaging template tailored for gamers, with bold colors and interactive features to showcase gaming content.",
+        image: gamerImage,
+        html: "",
+        css: "",
+        js: ""
+    },
+    {
+        name: "Kiya Fashion",
+        description: "A stylish and trendy fashion template, perfect for fashion bloggers and online stores, featuring a chic design and user-friendly layout.",
+        image: fashionImage,
+        html: "",
+        css: "",
+        js: ""
+    },
+    {
+        name: "Parallax",
+        description: "A visually stunning template that utilizes parallax scrolling effects to create an immersive user experience.",
+        image: parallaxImage,
+        html: "",
+        css: "",
+        js: ""
+    },
+    {
+        name: "Personal Trainer",
+        description: "A fitness-focused template designed for personal trainers, featuring a clean layout and motivational design elements.",
+        image: personalTrainerImage,
+        html: "",
+        css: "",
+        js: ""
+    },
+    {
+        name: "Coming Soon / Waitlist",
+        description: "A simple and effective coming soon template, perfect for building anticipation and collecting email addresses for your upcoming project.",
+        image: waitlistImage,
+        html: "",
+        css: "",
+        js: ""
+    }
+];
