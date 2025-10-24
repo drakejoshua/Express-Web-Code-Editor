@@ -1,11 +1,12 @@
-import React from 'react'
-import { SimpleCarousel } from '../components/simpleCarousel'
-import { Form } from 'radix-ui'
+import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
+import { Form, ToggleGroup } from 'radix-ui'
 import MultiStepTabs from '../components/MultiStepTabs'
 import TextField from '../components/TextField'
 import StepActions from '../components/StepActions'
 import PreviousButton from '../components/PreviousButton'
 import NextButton from '../components/NextButton'
+import Step from '../components/Step'
+import FinishButton from '../components/FinishButton'
 
 export default function Create() {
     return (
@@ -25,28 +26,30 @@ export default function Create() {
     )
 }
 
-function Step({ heading, text, children }) {
-    <SimpleCarousel.Item>
-        { heading && <h2 className="create--form__heading">
-            { heading }
-        </h2> }
-
-        { text && <p className="create--form__text">
-            { text }
-        </p> }
-
-        { children }
-    </SimpleCarousel.Item>
-}
-
 
 function MultiStepForm() {
+    const { handleNext, handlePrev } = useCarousel()
     return (
         <Form.Root>
             <MultiStepTabs />
 
-            <SimpleCarousel.Scroller>
-                <SimpleCarousel.Track>
+            <SimpleCarousel.Scroller
+                className="
+                    overflow-x-hidden
+                    scroll-smooth
+                    snap-x 
+                    snap-mandatory
+                "
+            >
+                <SimpleCarousel.Track
+                    className="
+                        flex
+                        transition-transform
+                        duration-500
+                        ease-in-out
+                    "
+                >
+                    {/* blok name step */}
                     <Step
                         heading="Enter your blok name"
                         text="Enter a name for the new blok to be created. 
@@ -63,9 +66,101 @@ function MultiStepForm() {
                                 mt-4
                             "
                         >
-                            <NextButton>
+                            <NextButton
+                                onClick={ handleNext}
+                            >
                                 Next
                             </NextButton>
+                        </StepActions>
+                    </Step>
+
+                    {/* select starter template step */}
+                    <Step
+                        heading="Choose a Starter Template"
+                        text="Select a template for your blok to get started quickly.
+                         Choose from a variety of pre-built templates designed for different use cases."
+                    >
+                        <ToggleGroup.Root>
+
+                        </ToggleGroup.Root>
+
+                        <StepActions
+                            className="
+                                mt-4
+                            "
+                        >
+                            <PreviousButton
+                                onClick={ handlePrev }
+                            >
+                                Previous
+                            </PreviousButton>
+
+                            <NextButton
+                                onClick={ handleNext }
+                            >
+                                Next
+                            </NextButton>
+                        </StepActions>
+                    </Step>
+                    
+                    {/* default editor settings step */}
+                    <Step
+                        heading="Choose Default Editor Settings"
+                        text="Customize your blok's editor settings to suit your workflow.
+                         Set preferences for themes, auto-completion, and other options."
+                    >
+                        <TextField
+                            label="Enter a blok name"
+                            name='blok_name'
+                            emptyValidationMessage="Please enter a blok name"
+                        />
+
+                        <StepActions
+                            className="
+                                mt-4
+                            "
+                        >
+                            <PreviousButton
+                                onClick={ handlePrev }
+                            >
+                                Previous
+                            </PreviousButton>
+
+                            <NextButton
+                                onClick={ handleNext }
+                            >
+                                Next
+                            </NextButton>
+                        </StepActions>
+                    </Step>
+                    
+                    {/* review blok details step */}
+                    <Step
+                        heading="Review Blok Details"
+                        text="Please review the details of your blok before creating it. 
+                        Check the name, template, and settings to ensure everything is inline with 
+                        your preferences."
+                    >
+                        <TextField
+                            label="Enter a blok name"
+                            name='blok_name'
+                            emptyValidationMessage="Please enter a blok name"
+                        />
+
+                        <StepActions
+                            className="
+                                mt-4
+                            "
+                        >
+                            <PreviousButton
+                                onClick={ handlePrev }
+                            >
+                                Previous
+                            </PreviousButton>
+
+                            <FinishButton>
+                                Create Blok
+                            </FinishButton>
                         </StepActions>
                     </Step>
                 </SimpleCarousel.Track>
