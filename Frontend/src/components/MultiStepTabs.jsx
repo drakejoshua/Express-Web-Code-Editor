@@ -1,11 +1,22 @@
+// MultiStepTabs.jsx
+// This component renders a multi-step tab indicator for a form using a carousel context.
+// Each step is represented by a dot, and lines between dots indicate progress.
+// The component uses the SimpleCarousel and useCarousel from simpleCarousel.jsx.
+
+
+
+// import component dependencies
 import { SimpleCarousel, useCarousel } from './simpleCarousel'
 
 
+// define MultiStepTabs component
 export default function MultiStepTabs({ className }) {
+    // retrieve slides from carousel context
     const { slides } = useCarousel()
 
     return (
         <SimpleCarousel.Tabs
+            // apply default and custom classes to the tabs container
             className={`
                 flex
                 justify-center
