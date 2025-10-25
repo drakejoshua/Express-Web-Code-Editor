@@ -1,3 +1,15 @@
+// simpleCarousel.jsx
+// A simple and reusable carousel component built with React.
+// It provides basic carousel functionality including navigation
+// buttons, slide tracking, and tab indicators. The carousel
+// components are designed to be flexible and customizable for
+// various use cases within the application.
+// To use the carousel, import the SimpleCarousel object and select
+// the desired sub-components ( Root, Scroller, Track, Item, Button, Tabs, Tab )
+// for your implementation.
+
+
+
 // import component dependencies
 import React, { 
     useContext, 
