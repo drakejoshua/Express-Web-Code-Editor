@@ -20,11 +20,11 @@ import {
 import { useRef, useState } from 'react'
 import BlankTemplatePreview from '../components/BlankTemplatePreview'
 import { editorThemes } from '../utils/editor_themes'
-
-
+import { FaMoon, FaRegSun, FaXmark } from 'react-icons/fa6'
+import { useThemeProvider } from '../providers/ThemeProvider'
 
 export default function Create() {
-    
+    const { theme, toggleTheme } = useThemeProvider()
 
     return (
         <div 
@@ -56,7 +56,31 @@ export default function Create() {
                 <MultiStepForm />
             </SimpleCarousel.Root>
 
-            
+            <div 
+                className="
+                    create--actions
+                    fixed
+                    top-6
+                    right-8
+                    flex
+                    gap-4
+
+                    **:text-2xl
+                "
+            >
+                <button 
+                    className="
+                        create--actions__theme-toggle
+                    "
+                    onClick={ toggleTheme }
+                >
+                    {theme === 'dark' ? <FaMoon/> : <FaRegSun/>}
+                </button>
+
+                <button className="create--actions__cancel-btn">
+                    <FaXmark/>
+                </button>
+            </div>
         </div>
     )
 }
