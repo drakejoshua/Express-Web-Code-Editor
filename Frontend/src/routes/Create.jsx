@@ -12,6 +12,7 @@ import { FaArrowDown, FaArrowUp, FaCaretDown, FaCaretUp, FaChevronDown, FaFileCo
 import SelectOption from '../components/SelectOption'
 import RangeOption from '../components/RangeOption'
 import ToggleOption from '../components/ToggleOption'
+import SwitchOption from '../components/SwitchOption'
 
 export default function Create() {
     return (
@@ -316,48 +317,9 @@ function MultiStepForm() {
                                 ]}
                             />
 
-                            <div 
-                                className="
-                                    switch-option
-                                    flex
-                                    flex-col
-                                    gap-2
-                                "
-                            >
-                                <span 
-                                    className="
-                                        switch-option
-                                        font-medium
-                                    "
-                                >
-                                    Autocompletion
-                                </span>
-
-                                <Switch.Root 
-                                    className='
-                                        w-12
-                                        h-7
-                                        p-1
-                                        bg-gray-300
-                                        rounded-full
-                                        flex
-                                        items-center
-                                        data-[state=checked]:justify-end
-                                        data-[state=checked]:bg-blue-200
-                                    '
-                                >
-                                    <Switch.Thumb 
-                                        className="
-                                            switch__thumb
-                                            block
-                                            w-5
-                                            h-full
-                                            bg-blue-700
-                                            rounded-full
-                                        " 
-                                    />
-                                </Switch.Root>
-                            </div>
+                            <SwitchOption
+                                label="Autocomplete"
+                            />
                         </div>
 
                         <StepActions
