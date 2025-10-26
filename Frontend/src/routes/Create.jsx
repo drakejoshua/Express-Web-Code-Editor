@@ -8,7 +8,6 @@ import NextButton from '../components/NextButton'
 import Step from '../components/Step'
 import FinishButton from '../components/FinishButton'
 import { blokTemplates } from '../utils/blok_templates'
-import { FaFileCode } from 'react-icons/fa6'
 import SelectOption from '../components/SelectOption'
 import RangeOption from '../components/RangeOption'
 import ToggleOption from '../components/ToggleOption'
@@ -18,10 +17,15 @@ import {
     TbLayoutSidebarRight, 
     TbLayoutNavbar 
 } from 'react-icons/tb'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import BlankTemplatePreview from '../components/BlankTemplatePreview'
+import { editorThemes } from '../utils/editor_themes'
+
+
 
 export default function Create() {
+    
+
     return (
         <div 
             className='
@@ -51,6 +55,8 @@ export default function Create() {
             <SimpleCarousel.Root>
                 <MultiStepForm />
             </SimpleCarousel.Root>
+
+            
         </div>
     )
 }
@@ -69,6 +75,14 @@ function MultiStepForm() {
         autocomplete: true
     })
 
+    const blokNameInputRef = useRef(null)
+
+    function moveToTemplateSection() {
+        if ( blokNameInputRef.current?.reportValidity() ) {
+            handleNext()
+        }
+    }
+
     function handleTemplateSelect(value) {
         if ( value != "" ) {
             setSelectedTemplate(value)
@@ -81,8 +95,8 @@ function MultiStepForm() {
                 value = value != "" ? value : "editor-top"
             break;
 
-            case "tabSize":
-                value = value != "" ? parseInt(value) : 16
+            case "tab_size":
+                value = value != "" ? value : "4"
             break;
 
             default:
@@ -141,6 +155,7 @@ function MultiStepForm() {
                             emptyValidationMessage="Please enter a blok name"
                             value={ blokName }
                             onChange={ (e) => setBlokName(e.target.value) }
+                            ref={ blokNameInputRef }
                         />
 
                         <StepActions
@@ -149,7 +164,7 @@ function MultiStepForm() {
                             "
                         >
                             <NextButton
-                                onClick={ handleNext}
+                                onClick={ moveToTemplateSection }
                             >
                                 Next
                             </NextButton>
@@ -323,35 +338,12 @@ function MultiStepForm() {
                                 placeholder="Select a theme"
                                 options={
                                     {
-                                        "light themes": [
-                                            {
-                                                text: "VS Code Light",
-                                                value: "vsc_light"
-                                            },
-                                            {
-                                                text: "Github Light",
-                                                value: "github_light"
-                                            },
-                                            {
-                                                text: "High Contrast Light",
-                                                value: "hc_light"
-                                            },
-                                        ],
-
-                                        "dark themes": [
-                                            {
-                                                text: "VS Code Dark",
-                                                value: "vsc_dark"
-                                            },
-                                            {
-                                                text: "Github Dark",
-                                                value: "github_dark"
-                                            },
-                                            {
-                                                text: "High Contrast Dark",
-                                                value: "hc_dark"
-                                            },
-                                        ]
+                                        "light themes": editorThemes.filter(
+                                            ( theme ) => theme.type == "light"
+                                        ),
+                                        "dark themes": editorThemes.filter(
+                                            ( theme ) => theme.type == "dark"
+                                        )
                                     }
                                 }
                             />
@@ -465,7 +457,7 @@ function MultiStepForm() {
                                 </span>
 
                                 <div className="create--form__review-value">
-                                    new_blok
+                                    { blokName }
                                 </div>
                             </div>
                             
@@ -476,19 +468,25 @@ function MultiStepForm() {
 
                                 <div className="create--form__review-value">
                                     <span className="create--form__review-value-text">
-                                        Blank Template
+                                        {
+                                            selectedTemplate != "blank" ? blokTemplates.find(
+                                                ( template ) => template.value == selectedTemplate
+                                            ).name : "Blank Template"
+                                        }
                                     </span>
 
-                                    <BlankTemplatePreview
+                                    { selectedTemplate == "blank" && <BlankTemplatePreview
                                         className="
                                             mb-4
                                         "
-                                    />
+                                    /> }
 
-                                    <img 
-                                        src={ blokTemplates[0].image }
+                                    { selectedTemplate != "blank" && <img 
+                                        src={ blokTemplates.find(
+                                                ( template ) => template.value == selectedTemplate
+                                            ).image }
                                         className="create--form__review-value-image" 
-                                    />
+                                    />}
                                 </div>
                             </div>
                             
@@ -504,7 +502,10 @@ function MultiStepForm() {
                                         </span>
                                         
                                         <span className="create--form__review-group-value">
-                                            VS Code Dark
+                                            { editorThemes.find(
+                                                (theme) => theme.value === defaultEditorSettings.theme
+                                                ).name 
+                                            }
                                         </span>
                                     </div>
                                     
@@ -514,7 +515,7 @@ function MultiStepForm() {
                                         </span>
                                         
                                         <span className="create--form__review-group-value">
-                                            15px
+                                            { defaultEditorSettings.font_size }px
                                         </span>
                                     </div>
                                     
@@ -524,7 +525,7 @@ function MultiStepForm() {
                                         </span>
                                         
                                         <span className="create--form__review-group-value">
-                                            2 spaces
+                                            { defaultEditorSettings.tab_size } spaces
                                         </span>
                                     </div>
                                     
@@ -534,7 +535,7 @@ function MultiStepForm() {
                                         </span>
                                         
                                         <span className="create--form__review-group-value">
-                                            On
+                                            { defaultEditorSettings.autocomplete ? "On" : "Off" }
                                         </span>
                                     </div>
                                     
@@ -543,9 +544,24 @@ function MultiStepForm() {
                                             Editor Layout
                                         </span>
                                         
-                                        <span className="create--form__review-group-value">
-                                            editor_top
-                                        </span>
+                                        <div className="create--form__review-group-value">
+                                            { 
+                                                {
+                                                    "editor-top": <div className="flex items-center">
+                                                                    <TbLayoutNavbar className='text-2xl'/>
+                                                                    <span className="ml-2">Editor on top</span>
+                                                                </div>,
+                                                    "editor-left": <div className="flex items-center">
+                                                                    <TbLayoutSidebar className='text-2xl'/>
+                                                                    <span className="ml-2">Editor on left</span>
+                                                                </div>,
+                                                    "editor-right": <div className="flex items-center">
+                                                                    <TbLayoutSidebarRight className='text-2xl'/>
+                                                                    <span className="ml-2">Editor on right</span>
+                                                                </div>,
+                                                }[ defaultEditorSettings.layout ] 
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>

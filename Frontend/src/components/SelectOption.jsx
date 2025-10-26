@@ -107,7 +107,7 @@ const SelectOption = React.forwardRef(({
                                                 key={index}
                                             >
                                                 <Select.ItemText>
-                                                    { option.text }
+                                                    { option.name }
                                                 </Select.ItemText>
                                             </Select.Item>
                                         ) )
@@ -124,7 +124,7 @@ const SelectOption = React.forwardRef(({
                                     key={index}
                                 >
                                     <Select.ItemText>
-                                        { option.text }
+                                        { option.name }
                                     </Select.ItemText>
                                 </Select.Item>
                             ))
