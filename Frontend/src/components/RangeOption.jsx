@@ -13,9 +13,9 @@ const RangeOption = React.forwardRef( ( {
     const [ value, setValue ] = useState( defaultValue )
 
     function handleValueChange( newValue ) {
-        setValue( newValue )
+        setValue( newValue[0] )
 
-        onValueChange()
+        onValueChange( newValue[0] )
     }
 
     return (
