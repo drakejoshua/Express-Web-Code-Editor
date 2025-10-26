@@ -45,7 +45,7 @@ export default function Create() {
                     font-semibold
                     text-center
                     capitalize
-                    mt-15
+                    mt-20 lg:mt-15
                     mb-12
                 "
             >
@@ -137,7 +137,7 @@ function MultiStepForm() {
         <Form.Root
             className="
                 create--form
-                w-3/5
+                w-full md:w-3/4 xl:w-3/5
                 flex
                 flex-col
                 items-center
@@ -157,6 +157,7 @@ function MultiStepForm() {
                     scroll-smooth
                     snap-x 
                     snap-mandatory
+                    w-full
                 "
             >
                 <SimpleCarousel.Track
@@ -209,7 +210,7 @@ function MultiStepForm() {
                             className='
                                 create--form__template-options
                                 grid
-                                grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+                                grid-cols-1 sm:grid-cols-2 xl:grid-cols-3
                                 gap-6
                                 justify-center
                                 h-[60vh] max-h-[500px]
@@ -316,11 +317,10 @@ function MultiStepForm() {
                                 create--form__default-options
                                 flex
                                 flex-col
-                                gap-10
-                                w-full
-                                max-w-2/3
+                                gap-6 xl:gap-10
+                                w-full xl:max-w-2/3
                                 mx-auto
-                                my-15
+                                my-10 xl:my-15
                             "
                         >
                             {/* Default Editor Layout option */}
