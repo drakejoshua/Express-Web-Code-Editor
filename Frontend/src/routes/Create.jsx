@@ -11,6 +11,7 @@ import { blokTemplates } from '../utils/blok_templates'
 import { FaArrowDown, FaArrowUp, FaCaretDown, FaCaretUp, FaChevronDown, FaFileCode } from 'react-icons/fa6'
 import SelectOption from '../components/SelectOption'
 import RangeOption from '../components/RangeOption'
+import ToggleOption from '../components/ToggleOption'
 
 export default function Create() {
     return (
@@ -288,7 +289,7 @@ function MultiStepForm() {
                                     }
                                 }
                             />
-                                
+
                             <RangeOption
                                 label="Font Size: "
                                 defaultValue={[16]}
@@ -297,50 +298,23 @@ function MultiStepForm() {
                                 step={1}
                             />
 
-                            <div 
-                                className="
-                                    toggle-option
-                                    flex
-                                    flex-col
-                                    gap-2
-                                "
-                            >
-                                <span 
-                                    className="
-                                        toggle-option__label
-                                        font-medium
-                                    "
-                                >
-                                    Tab Size:
-                                </span>
-
-                                <ToggleGroup.Root 
-                                    type="single"
-                                    className='
-                                        grid
-                                        grid-cols-3
-                                        rounded-lg
-                                        overflow-hidden
-
-                                        *:p-2
-                                        *:px-4
-                                        *:font-medium
-                                        *:bg-gray-600 dark:*:bg-gray-300
-                                        *:data-[state=on]:bg-blue-800 *:data-[state=on]:text-white
-                                        *:text-gray-200 *:dark:text-black
-                                    '
-                                >
-                                    <ToggleGroup.Item value='2'>
-                                        2
-                                    </ToggleGroup.Item>
-                                    <ToggleGroup.Item value='4'>
-                                        4
-                                    </ToggleGroup.Item>
-                                    <ToggleGroup.Item value='6'>
-                                        6
-                                    </ToggleGroup.Item>
-                                </ToggleGroup.Root>
-                            </div>
+                            <ToggleOption
+                                label="Tab Size:"
+                                options={[
+                                    {
+                                        value: "2",
+                                        content: "2"
+                                    },
+                                    {
+                                        value: "4",
+                                        content: "4"
+                                    },
+                                    {
+                                        value: "6",
+                                        content: "6"
+                                    },
+                                ]}
+                            />
 
                             <div 
                                 className="
