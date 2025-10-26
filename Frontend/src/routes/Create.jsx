@@ -18,6 +18,8 @@ import {
     TbLayoutSidebarRight, 
     TbLayoutNavbar 
 } from 'react-icons/tb'
+import { useState } from 'react'
+import BlankTemplatePreview from '../components/BlankTemplatePreview'
 
 export default function Create() {
     return (
@@ -56,6 +58,43 @@ export default function Create() {
 
 function MultiStepForm() {
     const { handleNext, handlePrev } = useCarousel()
+
+    const [ blokName, setBlokName ] = useState("")
+    const [ selectedTemplate, setSelectedTemplate ] = useState("blank")
+    const [ defaultEditorSettings, setDefaultEditorSettings ] = useState({
+        layout: "editor-top",
+        theme: "vsc_dark",
+        font_size: 16,
+        tab_size: "4",
+        autocomplete: true
+    })
+
+    function handleTemplateSelect(value) {
+        if ( value != "" ) {
+            setSelectedTemplate(value)
+        }
+    }
+
+    function handleDefaultSettingsChange(setting, value) {
+        switch( setting ) {
+            case "layout":
+                value = value != "" ? value : "editor-top"
+            break;
+
+            case "tabSize":
+                value = value != "" ? parseInt(value) : 16
+            break;
+
+            default:
+                break;
+        }
+
+        setDefaultEditorSettings( prevSettings => ({
+            ...prevSettings,
+            [setting]: value
+        }))
+    }
+
     return (
         <Form.Root
             className="
@@ -100,6 +139,8 @@ function MultiStepForm() {
                             label="Enter a blok name"
                             name='blok_name'
                             emptyValidationMessage="Please enter a blok name"
+                            value={ blokName }
+                            onChange={ (e) => setBlokName(e.target.value) }
                         />
 
                         <StepActions
@@ -123,12 +164,17 @@ function MultiStepForm() {
                     >
                         <ToggleGroup.Root
                             type='single'
+                            defaultValue='blank'
+                            value={ selectedTemplate }
+                            onValueChange={ handleTemplateSelect }
                             className='
                                 create--form__template-options
                                 grid
                                 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
                                 gap-6
                                 justify-center
+                                h-[60vh] max-h-[500px]
+                                overflow-y-auto
                                 
                                 [&_.template]:border-2
                                 [&_.template]:border-gray-300 [&_.template]:dark:border-gray-700
@@ -157,32 +203,11 @@ function MultiStepForm() {
                                     template
                                 '
                             >
-                                <div 
+                                <BlankTemplatePreview
                                     className="
-                                        template__blank-preview
-                                        h-52
-                                        flex
-                                        flex-col
-                                        justify-center
-                                        items-center
-                                        gap-2
-                                        bg-gray-100 dark:bg-gray-800
                                         mb-4
-                                        rounded-md
                                     "
-                                >
-                                    <FaFileCode 
-                                        className='
-                                            template__preview-icon
-                                            text-2xl
-                                            text-gray-500 dark:text-gray-400
-                                        ' 
-                                    />
-
-                                    <span className="template__preview-text">
-                                        Blank Template
-                                    </span>
-                                </div>
+                                />
 
                                 <span 
                                     className="
@@ -262,7 +287,6 @@ function MultiStepForm() {
                             {/* Default Editor Layout option */}
                             <ToggleOption
                                 label="Editor Layout:"
-                                defaultValue="editor-top"
                                 options={[
                                     {
                                         value: "editor-top",
@@ -286,11 +310,15 @@ function MultiStepForm() {
                                         </div>
                                     },
                                 ]}
+                                value={ defaultEditorSettings.layout }
+                                onValueChange={ (value) => handleDefaultSettingsChange("layout", value) }
                             />
 
                             {/* Default Theme option */}
                             <SelectOption
                                 label="Default Theme:"
+                                value={ defaultEditorSettings.theme }
+                                onValueChange={ (value) => handleDefaultSettingsChange("theme", value) }
                                 type="grouped"
                                 placeholder="Select a theme"
                                 options={
@@ -326,13 +354,13 @@ function MultiStepForm() {
                                         ]
                                     }
                                 }
-                                defaultValue="vsc_dark"
                             />
 
                             {/* Default Font Size option */}
                             <RangeOption
                                 label="Font Size: "
-                                defaultValue={16}
+                                onValueChange={ (value) => handleDefaultSettingsChange("font_size", value)}
+                                defaultValue={ defaultEditorSettings.font_size }
                                 min={8}
                                 max={48}
                                 step={1}
@@ -357,16 +385,19 @@ function MultiStepForm() {
                                         content: "6 spaces"
                                     },
                                 ]}
+                                value={ defaultEditorSettings.tab_size }
+                                onValueChange={ (value) => handleDefaultSettingsChange("tab_size", value) }
                             />
 
                             {/* Default Autocomplete option */}
                             <SwitchOption
                                 label="Autocomplete"
-                                defaultChecked={true}
+                                checked={ defaultEditorSettings.autocomplete }
                                 className="
                                     flex-row
                                     justify-between
                                 "
+                                onCheckedChange={ (value) => handleDefaultSettingsChange("autocomplete", value)}
                             />
                         </div>
 
@@ -448,32 +479,11 @@ function MultiStepForm() {
                                         Blank Template
                                     </span>
 
-                                    <div 
+                                    <BlankTemplatePreview
                                         className="
-                                            template__blank-preview
-                                            h-52
-                                            flex
-                                            flex-col
-                                            justify-center
-                                            items-center
-                                            gap-2
-                                            bg-gray-100 dark:bg-gray-800
                                             mb-4
-                                            rounded-md
                                         "
-                                    >
-                                        <FaFileCode 
-                                            className='
-                                                template__preview-icon
-                                                text-2xl
-                                                text-gray-500 dark:text-gray-400
-                                            ' 
-                                        />
-
-                                        <span className="template__preview-text">
-                                            Blank Template
-                                        </span>
-                                    </div>
+                                    />
 
                                     <img 
                                         src={ blokTemplates[0].image }
