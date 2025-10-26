@@ -41,7 +41,7 @@ const SelectOption = React.forwardRef(({
                     select__trigger
                     bg-gray-600 dark:bg-gray-300
                     inline-flex
-                    justify-center
+                    justify-between
                     items-center
                     gap-2
                     p-2 px-4

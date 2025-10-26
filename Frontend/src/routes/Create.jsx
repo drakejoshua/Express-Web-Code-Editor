@@ -1,5 +1,5 @@
 import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
-import { Form, Select, Slider, Switch, ToggleGroup } from 'radix-ui'
+import { Form, ToggleGroup } from 'radix-ui'
 import MultiStepTabs from '../components/MultiStepTabs'
 import TextField from '../components/TextField'
 import StepActions from '../components/StepActions'
@@ -8,11 +8,16 @@ import NextButton from '../components/NextButton'
 import Step from '../components/Step'
 import FinishButton from '../components/FinishButton'
 import { blokTemplates } from '../utils/blok_templates'
-import { FaArrowDown, FaArrowUp, FaCaretDown, FaCaretUp, FaChevronDown, FaFileCode } from 'react-icons/fa6'
+import { FaFileCode } from 'react-icons/fa6'
 import SelectOption from '../components/SelectOption'
 import RangeOption from '../components/RangeOption'
 import ToggleOption from '../components/ToggleOption'
 import SwitchOption from '../components/SwitchOption'
+import { 
+    TbLayoutSidebar, 
+    TbLayoutSidebarRight, 
+    TbLayoutNavbar 
+} from 'react-icons/tb'
 
 export default function Create() {
     return (
@@ -249,9 +254,41 @@ function MultiStepForm() {
                                 flex-col
                                 gap-10
                                 w-full
-                                max-w-1/3
+                                max-w-2/3
+                                mx-auto
+                                my-15
                             "
                         >
+                            {/* Default Editor Layout option */}
+                            <ToggleOption
+                                label="Editor Layout:"
+                                defaultValue="editor-top"
+                                options={[
+                                    {
+                                        value: "editor-top",
+                                        content: <div className="flex items-center py-2">
+                                            <TbLayoutNavbar className='text-2xl'/>
+                                            <span className="ml-2">Editor on top</span>
+                                        </div>
+                                    },
+                                    {
+                                        value: "editor-left",
+                                        content: <div className="flex items-center py-2">
+                                            <TbLayoutSidebar className='text-2xl'/>
+                                            <span className="ml-2">Editor on left</span>
+                                        </div>
+                                    },
+                                    {
+                                        value: "editor-right",
+                                        content: <div className="flex items-center py-2">
+                                            <TbLayoutSidebarRight className='text-2xl'/>
+                                            <span className="ml-2">Editor on right</span>
+                                        </div>
+                                    },
+                                ]}
+                            />
+
+                            {/* Default Theme option */}
                             <SelectOption
                                 label="Default Theme:"
                                 type="grouped"
@@ -289,36 +326,47 @@ function MultiStepForm() {
                                         ]
                                     }
                                 }
+                                defaultValue="vsc_dark"
                             />
 
+                            {/* Default Font Size option */}
                             <RangeOption
                                 label="Font Size: "
-                                defaultValue={[16]}
+                                defaultValue={16}
                                 min={8}
                                 max={48}
                                 step={1}
+                                unit="px"
                             />
 
+                            {/* Default Tab Size option */}
                             <ToggleOption
                                 label="Tab Size:"
+                                defaultValue="4"
                                 options={[
                                     {
                                         value: "2",
-                                        content: "2"
+                                        content: "2 spaces"
                                     },
                                     {
                                         value: "4",
-                                        content: "4"
+                                        content: "4 spaces"
                                     },
                                     {
                                         value: "6",
-                                        content: "6"
+                                        content: "6 spaces"
                                     },
                                 ]}
                             />
 
+                            {/* Default Autocomplete option */}
                             <SwitchOption
                                 label="Autocomplete"
+                                defaultChecked={true}
+                                className="
+                                    flex-row
+                                    justify-between
+                                "
                             />
                         </div>
 
