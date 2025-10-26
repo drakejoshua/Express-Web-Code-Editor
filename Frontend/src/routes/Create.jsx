@@ -10,6 +10,7 @@ import FinishButton from '../components/FinishButton'
 import { blokTemplates } from '../utils/blok_templates'
 import { FaArrowDown, FaArrowUp, FaCaretDown, FaCaretUp, FaChevronDown, FaFileCode } from 'react-icons/fa6'
 import SelectOption from '../components/SelectOption'
+import RangeOption from '../components/RangeOption'
 
 export default function Create() {
     return (
@@ -250,7 +251,7 @@ function MultiStepForm() {
                             "
                         >
                             <SelectOption
-                                label="default theme:"
+                                label="Default Theme:"
                                 type="grouped"
                                 placeholder="Select a theme"
                                 options={
@@ -287,71 +288,14 @@ function MultiStepForm() {
                                     }
                                 }
                             />
-
-                            <div 
-                                className="
-                                    range-option
-                                    flex
-                                    flex-col
-                                    gap-2
-                                "
-                            >
-                                <span 
-                                    className="
-                                        range-option__label
-                                        font-medium
-                                    "
-                                >
-                                    Font Size:
-                                </span>
-
-                                <Slider.Root
-                                    defaultValue={[16]}
-                                    min={8}
-                                    max={48}
-                                    step={1}
-                                    className='
-                                        relative
-                                        flex
-                                        items-center
-                                        select-none
-                                        touch-none
-                                        h-5
-                                        w-full
-                                    '
-                                >
-                                    <Slider.Track 
-                                        className="
-                                            slider__track
-                                            relative
-                                            bg-gray-300 dark:bg-gray-600
-                                            flex-1
-                                            rounded-full
-                                            h-1
-                                        "
-                                    >
-                                        <Slider.Range 
-                                            className="
-                                                slider__range
-                                                absolute
-                                                bg-gray-300 dark:bg-gray-600
-                                                h-full
-                                            " 
-                                        />
-                                    </Slider.Track>
-                                    
-                                    <Slider.Thumb 
-                                        className="
-                                            slider__thumb
-                                            block
-                                            w-5
-                                            h-5
-                                            rounded-full
-                                            bg-gray-800 dark:bg-gray-200
-                                        " 
-                                    />
-                                </Slider.Root>
-                            </div>
+                                
+                            <RangeOption
+                                label="Font Size: "
+                                defaultValue={[16]}
+                                min={8}
+                                max={48}
+                                step={1}
+                            />
 
                             <div 
                                 className="

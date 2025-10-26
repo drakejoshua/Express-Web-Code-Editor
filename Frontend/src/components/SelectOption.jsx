@@ -19,6 +19,7 @@ const SelectOption = React.forwardRef(({
             gap-2
             ${className || ""}
         `}
+        ref={ref}
     >
         { label && <span 
             className="
