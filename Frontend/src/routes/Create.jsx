@@ -8,7 +8,8 @@ import NextButton from '../components/NextButton'
 import Step from '../components/Step'
 import FinishButton from '../components/FinishButton'
 import { blokTemplates } from '../utils/blok_templates'
-import { FaArrowDown, FaArrowUp, FaCaretDown, FaCaretUp, FaFileCode } from 'react-icons/fa6'
+import { FaArrowDown, FaArrowUp, FaCaretDown, FaCaretUp, FaChevronDown, FaFileCode } from 'react-icons/fa6'
+import SelectOption from '../components/SelectOption'
 
 export default function Create() {
     return (
@@ -248,142 +249,44 @@ function MultiStepForm() {
                                 max-w-1/3
                             "
                         >
-                            <div 
-                                className="
-                                    select-option
-                                    flex
-                                    flex-col
-                                    gap-2
-                                "
-                            >
-                                <span 
-                                    className="
-                                        select-option__label
-                                        font-medium
-                                    "
-                                >
-                                    Default Theme:
-                                </span>
+                            <SelectOption
+                                label="default theme:"
+                                type="grouped"
+                                placeholder="Select a theme"
+                                options={
+                                    {
+                                        "light themes": [
+                                            {
+                                                text: "VS Code Light",
+                                                value: "vsc_light"
+                                            },
+                                            {
+                                                text: "Github Light",
+                                                value: "github_light"
+                                            },
+                                            {
+                                                text: "High Contrast Light",
+                                                value: "hc_light"
+                                            },
+                                        ],
 
-                                <Select.Root 
-                                    className="
-                                        select-option__select
-                                    "
-                                >
-                                    <Select.Trigger 
-                                        className="
-                                            select__trigger
-                                            bg-gray-600 dark:bg-gray-300
-                                            inline-flex
-                                            justify-center
-                                            items-center
-                                            gap-2
-                                            p-2 px-4
-                                            rounded-md
-                                            outline-none
-
-                                            *:text-white dark:*:text-black
-                                            *:font-medium
-                                        "
-                                    >
-                                        <Select.Value placeholder="Select a theme" />
-                                        <Select.Icon 
-                                            className="
-                                                select__icon
-                                            "
-                                        >
-                                            <FaCaretDown />
-                                        </Select.Icon>
-                                    </Select.Trigger>
-
-                                    <Select.Portal>
-                                        <Select.Content
-                                            className='
-                                                bg-gray-600 dark:bg-gray-300
-                                                rounded-md
-                                                overflow-hidden
-                                            '
-                                        >
-
-                                            <Select.Viewport
-                                                className='
-                                                    p-4
-
-                                                    **:outline-none
-
-                                                    [&_.select\_\_group-label]:font-medium
-                                                    [&_.select\_\_group-label]:mb-2
-                                                    [&_.select\_\_group-label]:text-sm
-                                                    [&_.select\_\_group-label]:uppercase
-                                                    
-                                                    [&_.select\_\_item]:p-1.5
-                                                    [&_.select\_\_item]:px-3
-                                                    [&_.select\_\_item]:rounded-sm
-                                                    [&_.select\_\_item]:data-[state=checked]:bg-gray-800
-                                                    [&_.select\_\_item]:data-[state=checked]:text-white
-                                                '
-                                            >
-                                                <Select.Group>
-                                                    <Select.Label
-                                                        className='
-                                                            select__group-label
-                                                        '
-                                                    >
-                                                        Light Themes
-                                                    </Select.Label>
-
-                                                    <Select.Item value="vsc_light" className="select__item">
-                                                        <Select.ItemText>
-                                                            VS Code Light
-                                                        </Select.ItemText>
-                                                    </Select.Item>
-                                                    
-                                                    <Select.Item value="github_light" className="select__item">
-                                                        <Select.ItemText>
-                                                            Github Light
-                                                        </Select.ItemText>
-                                                    </Select.Item>
-
-                                                    <Select.Item value="high_contrast_light" className="select__item">
-                                                        <Select.ItemText>
-                                                            High Contrast Light
-                                                        </Select.ItemText>
-                                                    </Select.Item>
-                                                </Select.Group>
-                                                
-                                                <Select.Group>
-                                                    <Select.Label
-                                                        className='
-                                                            select__group-label
-                                                            mt-2
-                                                        '
-                                                    >
-                                                        Dark Themes
-                                                    </Select.Label>
-
-                                                    <Select.Item value="vsc_dark" className="select__item">
-                                                        <Select.ItemText>
-                                                            VS Code Dark
-                                                        </Select.ItemText>
-                                                    </Select.Item>
-
-                                                    <Select.Item value="github_dark" className="select__item">
-                                                        <Select.ItemText>
-                                                            Github Dark
-                                                        </Select.ItemText>
-                                                    </Select.Item>
-                                                    
-                                                    <Select.Item value="high_contrast_dark" className="select__item">
-                                                        <Select.ItemText>
-                                                            High Contrast Dark
-                                                        </Select.ItemText>
-                                                    </Select.Item>
-                                                </Select.Group>
-                                            </Select.Viewport>
-                                        </Select.Content>
-                                    </Select.Portal>
-                                </Select.Root>
-                            </div>
+                                        "dark themes": [
+                                            {
+                                                text: "VS Code Dark",
+                                                value: "vsc_dark"
+                                            },
+                                            {
+                                                text: "Github Dark",
+                                                value: "github_dark"
+                                            },
+                                            {
+                                                text: "High Contrast Dark",
+                                                value: "hc_dark"
+                                            },
+                                        ]
+                                    }
+                                }
+                            />
 
                             <div 
                                 className="
