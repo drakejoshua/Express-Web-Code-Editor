@@ -38,9 +38,9 @@ const ToggleOption = React.forwardRef(({
                     *:p-2
                     *:px-4
                     *:font-medium
-                    *:bg-gray-600 dark:*:bg-gray-300
-                    *:data-[state=on]:bg-blue-800 *:data-[state=on]:text-white
-                    *:text-gray-200 *:dark:text-black
+                    *:bg-gray-400 dark:*:bg-gray-300
+                    *:data-[state=on]:bg-blue-600 *:data-[state=on]:text-white
+                    *:text-white *:dark:text-black
                 '
                 {...props}
             >

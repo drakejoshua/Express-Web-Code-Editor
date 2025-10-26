@@ -39,7 +39,7 @@ const SelectOption = React.forwardRef(({
             <Select.Trigger 
                 className="
                     select__trigger
-                    bg-gray-600 dark:bg-gray-300
+                    bg-gray-400 dark:bg-gray-300
                     inline-flex
                     justify-between
                     items-center
@@ -65,7 +65,7 @@ const SelectOption = React.forwardRef(({
             <Select.Portal>
                 <Select.Content
                     className='
-                        bg-gray-600 dark:bg-gray-300
+                        bg-gray-400 dark:bg-gray-300
                         rounded-md
                         overflow-hidden
                     '
@@ -79,12 +79,14 @@ const SelectOption = React.forwardRef(({
                             [&_.select\_\_group-label]:mb-2
                             [&_.select\_\_group-label]:text-sm
                             [&_.select\_\_group-label]:uppercase
+                            [&_.select\_\_group-label]:text-white dark:[&_.select\_\_group-label]:text-black
                             
                             [&_.select\_\_item]:p-1.5
                             [&_.select\_\_item]:px-3
                             [&_.select\_\_item]:rounded-sm
-                            [&_.select\_\_item]:data-[state=checked]:bg-gray-800
+                            [&_.select\_\_item]:data-[state=checked]:bg-gray-600 dark:[&_.select\_\_item]:data-[state=checked]:bg-gray-800
                             [&_.select\_\_item]:data-[state=checked]:text-white
+                            [&_.select\_\_item]:text-white dark:[&_.select\_\_item]:text-black
                         '
                     >
                         {

@@ -11,16 +11,17 @@ export default function BlankTemplatePreview({ className }) {
             justify-center
             items-center
             gap-2
-            bg-gray-100 dark:bg-gray-800
+            bg-gray-300 dark:bg-gray-800
             rounded-md
             ${ className || ""}
+
+            *:text-gray-500 dark:*:text-gray-400
         `}
     >
         <FaFileCode 
             className='
                 preview__icon
                 text-2xl
-                text-gray-500 dark:text-gray-400
             ' 
         />
 

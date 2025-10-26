@@ -220,7 +220,7 @@ function MultiStepForm() {
                                 [&_.template]:p-4
                                 [&_.template]:py-6
                                 [&_.template]:rounded-lg
-                                [&_.template]:data-[state=on]:border-gray-400
+                                [&_.template]:data-[state=on]:border-gray-500 dark:[&_.template]:data-[state=on]:border-gray-400
 
                                 [&_.template\_\_name]:font-medium
                                 [&_.template\_\_name]:text-center
@@ -464,6 +464,7 @@ function MultiStepForm() {
                                 [&_.create--form\_\_review-value]:flex
                                 [&_.create--form\_\_review-value]:flex-col
                                 [&_.create--form\_\_review-value]:gap-2.5
+                                [&_.create--form\_\_review-value]:text-white
                                 
                                 [&_.create--form\_\_review-value-image]:rounded-md
                                 [&_.create--form\_\_review-value-image]:h-54
@@ -472,7 +473,7 @@ function MultiStepForm() {
                                 [&_.create--form\_\_review-value-group]:flex
                                 [&_.create--form\_\_review-value-group]:gap-2
                                 
-                                [&_.create--form\_\_review-group-value]:text-gray-300
+                                [&_.create--form\_\_review-group-value]:text-gray-200
                             "
                         >
                             <div className="create--form__name-review">
