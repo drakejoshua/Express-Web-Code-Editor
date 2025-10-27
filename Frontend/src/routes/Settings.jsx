@@ -8,9 +8,11 @@ import UserAvatar from "../components/UserAvatar";
 import FinishButton from "../components/FinishButton";
 import ScrollSpy from "react-ui-scrollspy";
 import { useRef } from "react";
+import { useThemeProvider } from '../providers/ThemeProvider'
 
 export default function Settings() {
     const parentRef = useRef(null)
+    const { theme, toggleTheme } = useThemeProvider()
     
     return (
         <WideLayout>
@@ -18,7 +20,7 @@ export default function Settings() {
                 className="
                     settings
                     mt-8
-                    h-[90%]
+                    h-[85%]
                     gap-8
                     flex
                     flex-col
@@ -46,9 +48,10 @@ export default function Settings() {
                             ml-auto
                             text-2xl
                         "
+                        onClick={ toggleTheme }
                     >
-                        <FaMoon className="settings--header__theme-toggle-icon"/>
-                        {/* <FaRegSun className="settings--header__theme-toggle-icon"/> */}
+                        { theme == "light" && <FaMoon className="settings--header__theme-toggle-icon"/>}
+                        { theme == "dark" && <FaRegSun className="settings--header__theme-toggle-icon"/>}
                     </button>
                 </div>
 
