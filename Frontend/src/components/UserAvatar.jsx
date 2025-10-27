@@ -22,6 +22,7 @@ const UserAvatar = forwardRef( function ( { className, ...props }, ref ) {
                 rounded-full
                 overflow-hidden
                 bg-blue-600 dark:bg-white
+                block
                 ${ className || ""}
             `}
             ref={ref}
