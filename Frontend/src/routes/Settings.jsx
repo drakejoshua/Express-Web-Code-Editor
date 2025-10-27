@@ -1,4 +1,4 @@
-import { FaArrowLeftLong, FaMoon, FaPen, FaPencil, FaRegSun, FaTrash } from "react-icons/fa6";
+import { FaArrowLeftLong, FaMoon, FaPen, FaPencil, FaRegSun, FaTrash, FaXmark } from "react-icons/fa6";
 import WideLayout from "../components/WideLayout";
 import { DropdownMenu, Form } from "radix-ui";
 import TextField from "../components/TextField";
@@ -36,7 +36,7 @@ export default function Settings() {
                         capitalize
                     "
                 >
-                    <FaArrowLeftLong className="settings--header__icon" />
+                    <FaXmark className="settings--header__icon" />
 
                     <h1 className="settings--header__text">
                         settings
@@ -69,7 +69,7 @@ export default function Settings() {
                     <div 
                         className="
                             settings--options-ctn__navbar
-                            flex
+                            hidden lg:flex
                             flex-col
                             items-stretch
                             gap-1
@@ -106,13 +106,15 @@ export default function Settings() {
                         className="
                             settings--options-ctn__content
                             h-full
+                            *:flex lg:*:block
+                            *:flex-col
+                            *:gap-8
                             *:h-full
                             overflow-auto
                             pt-4
                             
 
-                            [&_.settings--options-ctn\_\_settings]:h-full
-                            [&_.settings--options-ctn\_\_settings]:w-1/2
+                            [&_.settings--options-ctn\_\_settings]:w-full lg:[&_.settings--options-ctn\_\_settings]:w-1/2
 
                             [&_.settings--options-ctn\_\_settings-heading]:text-2xl
                             [&_.settings--options-ctn\_\_settings-heading]:mb-2
@@ -133,7 +135,7 @@ export default function Settings() {
                             <div 
                                 className="
                                     settings--options-ctn__settings
-                                    h-full
+                                    h-max
                                 "
                                 id="account"
                             >
@@ -222,6 +224,7 @@ export default function Settings() {
                                 className="
                                     settings--options-ctn__settings
                                     h-full
+                                    lg:mt-10
                                 "
                                 id="api"
                             >
