@@ -246,7 +246,7 @@ export default function Settings() {
                                         value="jsn3j4njk3jn34jnj"
                                     />
 
-                                    <a href="#" className="settings--options-ctn__help-link">
+                                    <a href="#" className="settings--options-ctn__help-link underline">
                                         Want to use this API key? Learn how to integrate it
                                     </a>
 
