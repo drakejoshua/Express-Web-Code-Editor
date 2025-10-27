@@ -22,61 +22,64 @@ import BlankTemplatePreview from '../components/BlankTemplatePreview'
 import { editorThemes } from '../utils/editor_themes'
 import { FaMoon, FaRegSun, FaXmark } from 'react-icons/fa6'
 import { useThemeProvider } from '../providers/ThemeProvider'
+import WideLayout from '../components/WideLayout'
 
 export default function Create() {
     const { theme, toggleTheme } = useThemeProvider()
 
     return (
-        <div 
-            className='
-                create
-            '
-        >
-            <h1 
-                className="
-                    create--heading
-                    text-gray-900 dark:text-white
-                    text-3xl
-                    font-semibold
-                    text-center
-                    capitalize
-                    mt-20 lg:mt-15
-                    mb-12
-                "
-            >
-                create a new blok
-            </h1>
-
-            <SimpleCarousel.Root>
-                <MultiStepForm />
-            </SimpleCarousel.Root>
-
+        <WideLayout>
             <div 
-                className="
-                    create--actions
-                    fixed
-                    top-6
-                    right-8
-                    flex
-                    gap-4
-
-                    **:text-2xl
-                "
+                className='
+                    create
+                '
             >
-                <button 
+                <h1 
                     className="
-                        create--actions__theme-toggle
+                        create--heading
+                        text-gray-900 dark:text-white
+                        text-3xl
+                        font-semibold
+                        text-center
+                        capitalize
+                        mt-20 lg:mt-15
+                        mb-12
                     "
-                    onClick={ toggleTheme }
                 >
-                    {theme === 'dark' ? <FaMoon/> : <FaRegSun/>}
-                </button>
+                    create a new blok
+                </h1>
 
-                <button className="create--actions__cancel-btn">
-                    <FaXmark/>
-                </button>
+                <SimpleCarousel.Root>
+                    <MultiStepForm />
+                </SimpleCarousel.Root>
+
+                <div 
+                    className="
+                        create--actions
+                        fixed
+                        top-6
+                        right-8
+                        flex
+                        gap-4
+
+                        **:text-2xl
+                    "
+                >
+                    <button 
+                        className="
+                            create--actions__theme-toggle
+                        "
+                        onClick={ toggleTheme }
+                    >
+                        {theme === 'dark' ? <FaMoon/> : <FaRegSun/>}
+                    </button>
+
+                    <button className="create--actions__cancel-btn">
+                        <FaXmark/>
+                    </button>
+                </div>
             </div>
-        </div>
+        </WideLayout>
     )
 }
 
