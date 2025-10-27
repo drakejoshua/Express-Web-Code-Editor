@@ -91,14 +91,14 @@ export default function Settings() {
                             className="settings--options-ctn__nav-item"
                             data-to-scrollspy-id="account"
                         >
-                            <a href="#account">Account</a>
+                            <a href="#account" className="block">Account</a>
                         </button>
                         
                         <button 
                             className="settings--options-ctn__nav-item"
                             data-to-scrollspy-id="api"
                         >
-                            <a href="#api">API key</a>
+                            <a href="#api" className="block">API key</a>
                         </button>
                     </div>
 
