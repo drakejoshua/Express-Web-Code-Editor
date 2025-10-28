@@ -1,8 +1,18 @@
+// BlankTemplatePreview.jsx
+// A preview component for a blank template option in the template selection interface
+// of the create route
+
+
+
+// import component dependencies
 import { FaFileCode } from 'react-icons/fa6'
 
+
+// define and export BlankTemplatePreview component
 export default function BlankTemplatePreview({ className }) {
   return (
     <div 
+        // apply custom and default styles
         className={`
             preview
             h-52
