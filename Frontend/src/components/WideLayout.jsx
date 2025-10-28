@@ -1,3 +1,10 @@
+// WideLayout.jsx
+// A layout component that provides a wide screen layout for its children.
+// it's mostly used in usjer-facing pages such as editor, dashboard, etc
+
+
+
+// define and export WideLayout component
 export default function WideLayout({ children}) {
     return (
         <div
@@ -9,7 +16,7 @@ export default function WideLayout({ children}) {
                 px-3.5 lg:px-6 pb-12
             "
         >
-        {children}
+            {children}
         </div>
     )
 }
