@@ -1,13 +1,24 @@
+// SwitchOption.jsx
+// A customizable switch component using Radix UI's Switch primitive.
+// It supports rendering a switch with a label and className for custom styling
+
+
+
+// import component dependencies
 import { Switch } from 'radix-ui'
 import React from 'react'
 
+
+// define SwitchOption component
 const SwitchOption = React.forwardRef( ({
+    // extract key props to be used in the component
     label,
     className,
     ...props
 }, ref ) => {
   return (
     <div 
+        // apply default and custom values
         className={`
             switch-option
             flex
@@ -17,6 +28,7 @@ const SwitchOption = React.forwardRef( ({
         `}
         ref={ref}
     >
+        {/* render label if it's provided */}
         { label && <span 
             className="
                 switch-option
@@ -26,6 +38,7 @@ const SwitchOption = React.forwardRef( ({
             { label }
         </span>}
 
+        {/* switch root */}
         <Switch.Root 
             className='
                 w-12
@@ -40,6 +53,7 @@ const SwitchOption = React.forwardRef( ({
             '
             {...props}
         >
+            {/* switch thumb */}
             <Switch.Thumb 
                 className="
                     switch__thumb
@@ -56,4 +70,6 @@ const SwitchOption = React.forwardRef( ({
 })
 
 
+// export SwitchOption component for use
+// in other parts of the application
 export default SwitchOption
