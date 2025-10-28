@@ -1,9 +1,12 @@
-import React from 'react'
+import WideLayout from "../components/WideLayout";
+
 
 export default function Editor() {
   return (
-    <div>
-      This is the Editor page.
-    </div>
+    <WideLayout>
+        <div className="editor">
+        
+        </div>
+    </WideLayout>
   )
 }
