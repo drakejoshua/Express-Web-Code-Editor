@@ -1,7 +1,19 @@
+// ToggleOption.jsx
+// A customizable toggle group component using Radix UI's ToggleGroup primitive.
+// It supports rendering toggle options from an array, with a label and placeholder.
+// The options prop can be an array of toggle options with each object in the array 
+// having a value and content
+
+
+
+// import component dependencies
 import { ToggleGroup } from 'radix-ui'
 import React from 'react'
 
+
+// define ToggleOption component
 const ToggleOption = React.forwardRef(({
+    // extract key props
     className,
     label,
     options,
@@ -9,6 +21,7 @@ const ToggleOption = React.forwardRef(({
 }, ref) => {
     return (
         <div 
+            // apply custom and default styles if needed
             className={`
                 toggle-option
                 flex
@@ -18,15 +31,16 @@ const ToggleOption = React.forwardRef(({
             `}
             ref={ref}
         >
-            <span 
+            { label && <span 
                 className="
                     toggle-option__label
                     font-medium
                 "
             >
                 { label }
-            </span>
+            </span>}
 
+            {/* toggle group root */}
             <ToggleGroup.Root 
                 type="single"
                 className='
@@ -44,6 +58,10 @@ const ToggleOption = React.forwardRef(({
                 '
                 {...props}
             >
+                {/* 
+                    render the toggle options for the array passed through
+                    the options prop 
+                */}
                 {
                     options.map( ( option ) => (
                         <ToggleGroup.Item value={ option.value }>
@@ -57,4 +75,6 @@ const ToggleOption = React.forwardRef(({
 })
 
 
+// export ToggleOption component for use
+// in other parts of the application
 export default ToggleOption
