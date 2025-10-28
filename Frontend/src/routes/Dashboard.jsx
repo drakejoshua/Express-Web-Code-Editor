@@ -23,6 +23,7 @@ import SearchInput from '../components/SearchInput'
 import Blok from '../components/Blok'
 import WideLayout from '../components/WideLayout'
 import NavMenu from '../components/NavMenu'
+import NavAvatar from '../components/NavAvatar'
 
 
 export default function Dashboard() {
@@ -89,116 +90,7 @@ export default function Dashboard() {
                         { theme == "dark" && <FaSun className='dashboard--header__theme-toggle-icon' />}
                     </button>
 
-                    <DropdownMenu.Root>
-                        <DropdownMenu.Trigger asChild>
-                            <UserAvatar 
-                                className="
-                                    ml-4
-                                "
-                            />
-                        </DropdownMenu.Trigger>
-
-                        <DropdownMenu.Portal>
-                            <DropdownMenu.Content
-                                align='end'
-                                sideOffset={8}
-                                className='
-                                    dashboard--header__profile-dropdown
-                                    p-3.5
-                                    rounded-md
-                                    bg-neutral-100 dark:bg-gray-600
-                                    w-[30vh] min-w-[250px] max-w-[350px]
-                                '
-                            >
-                                <div 
-                                    className="
-                                        dashboard--header__profile-summary
-                                        flex
-                                        items-center
-                                        gap-3
-                                    "
-                                >
-                                    <UserAvatar />
-
-                                    <div 
-                                        className='
-                                            dashboard--header__profile-info
-                                            flex
-                                            flex-col
-                                        '
-                                    >
-                                        <span 
-                                            className="
-                                                dashboard--header__profile-username
-                                                font-medium
-                                                text-lg 
-                                                inline-block
-                                                text-ellipsis
-                                                overflow-hidden
-                                                whitespace-nowrap
-                                                dark:text-white
-                                            "
-                                        >
-                                            Joshua Mabawonku
-                                        </span>
-                                        
-                                        <span 
-                                        className="
-                                                dashboard--header__profile-email
-                                                inline-block
-                                                text-gray-600 dark:text-gray-300
-                                                text-ellipsis
-                                                overflow-hidden
-                                                whitespace-nowrap
-                                            "
-                                        >
-                                            joshua@email.com
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div 
-                                    className="
-                                        dashboard--header__profile-options-list 
-                                        mt-2
-                                        *:flex
-                                        *:items-center
-                                        *:gap-2
-                                        *:dark:text-white
-                                        *:hover:bg-neutral-300 *:hover:dark:bg-gray-700
-                                        *:p-2 *:px-3
-                                        *:outline-none
-                                        *:rounded-md
-                                        *:capitalize
-                                    "
-                                >
-                                    <DropdownMenu.Item 
-                                        className='
-                                            dashboard--header__profile-option
-                                        '
-                                    >
-                                        <FaArrowsRotate className="dashboard--header__option-icon" /> 
-
-                                        <span className="dashboard--header__option-text">
-                                            Update Profile
-                                        </span>
-                                    </DropdownMenu.Item>
-                                    
-                                    <DropdownMenu.Item 
-                                        className='
-                                            dashboard--header__profile-option
-                                        '
-                                    >
-                                        <FaArrowRightFromBracket className="dashboard--header__option-icon" /> 
-
-                                        <span className="dashboard--header__option-text">
-                                            logout
-                                        </span>
-                                    </DropdownMenu.Item>
-                                </div>
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Portal>
-                    </DropdownMenu.Root>
+                    <NavAvatar className="ml-4"/>
                 </div>
 
                 <div 
