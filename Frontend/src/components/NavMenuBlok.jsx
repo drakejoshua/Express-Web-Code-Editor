@@ -8,6 +8,7 @@
 // import component dependencies
 import { DropdownMenu } from 'radix-ui'
 import { FaEllipsisVertical, FaPencil, FaTrash } from 'react-icons/fa6'
+import DropdownContent from './DropdownContent'
 
 
 // define NavMenuBlok component
@@ -58,75 +59,31 @@ export default function NavMenuBlok({ id, name }) {
 
                 <DropdownMenu.Portal>
                     {/* dropdown menu content */}
-                    <DropdownMenu.Content 
-                        className='
-                            nav-menu-blok__options
-                            p-4 px-3.5
-                            rounded-md
-                            bg-gray-600
-                            flex
-                            flex-col
-                            w-48
-                        '
-                        align="end"
-                        sideOffset  ={8}
-                    >
-                        {/* dropdown label */}
-                        <DropdownMenu.Label 
-                            className='
-                                nav-menu-blok__options-label
-                                uppercase
-                                text-xs
-                                font-medium
-                                text-white
-                                mb-2
-                            '
-                        >
-                            more options
-                        </DropdownMenu.Label>
+                    <DropdownContent
+                        label="More options"
+                        options={[
+                            {
+                                action: function(){},
+                                content: <>
+                                    <FaTrash className='dashboard--blok-list__blok-option-icon' />
 
-                        {/* options list */}
-                        <div 
-                            className="
-                                nav-menu-blok__options-ctn
-                                *:flex
-                                *:items-center
-                                *:gap-3
-                                *:text-white
-                                *:capitalize
-                                *:hover:bg-gray-800
-                                *:p-2 *:px-3
-                                *:outline-none
-                                *:rounded-sm
-                            "
-                        >
-                            {/* rename blok option */}
-                            <DropdownMenu.Item
-                                className='
-                                    nav-menu-blok__option
-                                '
-                            >
-                                <FaPencil className='nav-menu-blok__option-icon' />
+                                    <span className="dashboard--blok-list__blok-option-text">
+                                        delete blok
+                                    </span>
+                                </>
+                            },
+                            {
+                                action: function(){},
+                                content: <>
+                                    <FaPencil className='dashboard--blok-list__blok-option-icon' />
 
-                                <span className="nav-menu-blok__option-text">
-                                    rename blok
-                                </span>
-                            </DropdownMenu.Item>
-
-                            {/* delete blok option */}
-                            <DropdownMenu.Item
-                                className='
-                                    nav-menu-blok__option
-                                '
-                            >
-                                <FaTrash className='nav-menu-blok__option-icon' />
-
-                                <span className="nav-menu-blok__option-text">
-                                    delete blok
-                                </span>
-                            </DropdownMenu.Item>
-                        </div>
-                    </DropdownMenu.Content>
+                                    <span className="dashboard--blok-list__blok-option-text">
+                                        rename blok
+                                    </span>
+                                </>
+                            },
+                        ]}
+                    />
                 </DropdownMenu.Portal>
             </DropdownMenu.Root>
         </div>
