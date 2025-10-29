@@ -1,5 +1,15 @@
+// DropdownContent.jsx
+// This component acts as a wrapper for the dropdown content of radix-ui
+// it accepts a label and options props for providing the content of the 
+// dropdown content to be rendered.
+
+
+
+// import route dependencies
 import { DropdownMenu } from 'radix-ui'
 
+
+// define and export DropdownContent component
 export default function DropdownContent({ label, options = [] }) {
     return (
         <DropdownMenu.Content 
@@ -15,7 +25,7 @@ export default function DropdownContent({ label, options = [] }) {
             align="end"
             sideOffset={8}
         >
-            {/* dropdown label */}
+            {/* dropdown label if it exists */}
             { label && <DropdownMenu.Label 
                 className='
                     dropdown-content__label
