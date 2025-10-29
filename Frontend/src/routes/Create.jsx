@@ -1,3 +1,12 @@
+// Create route
+// handles blok creation with a multi-step form using a carousel for navigation
+// The form collects blok name, template to be used and default/initial settings in steps
+// Each step validates its inputs before allowing navigation to the next step
+// The final step submits the collected data to create a new blok for the authenticated account.
+
+
+
+// import route dependencies
 import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
 import { Form, ToggleGroup } from 'radix-ui'
 import MultiStepTabs from '../components/MultiStepTabs'
@@ -24,16 +33,22 @@ import { FaMoon, FaRegSun, FaXmark } from 'react-icons/fa6'
 import { useThemeProvider } from '../providers/ThemeProvider'
 import WideLayout from '../components/WideLayout'
 
+
+
+// define and export Create route component
 export default function Create() {
+    // retrieve theme and toggleTheme function for the theme context
     const { theme, toggleTheme } = useThemeProvider()
 
     return (
+        // wrap route content in a wideLayout
         <WideLayout>
             <div 
                 className='
                     create
                 '
             >
+                {/* route heading */}
                 <h1 
                     className="
                         create--heading
@@ -49,10 +64,15 @@ export default function Create() {
                     create a new blok
                 </h1>
 
+                {/* 
+                    route multi-step form wrapped in a SimpleCarousel for multi-
+                    step functionality
+                */}
                 <SimpleCarousel.Root>
                     <MultiStepForm />
                 </SimpleCarousel.Root>
 
+                {/* route action buttons container */}
                 <div 
                     className="
                         create--actions
@@ -65,6 +85,7 @@ export default function Create() {
                         **:text-2xl
                     "
                 >
+                    {/* theme toggle container */}
                     <button 
                         className="
                             create--actions__theme-toggle
@@ -74,6 +95,7 @@ export default function Create() {
                         {theme === 'dark' ? <FaMoon/> : <FaRegSun/>}
                     </button>
 
+                    {/* cancel button */}
                     <button className="create--actions__cancel-btn">
                         <FaXmark/>
                     </button>
@@ -85,8 +107,10 @@ export default function Create() {
 
 
 function MultiStepForm() {
+    // retrieve carousel handling functions from carousel context
     const { handleNext, handlePrev } = useCarousel()
 
+    // intialize create form state
     const [ blokName, setBlokName ] = useState("")
     const [ selectedTemplate, setSelectedTemplate ] = useState("blank")
     const [ defaultEditorSettings, setDefaultEditorSettings ] = useState({
@@ -97,20 +121,29 @@ function MultiStepForm() {
         autocomplete: true
     })
 
+    // ref for blok name input - used for validating the blok name
     const blokNameInputRef = useRef(null)
 
+    // moveToTemplateSection() - validates the blok name input and
+    // moves to the template selection if input is valid
     function moveToTemplateSection() {
         if ( blokNameInputRef.current?.reportValidity() ) {
             handleNext()
         }
     }
 
+    // handleTemplateSelect() - used by the template selection togglegroup
+    // to guard against null values and update state when the value changes 
+    // in the togglegroup
     function handleTemplateSelect(value) {
         if ( value != "" ) {
             setSelectedTemplate(value)
         }
     }
 
+    // handleDefaultSettingsChange() - used for updating state when changing the
+    // editor default settings in the form, it's used to guard against null/incorrect
+    // values received from the form input and normalize them if needed
     function handleDefaultSettingsChange(setting, value) {
         switch( setting ) {
             case "layout":
@@ -132,6 +165,7 @@ function MultiStepForm() {
     }
 
     return (
+        // form root
         <Form.Root
             className="
                 create--form
@@ -142,6 +176,7 @@ function MultiStepForm() {
                 mx-auto
             "
         >
+            {/* form progress indicator/tabs */}
             <MultiStepTabs 
                 className="
                     w-full max-w-[700px]
@@ -149,6 +184,7 @@ function MultiStepForm() {
                 "
             />
 
+            {/* carousel scroller */}
             <SimpleCarousel.Scroller
                 className="
                     overflow-x-hidden
@@ -158,6 +194,7 @@ function MultiStepForm() {
                     w-full
                 "
             >
+                {/* carousel track */}
                 <SimpleCarousel.Track
                     className="
                         flex
@@ -172,6 +209,7 @@ function MultiStepForm() {
                         text="Enter a name for the new blok to be created. 
                         Make sure it's something short and memorable"
                     >
+                        {/* TextField for collecting blok name */}
                         <TextField
                             label="Enter a blok name"
                             name='blok_name'
@@ -200,6 +238,7 @@ function MultiStepForm() {
                         text="Select a template for your blok to get started quickly.
                          Choose from a variety of pre-built templates designed for different use cases."
                     >
+                        {/* template selection toggle group */}
                         <ToggleGroup.Root
                             type='single'
                             defaultValue='blank'
@@ -260,6 +299,7 @@ function MultiStepForm() {
                                 </p>
                             </ToggleGroup.Item>
 
+                            {/* load other templates from the blok templates array */}
                             {
                                 blokTemplates.map((template) => (
                                     <ToggleGroup.Item
@@ -441,6 +481,7 @@ function MultiStepForm() {
                         Check the name, template, and settings to ensure everything is inline with 
                         your preferences, else, go back to edit details"
                     >
+                        {/* editor review container */}
                         <div 
                             className="
                                 create--form__blok-review-ctn
@@ -474,6 +515,7 @@ function MultiStepForm() {
                                 [&_.create--form\_\_review-group-value]:text-gray-200
                             "
                         >
+                            {/* name review */}
                             <div className="create--form__name-review">
                                 <span className="create--form__review-title">
                                     Blok name:
@@ -484,6 +526,7 @@ function MultiStepForm() {
                                 </div>
                             </div>
                             
+                            {/* template review */}
                             <div className="create--form__name-review">
                                 <span className="create--form__review-title">
                                     Blok template:
@@ -513,6 +556,7 @@ function MultiStepForm() {
                                 </div>
                             </div>
                             
+                            {/* blok default settings review */}
                             <div className="create--form__name-review">
                                 <span className="create--form__review-title">
                                     Blok Default Settings:
