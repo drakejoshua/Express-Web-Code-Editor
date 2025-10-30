@@ -25,33 +25,97 @@ import SwitchOption from "../components/SwitchOption";
 import SelectOption from "../components/SelectOption";
 import { editorThemes } from "../utils/editor_themes";
 import RangeOption from "../components/RangeOption";
+import MonacoEditor from "@monaco-editor/react";
+import { forwardRef } from "react";
 
 
 export default function Editor() {
   return (
     <WideLayout>
-        <div className="editor">
-            <div className="editor--header">
+        <div 
+            className="
+                editor
+                flex
+                flex-col
+                h-full
+                pb-8
+            "
+        >
+            <div 
+                className="
+                    editor--header
+                    py-3
+                    flex
+                    items-center
+                "
+            >
                 <NavMenu />
 
-                <span className="editor--header__name-ctn">
-                    <span className="editor--header__blok-name">
+                <span 
+                    className="
+                        editor--header__name-ctn
+                        flex
+                        items-center
+                        gap-3
+                        ml-4
+                    "
+                >
+                    <span 
+                        className="
+                            editor--header__blok-name
+                            text-xl
+                            font-medium
+                            font-mono
+                        "
+                    >
                         New_Blok
                     </span>
 
-                    <button className="editor--header__rename-btn">
+                    <button 
+                        className="
+                            editor--header__rename-btn
+                            text-gray-500
+                        "
+                    >
                         <FaPencil/>
                     </button>
                 </span>
 
-                <div className="editor--header__actions-ctn">
+                <div 
+                    className="
+                        editor--header__actions-ctn
+                        ml-auto
+                        flex
+                        gap-4
+                        items-center
+
+                        [&>button]:p-3
+                        [&>button]:bg-gray-100
+                        [&>button]:text-xl
+                        [&>button]:rounded-md
+                    "
+                >
                     <DropdownMenu.Root>
-                        <div>
-                            <Button>
+                        <div
+                            className="
+                                flex
+                                gap-0.5
+                            "
+                        >
+                            <Button
+                                className="
+                                    rounded-r-none
+                                    capitalize
+                                "
+                            >
                                 run
                             </Button>
                             <DropdownMenu.Trigger asChild>
-                                <Button>
+                                <Button
+                                    className="
+                                        rounded-l-none
+                                    "
+                                >
                                     <FaChevronDown/>
                                 </Button>
                             </DropdownMenu.Trigger>
@@ -59,6 +123,9 @@ export default function Editor() {
 
                         <DropdownContent 
                             label="run options"
+                            className="
+                                z-1
+                            "
                             options={[
                                 {
                                     action: function(){},
@@ -94,7 +161,15 @@ export default function Editor() {
                         />
                     </DropdownMenu.Root>
 
-                    <button className="editor--header__fullscreen-btn">
+                    <button 
+                        className="
+                            editor--header__fullscreen-btn
+                            p-3
+                            bg-gray-100
+                            text-xl
+                            rounded-md
+                        "
+                    >
                         <FaExpand/>
                         {/* <FaCompress/> */}
                     </button>
@@ -110,69 +185,113 @@ export default function Editor() {
                 </div>
             </div>
 
-            <div className="editor--main">
-                <div className="editor--main__editors-ctn">
-                    <div className="editor--main__editor">
-                        <div className="editor--main__editor-header">
-                            <span className="editor--main__editor-name">
-                                html
-                            </span>
+            {/* <div 
+                className="
+                    editor--main
+                    flex-grow
+                    grid
+                    grid-rows-2
+                    __grid-cols-2
+                    gap-4
+                "
+            >
+                <div 
+                    className="
+                        editor--main__editors-ctn
+                        flex
+                        __flex-col
+                        gap-4
+                        __order-2
 
-                            <FaXmark/>
-                        </div>
+                        *:flex-grow
+                        *:flex
+                        *:flex-col
+                        *:rounded-md
+                        *:overflow-hidden
+                        
+                        [&_.editor--main\_\_editor-header]:bg-gray-100
+                        [&_.editor--main\_\_editor-header]:flex
+                        [&_.editor--main\_\_editor-header]:justify-between
+                        [&_.editor--main\_\_editor-header]:items-center
+                        [&_.editor--main\_\_editor-header]:py-2 [&_.editor--main\_\_editor-header]:px-4
 
-                        <div className="editor--main__editor-body">
+                        [&_.editor--main\_\_editor-body]:flex-grow
+                        [&_.editor--main\_\_editor-body]:w-full
+                        [&_.editor--main\_\_editor-body]:h-full
+                        [&_.editor--main\_\_editor-body]:bg-gray-200
 
-                        </div>
-                    </div>
-                    <div className="editor--main__editor">
-                        <div className="editor--main__editor-header">
-                            <span className="editor--main__editor-name">
-                                css
-                            </span>
-
-                            <FaXmark/>
-                        </div>
-
-                        <div className="editor--main__editor-body">
-
-                        </div>
-                    </div>
-                    <div className="editor--main__editor">
-                        <div className="editor--main__editor-header">
-                            <span className="editor--main__editor-name">
-                                js
-                            </span>
-
-                            <FaXmark/>
-                        </div>
-
-                        <div className="editor--main__editor-body">
-
-                        </div>
-                    </div>
+                        [&_.editor--main\_\_editor-name]:uppercase
+                        [&_.editor--main\_\_editor-name]:font-medium
+                        
+                        [&_.editor--main\_\_editor-close-btn]:text-xl
+                    "
+                >
+                    <MainEditor label="html" defaultLanguage="html"/>
+                    <MainEditor label="css" defaultLanguage="css"/>
+                    <MainEditor label="js" defaultLanguage="javascript"/>
                 </div>
                  
-                <div className="editor--main__preview">
+                <div 
+                    className="
+                        editor--main__preview   
+                        rounded-md
+                        overflow-hidden
+                        relative
+                        border-2
+                        border-gray-400
+                    "
+                >
                     <iframe 
-                        className="editor--main__preview-iframe"
+                        className="
+                            editor--main__preview-iframe
+                            w-full
+                            h-full
+                            rounded-md
+                        "
                         srcDoc={`
                             <h1>hello</h1>
                             <p> Welcome to code bloks </p>
                         `}
                     ></iframe>
 
-                    <div className="editor--main__preview-actions">
-                        <button className="editor--main__share-btn">
+                    <div 
+                        className="
+                            editor--main__preview-actions
+                            absolute
+                            bottom-0
+                            right-0
+                            flex
+                            gap-2
+                            bg-gray-400
+
+                            *:text-white
+                            *:capitalize
+                            *:cursor-pointer
+                        "
+                    >
+                        <button 
+                            className="
+                                editor--main__share-btn
+                                flex
+                                gap-2
+                                items-center
+                                py-2 px-3
+                            "
+                        >
                             share <FaShare />
                         </button>
 
-                        <button className="editor--main__preview-btn">
+                        <button 
+                            className="
+                                editor--main__preview-btn
+                                py-2 px-3
+                            "
+                        >
                             <FaArrowUpRightFromSquare />
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             <Tabs.Root 
                 className="
@@ -197,14 +316,12 @@ export default function Editor() {
                     <EditorSettingsPopover />
                 </Tabs.List>
 
-                <Tabs.Content value="html" asChild>
+                <Tabs.Content value="html">
                     <div className="editor--main__editor">
                         <div className="editor--main__editor-header">
                             <span className="editor--main__editor-name">
                                 html
                             </span>
-
-                            <FaXmark/>
                         </div>
 
                         <div className="editor--main__editor-body">
@@ -213,14 +330,12 @@ export default function Editor() {
                     </div>
                 </Tabs.Content>
 
-                <Tabs.Content value="css" asChild>
+                <Tabs.Content value="css">
                     <div className="editor--main__editor">
                         <div className="editor--main__editor-header">
                             <span className="editor--main__editor-name">
                                 css
                             </span>
-
-                            <FaXmark/>
                         </div>
 
                         <div className="editor--main__editor-body">
@@ -235,8 +350,6 @@ export default function Editor() {
                             <span className="editor--main__editor-name">
                                 js
                             </span>
-
-                            <FaXmark/>
                         </div>
 
                         <div className="editor--main__editor-body">
@@ -282,14 +395,34 @@ function EditorSettingsPopover() {
         </Popover.Trigger>
 
         <Popover.Portal>
-            <Popover.Content>
-                <span className="editor-settings__popover-content">
+            <Popover.Content 
+                className="
+                    bg-gray-100
+                    rounded-md
+                    p-4
+                "
+                align="end"
+                sideOffset={8}
+            >
+                <span 
+                    className="
+                        editor-settings__popover-content
+                        uppercase
+                        text-sm
+                        font-medium
+                        mb-3
+                        inline-block
+                    "
+                >
                     editor settings
                 </span>
 
                 <ToggleOption
-                    label="layout"
+                    label="Layout"
                     defaultValue="editor-top"
+                    className="
+                        mb-2
+                    "
                     options={[
                         {
                             value: "editor-top",
@@ -307,9 +440,12 @@ function EditorSettingsPopover() {
                 />
 
                 <ToggleOption
-                    label="toggle code"
+                    label="Toggle Code"
                     defaultValue={["html", "css", "js"]}
                     type="multiple"
+                    className="
+                        mb-4
+                    "
                     options={[
                         {
                             value: "html",
@@ -339,14 +475,18 @@ function EditorSettingsPopover() {
                     className="
                         flex-row
                         justify-between
+                        mb-2
                     "
-                    label="focus mode"
+                    label="Focus Mode"
                 />
 
                 <SelectOption
                     label="Editor Theme:"
                     type="grouped"
                     placeholder="Select a theme"
+                    className="
+                        mb-3
+                    "
                     options={
                         {
                             "light themes": editorThemes.filter(
@@ -360,16 +500,19 @@ function EditorSettingsPopover() {
                 />
 
                 <RangeOption
-                    label="font size"
+                    label="Font Size"
                     unit="px"
                     min={8}
                     max={48}
                     step={1}
                     defaultValue={16}
+                    className="
+                        mb-2
+                    "
                 />
 
                 <ToggleOption
-                    label="tab size"
+                    label="Tab Size"
                     defaultValue="4"
                     options={[
                         {
@@ -385,27 +528,45 @@ function EditorSettingsPopover() {
                             content: "6 spaces"
                         },
                     ]}
+                    className="
+                        mb-3
+                    "
                 />
 
                 <SwitchOption
                     className="
                         flex-row
                         justify-between
+                        mb-3
                     "
-                    label="autocomplete"
+                    label="Autocomplete"
                 />
                 
                 <SwitchOption
                     className="
                         flex-row
                         justify-between
+                        mb-3
                     "
-                    label="line number"
+                    label="Line Number"
                 />
 
-                <button className="shortcut-option">
-                    <span className="shortcut-option__label">
-                        shortcuts
+                <button 
+                    className="
+                        shortcut-option
+                        w-full
+                        flex
+                        items-center
+                        justify-between
+                    "
+                >
+                    <span 
+                        className="
+                            shortcut-option__label
+                            font-medium
+                        "
+                    >
+                        Shortcuts
                     </span>
 
                     <FaArrowUpRightFromSquare/>
@@ -414,3 +575,27 @@ function EditorSettingsPopover() {
         </Popover.Portal>
     </Popover.Root>
 }
+
+const MainEditor = forwardRef( function( { label, ...props}, ref ) {
+    return (
+        <div className="editor--main__editor">
+            <div className="editor--main__editor-header">
+                <span className="editor--main__editor-name">
+                    { label }
+                </span>
+
+                <FaXmark className="editor--main__editor-close-btn"/>
+            </div>
+
+            <MonacoEditor 
+                className="editor--main__editor-body" 
+                ref={ref} 
+                options={{
+                    minimap: { enabled: false },
+                    wordWrap: "off"
+                }}
+                { ...props } 
+            />
+        </div>
+    )
+})

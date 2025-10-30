@@ -10,10 +10,10 @@ import { DropdownMenu } from 'radix-ui'
 
 
 // define and export DropdownContent component
-export default function DropdownContent({ label, options = [] }) {
+export default function DropdownContent({ label, className, options = [] }) {
     return (
         <DropdownMenu.Content 
-            className='
+            className={`
                 dropdown-content
                 p-4 px-3.5
                 rounded-md
@@ -21,7 +21,8 @@ export default function DropdownContent({ label, options = [] }) {
                 flex
                 flex-col
                 w-48
-            '
+                ${ className || '' }
+            `}
             align="end"
             sideOffset={8}
         >

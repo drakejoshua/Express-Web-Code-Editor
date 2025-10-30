@@ -35,6 +35,7 @@ export default function Dashboard() {
             <div
                 className='
                     dashboard
+                    pb-12
                 '
             >
                 <div

@@ -24,6 +24,7 @@ export default function Settings() {
                     gap-8
                     flex
                     flex-col
+                    pb-12
                 "
             >
                 <div 
