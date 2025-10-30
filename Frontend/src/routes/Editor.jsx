@@ -32,20 +32,46 @@ import { useThemeProvider } from "../providers/ThemeProvider";
 
 export default function Editor() {
     const { theme, toggleTheme } = useThemeProvider() 
+    const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
 
-    const [ inFocusMode, setInFocusMode ] = useState( false )
+    function handleBreakpointResize() {
+        setMobileBreakpoint( window.innerWidth <= 1024 )
+    }
+
+    useEffect( function() {
+        window.addEventListener( "resize", handleBreakpointResize )
+
+        return function() {
+            window.removeEventListener( "resize", handleBreakpointResize )
+        }
+    }, [])
+
+    const [ editorSettings, setEditorSettings ] = useState( { 
+        focusMode: false,
+        layout: "editor_top"
+    } )
     const editorCtnRef = useRef( null )
 
     function toggleFocusMode() {
         if ( editorCtnRef.current ) {
-            if ( !inFocusMode ) {
+            if ( !editorSettings.focusMode ) {
                 editorCtnRef.current.requestFullscreen()
             } else {
                 document.exitFullscreen()
             }
         }
 
-        setInFocusMode( ( prev ) => !prev )
+        setEditorSettings( function( prev ) { return { ...prev, focusMode: !prev.focusMode } })
+    }
+
+    function changeEditorLayout( layout ) {
+        const allowableEditorLayouts = [ "editor_top", "editor_left", "editor_right" ]
+
+        if ( allowableEditorLayouts.includes( layout ) && !mobileBreakpoint ) {
+            setEditorSettings( function( prev ) {
+                return { ...prev, layout }
+            } )
+        }
     }
 
 
@@ -84,27 +110,28 @@ export default function Editor() {
                         editor settings
                     </span>
 
-                    <ToggleOption
+                    { !mobileBreakpoint && <ToggleOption
                         label="Layout"
-                        defaultValue="editor-top"
+                        value={ editorSettings.layout }
                         className="
                             mb-2
                         "
+                        onValueChange={ changeEditorLayout }
                         options={[
                             {
-                                value: "editor-top",
+                                value: "editor_top",
                                 content: <TbLayoutNavbar className='text-2xl mx-auto'/>
                             },
                             {
-                                value: "editor-left",
+                                value: "editor_left",
                                 content: <TbLayoutSidebar className='text-2xl mx-auto'/>
                             },
                             {
-                                value: "editor-right",
+                                value: "editor_right",
                                 content: <TbLayoutSidebarRight className='text-2xl mx-auto'/>
                             },
                         ]}
-                    />
+                    />}
 
                     <ToggleOption
                         label="Toggle Code"
@@ -145,7 +172,7 @@ export default function Editor() {
                             mb-2
                         "
                         label="Focus Mode"
-                        checked={ inFocusMode }
+                        checked={ editorSettings.focusMode }
                         onCheckedChange={ toggleFocusMode }
                     />
 
@@ -475,8 +502,8 @@ export default function Editor() {
                             "
                             onClick={ toggleFocusMode }
                         >
-                            { !inFocusMode && <FaExpand/> }
-                            { inFocusMode && <FaCompress/>}
+                            { !editorSettings.focusMode && <FaExpand/> }
+                            { editorSettings.focusMode && <FaCompress/>}
                         </button>
 
                         <button 
@@ -498,22 +525,21 @@ export default function Editor() {
                 </div>
 
                 <div 
-                    className="
+                    className={`
                         editor--main
                         flex-grow
                         hidden lg:grid
-                        grid-rows-2
-                        __grid-cols-2
+                        ${ editorSettings.layout == "editor_top" ? "grid-rows-2" : "grid-cols-2" }
                         gap-4
-                    "
+                    `}
                 >
                     <div 
-                        className="
+                        className={`
                             editor--main__editors-ctn
                             flex
-                            __flex-col
+                            ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
                             gap-4
-                            __order-2
+                            ${ editorSettings.layout != "editor_top" && editorSettings.layout == "editor_right" ? "order-2" : "" }
 
                             *:flex-grow
                             *:flex
@@ -521,21 +547,21 @@ export default function Editor() {
                             *:rounded-md
                             *:overflow-hidden
                             
-                            [&_.editor--main\_\_editor-header]:bg-gray-100 [&_.editor--main\_\_editor-header]:dark:bg-gray-600
-                            [&_.editor--main\_\_editor-header]:flex
-                            [&_.editor--main\_\_editor-header]:justify-between
-                            [&_.editor--main\_\_editor-header]:items-center
-                            [&_.editor--main\_\_editor-header]:py-2 [&_.editor--main\_\_editor-header]:px-4
+                            [&_.editor--main\\_\\_editor-header]:bg-gray-100 [&_.editor--main\\_\\_editor-header]:dark:bg-gray-600
+                            [&_.editor--main\\_\\_editor-header]:flex
+                            [&_.editor--main\\_\\_editor-header]:justify-between
+                            [&_.editor--main\\_\\_editor-header]:items-center
+                            [&_.editor--main\\_\\_editor-header]:py-2 [&_.editor--main\\_\\_editor-header]:px-4
 
-                            [&_.editor--main\_\_editor-body]:flex-grow
-                            [&_.editor--main\_\_editor-body]:w-full
-                            [&_.editor--main\_\_editor-body]:h-full
+                            [&_.editor--main\\_\\_editor-body]:flex-grow
+                            [&_.editor--main\\_\\_editor-body]:w-full
+                            [&_.editor--main\\_\\_editor-body]:h-full
 
-                            [&_.editor--main\_\_editor-name]:uppercase
-                            [&_.editor--main\_\_editor-name]:font-medium
+                            [&_.editor--main\\_\\_editor-name]:uppercase
+                            [&_.editor--main\\_\\_editor-name]:font-medium
                             
-                            [&_.editor--main\_\_editor-close-btn]:text-xl
-                        "
+                            [&_.editor--main\\_\\_editor-close-btn]:text-xl
+                        `}
                     >
                         <MainEditor label="html" defaultLanguage="html"/>
                         <MainEditor label="css" defaultLanguage="css"/>
