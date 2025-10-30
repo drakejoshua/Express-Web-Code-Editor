@@ -54,10 +54,10 @@ export default function Editor() {
                 <span 
                     className="
                         editor--header__name-ctn
-                        flex
                         items-center
                         gap-3
                         ml-4
+                        hidden md:flex
                     "
                 >
                     <span 
@@ -86,7 +86,7 @@ export default function Editor() {
                         editor--header__actions-ctn
                         ml-auto
                         flex
-                        gap-4
+                        gap-2 md:gap-4 
                         items-center
 
                         [&>button]:p-3
@@ -168,6 +168,7 @@ export default function Editor() {
                             bg-gray-100
                             text-xl
                             rounded-md
+                            hidden md:block
                         "
                     >
                         <FaExpand/>
@@ -179,17 +180,21 @@ export default function Editor() {
                         {/* <FaRegSun/> */}
                     </button>
 
-                    <EditorSettingsPopover />
+                    <EditorSettingsPopover 
+                        className="
+                            hidden lg:block
+                        "
+                    />
 
                     <NavAvatar />
                 </div>
             </div>
 
-            {/* <div 
+            <div 
                 className="
                     editor--main
                     flex-grow
-                    grid
+                    hidden lg:grid
                     grid-rows-2
                     __grid-cols-2
                     gap-4
@@ -231,75 +236,45 @@ export default function Editor() {
                     <MainEditor label="js" defaultLanguage="javascript"/>
                 </div>
                  
-                <div 
+                <PreviewFrame 
+                    srcDoc={`
+                        <h1>hello</h1>
+                        <p>this is a new blok</p>
+                    `}
                     className="
-                        editor--main__preview   
-                        rounded-md
-                        overflow-hidden
-                        relative
                         border-2
                         border-gray-400
                     "
-                >
-                    <iframe 
-                        className="
-                            editor--main__preview-iframe
-                            w-full
-                            h-full
-                            rounded-md
-                        "
-                        srcDoc={`
-                            <h1>hello</h1>
-                            <p> Welcome to code bloks </p>
-                        `}
-                    ></iframe>
-
-                    <div 
-                        className="
-                            editor--main__preview-actions
-                            absolute
-                            bottom-0
-                            right-0
-                            flex
-                            gap-2
-                            bg-gray-400
-
-                            *:text-white
-                            *:capitalize
-                            *:cursor-pointer
-                        "
-                    >
-                        <button 
-                            className="
-                                editor--main__share-btn
-                                flex
-                                gap-2
-                                items-center
-                                py-2 px-3
-                            "
-                        >
-                            share <FaShare />
-                        </button>
-
-                        <button 
-                            className="
-                                editor--main__preview-btn
-                                py-2 px-3
-                            "
-                        >
-                            <FaArrowUpRightFromSquare />
-                        </button>
-                    </div>
-                </div>
-            </div> */}
+                />
+            </div>
 
             <Tabs.Root 
                 className="
                     editor--mobile-main
+                    flex-grow
+                    flex lg:hidden
+                    flex-col
+                    border-2
+                    border-gray-100
+                    rounded-md
+                    overflow-hidden
                 " 
                 defaultValue="html"
             >
-                <Tabs.List>
+                <Tabs.List 
+                    className="
+                        editor--mobile-main__tabs
+                        flex
+                        items-center
+                        bg-gray-100
+                        w-full
+                        overflow-x-auto
+
+                        *:py-2 *:px-5
+                        *:rounded-md
+                        *:data-[state=active]:bg-gray-300
+                    "
+                >
                     <Tabs.Trigger value="html">
                         html
                     </Tabs.Trigger>
@@ -316,68 +291,64 @@ export default function Editor() {
                     <EditorSettingsPopover />
                 </Tabs.List>
 
-                <Tabs.Content value="html">
-                    <div className="editor--main__editor">
-                        <div className="editor--main__editor-header">
-                            <span className="editor--main__editor-name">
-                                html
-                            </span>
-                        </div>
+                <Tabs.Content 
+                    value="html"
+                    className="
+                        flex-grow
+                    "
 
-                        <div className="editor--main__editor-body">
-
-                        </div>
-                    </div>
+                >
+                    <MonacoEditor 
+                        options={{
+                            minimap: { enabled: false }
+                        }}
+                    />
                 </Tabs.Content>
 
-                <Tabs.Content value="css">
-                    <div className="editor--main__editor">
-                        <div className="editor--main__editor-header">
-                            <span className="editor--main__editor-name">
-                                css
-                            </span>
-                        </div>
+                <Tabs.Content 
+                    value="css"
+                    className="
+                        flex-grow
+                    "
 
-                        <div className="editor--main__editor-body">
-
-                        </div>
-                    </div>
+                >
+                    <MonacoEditor 
+                        options={{
+                            minimap: { enabled: false }
+                        }}
+                    />
                 </Tabs.Content>
 
-                <Tabs.Content value="js">
-                    <div className="editor--main__editor">
-                        <div className="editor--main__editor-header">
-                            <span className="editor--main__editor-name">
-                                js
-                            </span>
-                        </div>
+                <Tabs.Content 
+                    value="js"
+                    className="
+                        flex-grow
+                    "
 
-                        <div className="editor--main__editor-body">
-
-                        </div>
-                    </div>
+                >
+                    <MonacoEditor 
+                        options={{
+                            minimap: { enabled: false }
+                        }}
+                    />
                 </Tabs.Content>
 
-                <Tabs.Content value="preview">
-                    <div className="editor--main__preview">
-                        <iframe 
-                            className="editor--main__preview-iframe"
-                            srcDoc={`
-                                <h1>hello</h1>
-                                <p> Welcome to code bloks </p>
-                            `}
-                        ></iframe>
+                <Tabs.Content 
+                    value="preview"
+                    className="
+                        flex-grow
+                    "
 
-                        <div className="editor--main__preview-actions">
-                            <button className="editor--main__share-btn">
-                                share <FaShare />
-                            </button>
-
-                            <button className="editor--main__preview-btn">
-                                <FaArrowUpRightFromSquare />
-                            </button>
-                        </div>
-                    </div>
+                >
+                    <PreviewFrame 
+                        srcDoc={`
+                            <h1>hello</h1>
+                            <p>this is a new blok</p>
+                        `}
+                        className="
+                            h-full
+                        "
+                    />
                 </Tabs.Content>
             </Tabs.Root>
         </div>
@@ -386,10 +357,10 @@ export default function Editor() {
 }
 
 
-function EditorSettingsPopover() {
+function EditorSettingsPopover({ className }) {
     return <Popover.Root>
         <Popover.Trigger asChild>
-            <button className="editor--header__editor-setting">
+            <button className={`editor--header__editor-setting ${className}`}>
                 <FaGear/>
             </button>
         </Popover.Trigger>
@@ -400,6 +371,9 @@ function EditorSettingsPopover() {
                     bg-gray-100
                     rounded-md
                     p-4
+                    overflow-auto
+                    max-h-[70vh]
+                    max-w-[90vw]
                 "
                 align="end"
                 sideOffset={8}
@@ -599,3 +573,64 @@ const MainEditor = forwardRef( function( { label, ...props}, ref ) {
         </div>
     )
 })
+
+function PreviewFrame( { srcDoc, className } ) {
+    return (
+        <div 
+            className={`
+                editor--main__preview   
+                rounded-md
+                overflow-hidden
+                relative
+                ${className || ''}
+            `}
+        >
+            <iframe 
+                className="
+                    editor--main__preview-iframe
+                    w-full
+                    h-full
+                    rounded-md
+                "
+                srcDoc={ srcDoc}
+            ></iframe>
+
+            <div 
+                className="
+                    editor--main__preview-actions
+                    absolute
+                    bottom-0
+                    right-0
+                    flex
+                    gap-2
+                    bg-gray-400
+
+                    *:text-white
+                    *:capitalize
+                    *:cursor-pointer
+                "
+            >
+                <button 
+                    className="
+                        editor--main__share-btn
+                        flex
+                        gap-2
+                        items-center
+                        py-2 px-3
+                    "
+                >
+                    share <FaShare />
+                </button>
+
+                <button 
+                    className="
+                        editor--main__preview-btn
+                        py-2 px-3
+                    "
+                >
+                    <FaArrowUpRightFromSquare />
+                </button>
+            </div>
+        </div>
+    )
+}
