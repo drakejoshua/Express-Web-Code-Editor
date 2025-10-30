@@ -2,12 +2,15 @@
 // A layout component that provides a wide screen layout for its children.
 // it's mostly used in usjer-facing pages such as editor, dashboard, etc
 
+import { forwardRef } from "react"
+
 
 
 // define and export WideLayout component
-export default function WideLayout({ children}) {
+const WideLayout = forwardRef(({ children }, ref) => {
     return (
         <div
+            ref={ref}
             className="
                 h-screen
                 text-gray-900 dark:text-white
@@ -19,4 +22,7 @@ export default function WideLayout({ children}) {
             {children}
         </div>
     )
-}
+})
+
+
+export default WideLayout

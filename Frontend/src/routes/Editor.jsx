@@ -26,15 +26,314 @@ import SelectOption from "../components/SelectOption";
 import { editorThemes } from "../utils/editor_themes";
 import RangeOption from "../components/RangeOption";
 import MonacoEditor from "@monaco-editor/react";
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useThemeProvider } from "../providers/ThemeProvider";
 
 
 export default function Editor() {
     const { theme, toggleTheme } = useThemeProvider() 
 
+    const [ inFocusMode, setInFocusMode ] = useState( false )
+    const editorCtnRef = useRef( null )
+
+    function toggleFocusMode() {
+        if ( editorCtnRef.current ) {
+            if ( !inFocusMode ) {
+                editorCtnRef.current.requestFullscreen()
+            } else {
+                document.exitFullscreen()
+            }
+        }
+
+        setInFocusMode( ( prev ) => !prev )
+    }
+
+
+    function EditorSettingsPopover({ className }) {
+        return <Popover.Root>
+            <Popover.Trigger asChild>
+                <button className={`editor--header__editor-setting ${className}`}>
+                    <FaGear/>
+                </button>
+            </Popover.Trigger>
+
+            <Popover.Portal>
+                <Popover.Content 
+                    className="
+                        bg-gray-100 dark:bg-gray-800
+                        *:text-black *:dark:text-white
+                        rounded-md
+                        p-4
+                        overflow-auto
+                        max-h-[70vh]
+                        max-w-[90vw]
+                    "
+                    align="end"
+                    sideOffset={8}
+                >
+                    <span 
+                        className="
+                            editor-settings__popover-content
+                            uppercase
+                            text-sm
+                            font-medium
+                            mb-3
+                            inline-block
+                        "
+                    >
+                        editor settings
+                    </span>
+
+                    <ToggleOption
+                        label="Layout"
+                        defaultValue="editor-top"
+                        className="
+                            mb-2
+                        "
+                        options={[
+                            {
+                                value: "editor-top",
+                                content: <TbLayoutNavbar className='text-2xl mx-auto'/>
+                            },
+                            {
+                                value: "editor-left",
+                                content: <TbLayoutSidebar className='text-2xl mx-auto'/>
+                            },
+                            {
+                                value: "editor-right",
+                                content: <TbLayoutSidebarRight className='text-2xl mx-auto'/>
+                            },
+                        ]}
+                    />
+
+                    <ToggleOption
+                        label="Toggle Code"
+                        defaultValue={["html", "css", "js"]}
+                        type="multiple"
+                        className="
+                            mb-4
+                        "
+                        options={[
+                            {
+                                value: "html",
+                                content: <div className="flex items-center justify-center py-2">
+                                    <FaCheck className='text-2xl'/>
+                                    <span className="ml-2 uppercase">html</span>
+                                </div>
+                            },
+                            {
+                                value: "css",
+                                content: <div className="flex items- justify-center py-2">
+                                    <FaCheck className='text-2xl'/>
+                                    <span className="ml-2 uppercase">css</span>
+                                </div>
+                            },
+                            {
+                                value: "js",
+                                content: <div className="flex items-center justify-center py-2">
+                                    <FaCheck className='text-2xl'/>
+                                    <span className="ml-2 uppercase">js</span>
+                                </div>
+                            },
+                        ]}
+                    />
+
+                    <SwitchOption
+                        className="
+                            flex-row
+                            justify-between
+                            mb-2
+                        "
+                        label="Focus Mode"
+                        checked={ inFocusMode }
+                        onCheckedChange={ toggleFocusMode }
+                    />
+
+                    <SelectOption
+                        label="Editor Theme:"
+                        type="grouped"
+                        placeholder="Select a theme"
+                        className="
+                            mb-3
+                        "
+                        options={
+                            {
+                                "light themes": editorThemes.filter(
+                                    ( theme ) => theme.type == "light"
+                                ),
+                                "dark themes": editorThemes.filter(
+                                    ( theme ) => theme.type == "dark"
+                                )
+                            }
+                        }
+                    />
+
+                    <RangeOption
+                        label="Font Size"
+                        unit="px"
+                        min={8}
+                        max={48}
+                        step={1}
+                        defaultValue={16}
+                        className="
+                            mb-2
+                        "
+                    />
+
+                    <ToggleOption
+                        label="Tab Size"
+                        defaultValue="4"
+                        options={[
+                            {
+                                value: "2",
+                                content: "2 spaces"
+                            },
+                            {
+                                value: "4",
+                                content: "4 spaces"
+                            },
+                            {
+                                value: "6",
+                                content: "6 spaces"
+                            },
+                        ]}
+                        className="
+                            mb-3
+                        "
+                    />
+
+                    <SwitchOption
+                        className="
+                            flex-row
+                            justify-between
+                            mb-3
+                        "
+                        label="Autocomplete"
+                    />
+                    
+                    <SwitchOption
+                        className="
+                            flex-row
+                            justify-between
+                            mb-3
+                        "
+                        label="Line Number"
+                    />
+
+                    <button 
+                        className="
+                            shortcut-option
+                            w-full
+                            flex
+                            items-center
+                            justify-between
+                        "
+                    >
+                        <span 
+                            className="
+                                shortcut-option__label
+                                font-medium
+                            "
+                        >
+                            Shortcuts
+                        </span>
+
+                        <FaArrowUpRightFromSquare/>
+                    </button>
+                </Popover.Content>
+            </Popover.Portal>
+        </Popover.Root>
+    }
+
+    const MainEditor = forwardRef( function( { label, ...props}, ref ) {
+        return (
+            <div className="editor--main__editor">
+                <div className="editor--main__editor-header">
+                    <span className="editor--main__editor-name">
+                        { label }
+                    </span>
+
+                    <FaXmark className="editor--main__editor-close-btn"/>
+                </div>
+
+                <MonacoEditor 
+                    className="editor--main__editor-body" 
+                    ref={ref} 
+                    options={{
+                        minimap: { enabled: false },
+                        wordWrap: "off"
+                    }}
+                    { ...props } 
+                />
+            </div>
+        )
+    })
+
+    function PreviewFrame( { srcDoc, className } ) {
+        return (
+            <div 
+                className={`
+                    editor--main__preview   
+                    rounded-md
+                    overflow-hidden
+                    relative
+                    ${className || ''}
+                `}
+            >
+                <iframe 
+                    className="
+                        editor--main__preview-iframe
+                        w-full
+                        h-full
+                        rounded-md
+                    "
+                    srcDoc={ srcDoc}
+                ></iframe>
+
+                <div 
+                    className="
+                        editor--main__preview-actions
+                        absolute
+                        bottom-0
+                        right-0
+                        flex
+                        gap-2
+                        bg-gray-400 dark:bg-gray-600
+
+                        *:text-white
+                        *:capitalize
+                        *:cursor-pointer
+                    "
+                >
+                    <button 
+                        className="
+                            editor--main__share-btn
+                            flex
+                            gap-2
+                            items-center
+                            py-2 px-3
+                        "
+                    >
+                        share <FaShare />
+                    </button>
+
+                    <button 
+                        className="
+                            editor--main__preview-btn
+                            py-2 px-3
+                        "
+                    >
+                        <FaArrowUpRightFromSquare />
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <WideLayout>
+        <WideLayout
+            ref={ editorCtnRef }
+        >
             <div 
                 className="
                     editor
@@ -174,9 +473,10 @@ export default function Editor() {
                                 rounded-md
                                 hidden md:block
                             "
+                            onClick={ toggleFocusMode }
                         >
-                            <FaExpand/>
-                            {/* <FaCompress/> */}
+                            { !inFocusMode && <FaExpand/> }
+                            { inFocusMode && <FaCompress/>}
                         </button>
 
                         <button 
@@ -359,285 +659,5 @@ export default function Editor() {
                 </Tabs.Root>
             </div>
         </WideLayout>
-    )
-}
-
-
-function EditorSettingsPopover({ className }) {
-    return <Popover.Root>
-        <Popover.Trigger asChild>
-            <button className={`editor--header__editor-setting ${className}`}>
-                <FaGear/>
-            </button>
-        </Popover.Trigger>
-
-        <Popover.Portal>
-            <Popover.Content 
-                className="
-                    bg-gray-100 dark:bg-gray-800
-                    *:text-black *:dark:text-white
-                    rounded-md
-                    p-4
-                    overflow-auto
-                    max-h-[70vh]
-                    max-w-[90vw]
-                "
-                align="end"
-                sideOffset={8}
-            >
-                <span 
-                    className="
-                        editor-settings__popover-content
-                        uppercase
-                        text-sm
-                        font-medium
-                        mb-3
-                        inline-block
-                    "
-                >
-                    editor settings
-                </span>
-
-                <ToggleOption
-                    label="Layout"
-                    defaultValue="editor-top"
-                    className="
-                        mb-2
-                    "
-                    options={[
-                        {
-                            value: "editor-top",
-                            content: <TbLayoutNavbar className='text-2xl mx-auto'/>
-                        },
-                        {
-                            value: "editor-left",
-                            content: <TbLayoutSidebar className='text-2xl mx-auto'/>
-                        },
-                        {
-                            value: "editor-right",
-                            content: <TbLayoutSidebarRight className='text-2xl mx-auto'/>
-                        },
-                    ]}
-                />
-
-                <ToggleOption
-                    label="Toggle Code"
-                    defaultValue={["html", "css", "js"]}
-                    type="multiple"
-                    className="
-                        mb-4
-                    "
-                    options={[
-                        {
-                            value: "html",
-                            content: <div className="flex items-center justify-center py-2">
-                                <FaCheck className='text-2xl'/>
-                                <span className="ml-2 uppercase">html</span>
-                            </div>
-                        },
-                        {
-                            value: "css",
-                            content: <div className="flex items- justify-center py-2">
-                                <FaCheck className='text-2xl'/>
-                                <span className="ml-2 uppercase">css</span>
-                            </div>
-                        },
-                        {
-                            value: "js",
-                            content: <div className="flex items-center justify-center py-2">
-                                <FaCheck className='text-2xl'/>
-                                <span className="ml-2 uppercase">js</span>
-                            </div>
-                        },
-                    ]}
-                />
-
-                <SwitchOption
-                    className="
-                        flex-row
-                        justify-between
-                        mb-2
-                    "
-                    label="Focus Mode"
-                />
-
-                <SelectOption
-                    label="Editor Theme:"
-                    type="grouped"
-                    placeholder="Select a theme"
-                    className="
-                        mb-3
-                    "
-                    options={
-                        {
-                            "light themes": editorThemes.filter(
-                                ( theme ) => theme.type == "light"
-                            ),
-                            "dark themes": editorThemes.filter(
-                                ( theme ) => theme.type == "dark"
-                            )
-                        }
-                    }
-                />
-
-                <RangeOption
-                    label="Font Size"
-                    unit="px"
-                    min={8}
-                    max={48}
-                    step={1}
-                    defaultValue={16}
-                    className="
-                        mb-2
-                    "
-                />
-
-                <ToggleOption
-                    label="Tab Size"
-                    defaultValue="4"
-                    options={[
-                        {
-                            value: "2",
-                            content: "2 spaces"
-                        },
-                        {
-                            value: "4",
-                            content: "4 spaces"
-                        },
-                        {
-                            value: "6",
-                            content: "6 spaces"
-                        },
-                    ]}
-                    className="
-                        mb-3
-                    "
-                />
-
-                <SwitchOption
-                    className="
-                        flex-row
-                        justify-between
-                        mb-3
-                    "
-                    label="Autocomplete"
-                />
-                
-                <SwitchOption
-                    className="
-                        flex-row
-                        justify-between
-                        mb-3
-                    "
-                    label="Line Number"
-                />
-
-                <button 
-                    className="
-                        shortcut-option
-                        w-full
-                        flex
-                        items-center
-                        justify-between
-                    "
-                >
-                    <span 
-                        className="
-                            shortcut-option__label
-                            font-medium
-                        "
-                    >
-                        Shortcuts
-                    </span>
-
-                    <FaArrowUpRightFromSquare/>
-                </button>
-            </Popover.Content>
-        </Popover.Portal>
-    </Popover.Root>
-}
-
-const MainEditor = forwardRef( function( { label, ...props}, ref ) {
-    return (
-        <div className="editor--main__editor">
-            <div className="editor--main__editor-header">
-                <span className="editor--main__editor-name">
-                    { label }
-                </span>
-
-                <FaXmark className="editor--main__editor-close-btn"/>
-            </div>
-
-            <MonacoEditor 
-                className="editor--main__editor-body" 
-                ref={ref} 
-                options={{
-                    minimap: { enabled: false },
-                    wordWrap: "off"
-                }}
-                { ...props } 
-            />
-        </div>
-    )
-})
-
-function PreviewFrame( { srcDoc, className } ) {
-    return (
-        <div 
-            className={`
-                editor--main__preview   
-                rounded-md
-                overflow-hidden
-                relative
-                ${className || ''}
-            `}
-        >
-            <iframe 
-                className="
-                    editor--main__preview-iframe
-                    w-full
-                    h-full
-                    rounded-md
-                "
-                srcDoc={ srcDoc}
-            ></iframe>
-
-            <div 
-                className="
-                    editor--main__preview-actions
-                    absolute
-                    bottom-0
-                    right-0
-                    flex
-                    gap-2
-                    bg-gray-400 dark:bg-gray-600
-
-                    *:text-white
-                    *:capitalize
-                    *:cursor-pointer
-                "
-            >
-                <button 
-                    className="
-                        editor--main__share-btn
-                        flex
-                        gap-2
-                        items-center
-                        py-2 px-3
-                    "
-                >
-                    share <FaShare />
-                </button>
-
-                <button 
-                    className="
-                        editor--main__preview-btn
-                        py-2 px-3
-                    "
-                >
-                    <FaArrowUpRightFromSquare />
-                </button>
-            </div>
-        </div>
     )
 }
