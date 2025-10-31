@@ -48,7 +48,8 @@ export default function Editor() {
 
     const [ editorSettings, setEditorSettings ] = useState( { 
         focusMode: false,
-        layout: "editor_top"
+        layout: "editor_top",
+        editors: ["html", "css", "js"]
     } )
     const editorCtnRef = useRef( null )
 
@@ -62,6 +63,69 @@ export default function Editor() {
         }
 
         setEditorSettings( function( prev ) { return { ...prev, focusMode: !prev.focusMode } })
+    }
+
+    function toggleHTMLEditor() {
+        if ( editorSettings.editors.length > 1 ) {
+            if ( editorSettings.editors.includes("html") ) {
+                setEditorSettings( ( prevEditorSettings ) => ({ 
+                    ...prevEditorSettings,
+                    editors: prevEditorSettings.editors.filter( function( editor ) {
+                        return editor != "html"
+                    })
+                }))
+            } else {
+                setEditorSettings( ( prevEditorSettings ) => ({
+                    ...prevEditorSettings,
+                    editors: prevEditorSettings.editors.push("html")
+                }))
+            }
+        }
+    }
+    
+    function toggleCSSEditor() {
+        if ( editorSettings.editors.length > 1 ) {
+            if ( editorSettings.editors.includes("css") ) {
+                setEditorSettings( ( prevEditorSettings ) => ({ 
+                    ...prevEditorSettings,
+                    editors: prevEditorSettings.editors.filter( function( editor ) {
+                        return editor != "css"
+                    })
+                }))
+            } else {
+                setEditorSettings( ( prevEditorSettings ) => ({
+                    ...prevEditorSettings,
+                    editors: prevEditorSettings.editors.push("css")
+                }))
+            }
+        }
+    }
+    
+    function toggleJSEditor() {
+        if ( editorSettings.editors.length > 1 ) {
+            if ( editorSettings.editors.includes("js") ) {
+                setEditorSettings( ( prevEditorSettings ) => ({ 
+                    ...prevEditorSettings,
+                    editors: prevEditorSettings.editors.filter( function( editor ) {
+                        return editor != "js"
+                    })
+                }))
+            } else {
+                setEditorSettings( ( prevEditorSettings ) => ({
+                    ...prevEditorSettings,
+                    editors: prevEditorSettings.editors.push("js")
+                }))
+            }
+        }
+    }
+
+    function changeActiveEditors( editors ) {
+        if ( editors.length > 0 && !mobileBreakpoint ) {
+            setEditorSettings( ( prevEditorSettings ) => ({
+                ...prevEditorSettings,
+                editors: editors
+            }))
+        }
     }
 
     function changeEditorLayout( layout ) {
@@ -133,9 +197,10 @@ export default function Editor() {
                         ]}
                     />}
 
-                    <ToggleOption
+                    { !mobileBreakpoint && <ToggleOption
                         label="Toggle Code"
-                        defaultValue={["html", "css", "js"]}
+                        value={ editorSettings.editors }
+                        onValueChange={ changeActiveEditors }
                         type="multiple"
                         className="
                             mb-4
@@ -144,26 +209,26 @@ export default function Editor() {
                             {
                                 value: "html",
                                 content: <div className="flex items-center justify-center py-2">
-                                    <FaCheck className='text-2xl'/>
+                                    { editorSettings.editors.includes("html") && <FaCheck className='text-2xl'/> }
                                     <span className="ml-2 uppercase">html</span>
                                 </div>
                             },
                             {
                                 value: "css",
                                 content: <div className="flex items- justify-center py-2">
-                                    <FaCheck className='text-2xl'/>
+                                    { editorSettings.editors.includes("css") && <FaCheck className='text-2xl'/> }
                                     <span className="ml-2 uppercase">css</span>
                                 </div>
                             },
                             {
                                 value: "js",
                                 content: <div className="flex items-center justify-center py-2">
-                                    <FaCheck className='text-2xl'/>
+                                    { editorSettings.editors.includes("js") && <FaCheck className='text-2xl'/> }
                                     <span className="ml-2 uppercase">js</span>
                                 </div>
                             },
                         ]}
-                    />
+                    />}
 
                     <SwitchOption
                         className="
@@ -272,7 +337,7 @@ export default function Editor() {
         </Popover.Root>
     }
 
-    const MainEditor = forwardRef( function( { label, ...props}, ref ) {
+    const MainEditor = forwardRef( function( { label, onToggle, ...props}, ref ) {
         return (
             <div className="editor--main__editor">
                 <div className="editor--main__editor-header">
@@ -280,7 +345,10 @@ export default function Editor() {
                         { label }
                     </span>
 
-                    <FaXmark className="editor--main__editor-close-btn"/>
+                    <FaXmark 
+                        className="editor--main__editor-close-btn"
+                        onClick={ onToggle }
+                    />
                 </div>
 
                 <MonacoEditor 
@@ -563,9 +631,27 @@ export default function Editor() {
                             [&_.editor--main\\_\\_editor-close-btn]:text-xl
                         `}
                     >
-                        <MainEditor label="html" defaultLanguage="html"/>
-                        <MainEditor label="css" defaultLanguage="css"/>
-                        <MainEditor label="js" defaultLanguage="javascript"/>
+                        { 
+                            editorSettings.editors.includes("html") && <MainEditor 
+                                label="html" 
+                                defaultLanguage="html"
+                                onToggle={ toggleHTMLEditor }
+                            />
+                        }
+                        { 
+                            editorSettings.editors.includes("css") && <MainEditor 
+                                label="css" 
+                                defaultLanguage="css"
+                                onToggle={ toggleCSSEditor }
+                            />
+                        }
+                        { 
+                            editorSettings.editors.includes("js") && <MainEditor 
+                                label="js" 
+                                defaultLanguage="javascript"
+                                onToggle={ toggleJSEditor }
+                            />
+                        }
                     </div>
                     
                     <PreviewFrame 
