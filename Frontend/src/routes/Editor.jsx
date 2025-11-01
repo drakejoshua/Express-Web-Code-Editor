@@ -50,7 +50,8 @@ export default function Editor() {
         focusMode: false,
         layout: "editor_top",
         editors: ["html", "css", "js"],
-        fontSize: 16
+        fontSize: 16,
+        tabSize: '2'
     } )
 
     function toggleFocusMode() {
@@ -141,6 +142,17 @@ export default function Editor() {
             ...prevEditorSettings,
             fontSize: fontSize
         }))
+    }
+
+    function changeTabSize( tabSize ) {
+        const allowableTabSizes = [ "2", "4", "6" ]
+
+        if ( allowableTabSizes.includes( tabSize ) ) {
+            setEditorSettings( ( prevEditorSettings ) => ({
+                ...prevEditorSettings,
+                tabSize: tabSize
+            }))
+        }
     }
 
 
@@ -280,7 +292,8 @@ export default function Editor() {
 
                     <ToggleOption
                         label="Tab Size"
-                        defaultValue="4"
+                        value={ editorSettings.tabSize }
+                        onValueChange={ changeTabSize }
                         options={[
                             {
                                 value: "2",
@@ -400,7 +413,8 @@ export default function Editor() {
                     options={{
                         minimap: { enabled: false },
                         fontSize: editorSettings.fontSize,
-                        wordWrap: "off"
+                        wordWrap: "off",
+                        tabSize: parseInt( editorSettings.tabSize )
                     }}
                     { ...props } 
                 />
