@@ -9,24 +9,29 @@ import nightOwl from "monaco-themes/themes/Night Owl.json"
 import solarizedDark from "monaco-themes/themes/Solarized-dark.json"
 
 
-
 export const editorThemes = [
     // light themes
     {
         type: "light",
-        value: "vsc_light",
+        value: "vs",
         json: "",
         name: "VS Code Light"
     },
     {
         type: "light",
-        value: "github_light",
+        value: "hc-light",
+        json: "",
+        name: "High Contrast Light"
+    },
+    {
+        type: "light",
+        value: "githubLight",
         json: githubLight,
         name: "Github Light"
     },
     {
         type: "light",
-        value: "solarized_light",
+        value: "solarizedLight",
         json: solarizedLight,
         name: "Solarized Light"
     },
@@ -46,13 +51,19 @@ export const editorThemes = [
     // dark themes
     {
         type: "dark",
-        value: "vsc_dark",
+        value: "vs-dark",
         json: "",
         name: "VS Code Dark"
     },
     {
         type: "dark",
-        value: "github_dark",
+        value: "hc-black",
+        json: "",
+        name: "High Contrast Dark"
+    },
+    {
+        type: "dark",
+        value: "githubDark",
         json: githubDark,
         name: "Github Dark"
     },
@@ -64,13 +75,13 @@ export const editorThemes = [
     },
     {
         type: "dark",
-        value: "night_owl",
+        value: "nightOwl",
         json: nightOwl,
         name: "Night Owl"
     },
     {
         type: "dark",
-        value: "solarized_dark",
+        value: "solarizedDark",
         json: solarizedDark,
         name: "Solarized Dark"
     },

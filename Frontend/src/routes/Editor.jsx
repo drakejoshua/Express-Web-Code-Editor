@@ -38,6 +38,18 @@ export default function Editor() {
         setMobileBreakpoint( window.innerWidth <= 1024 )
     }
 
+    function initializeEditorThemes( monaco ) {
+        const themeValueToOmit = [ "vs", "vs-dark", "hc-black", "hc-light" ]
+
+        editorThemes.forEach( function( theme ) {
+            if ( themeValueToOmit.includes( theme.value ) ) {
+                return
+            } else {
+                monaco.editor.defineTheme( theme.value, theme.json )
+            }
+        })
+    }
+
     useEffect( function() {
         window.addEventListener( "resize", handleBreakpointResize )
 
@@ -54,6 +66,7 @@ export default function Editor() {
         tabSize: '2',
         lineNumbers: true,
         autocomplete: true,
+        theme: "hc-black"
     } )
 
     function toggleFocusMode() {
@@ -171,7 +184,16 @@ export default function Editor() {
         }))
     }
 
+    function changeTheme( value ) {
+        setEditorSettings( ( prevEditorSettings ) => ({
+            ...prevEditorSettings,
+            theme: value
+        }))
+    }
 
+
+
+    // internal/partial components to be used inside Editor component
     function EditorSettingsPopover({ className }) {
         return <Popover.Root>
             <Popover.Trigger asChild>
@@ -281,6 +303,8 @@ export default function Editor() {
                         className="
                             mb-3
                         "
+                        value={ editorSettings.theme}
+                        onValueChange={ changeTheme }
                         options={
                             {
                                 "light themes": editorThemes.filter(
@@ -441,8 +465,10 @@ export default function Editor() {
                         parameterHints: { enabled: editorSettings.autocomplete },
                         hover: { enabled: editorSettings.autocomplete },
                         wordBasedSuggestions: editorSettings.autocomplete,
-                        tabCompletion: editorSettings.autocomplete ? "on" : "off",
+                        tabCompletion: editorSettings.autocomplete ? "on" : "off"
                     }}
+                    theme={ editorSettings.theme }
+                    beforeMount={ initializeEditorThemes }
                     { ...props } 
                 />
             </div>
