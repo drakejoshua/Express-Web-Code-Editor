@@ -21,7 +21,9 @@ const RangeOption = React.forwardRef( ( {
     // it is used by the Slider component to notify about value changes
     function handleValueChange( newValue ) {
         setValue( newValue[0] )
-
+    }
+    
+    function handleValueCommit( newValue ) {
         onValueChange( newValue[0] )
     }
 
@@ -68,6 +70,7 @@ const RangeOption = React.forwardRef( ( {
                     '
                     defaultValue={ [value] }
                     onValueChange={ handleValueChange }
+                    onValueCommit={ handleValueCommit }
                     {...props}
                 >
                     {/* slider track */}

@@ -26,7 +26,7 @@ import SelectOption from "../components/SelectOption";
 import { editorThemes } from "../utils/editor_themes";
 import RangeOption from "../components/RangeOption";
 import MonacoEditor from "@monaco-editor/react";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useThemeProvider } from "../providers/ThemeProvider";
 
 
@@ -49,17 +49,15 @@ export default function Editor() {
     const [ editorSettings, setEditorSettings ] = useState( { 
         focusMode: false,
         layout: "editor_top",
-        editors: ["html", "css", "js"]
+        editors: ["html", "css", "js"],
+        fontSize: 16
     } )
-    const editorCtnRef = useRef( null )
 
     function toggleFocusMode() {
-        if ( editorCtnRef.current ) {
-            if ( !editorSettings.focusMode ) {
-                editorCtnRef.current.requestFullscreen()
-            } else {
-                document.exitFullscreen()
-            }
+        if ( !editorSettings.focusMode ) {
+            document.body.requestFullscreen()
+        } else {
+            document.exitFullscreen()
         }
 
         setEditorSettings( function( prev ) { return { ...prev, focusMode: !prev.focusMode } })
@@ -136,6 +134,13 @@ export default function Editor() {
                 return { ...prev, layout }
             } )
         }
+    }
+
+    function changeEditorFontSize( fontSize ) {
+        setEditorSettings( ( prevEditorSettings ) => ({
+            ...prevEditorSettings,
+            fontSize: fontSize
+        }))
     }
 
 
@@ -266,7 +271,8 @@ export default function Editor() {
                         min={8}
                         max={48}
                         step={1}
-                        defaultValue={16}
+                        defaultValue={ editorSettings.fontSize }
+                        onValueChange={ changeEditorFontSize }
                         className="
                             mb-2
                         "
@@ -337,25 +343,63 @@ export default function Editor() {
         </Popover.Root>
     }
 
-    const MainEditor = forwardRef( function( { label, onToggle, ...props}, ref ) {
+    const MainEditor = forwardRef( function( { 
+        label, 
+        onToggle, 
+        className,
+        ...props
+    }, ref ) {
         return (
-            <div className="editor--main__editor">
-                <div className="editor--main__editor-header">
-                    <span className="editor--main__editor-name">
+            <div 
+                className={`
+                    editor--main__editor
+                    flex
+                    flex-col
+                    rounded-md
+                    overflow-hidden
+                    ${ className || "" }
+                `}
+            >
+                <div 
+                    className="
+                        editor--main__editor-header
+                        bg-gray-300 dark:bg-gray-600
+                        flex
+                        justify-between
+                        items-center
+                        py-2 px-4
+                    "
+                >
+                    <span 
+                        className="
+                            editor--main__editor-name
+                            uppercase
+                            font-medium
+                        "
+                    >
                         { label }
                     </span>
 
                     <FaXmark 
-                        className="editor--main__editor-close-btn"
+                        className="
+                            editor--main__editor-close-btn
+                            text-xl
+                        "
                         onClick={ onToggle }
                     />
                 </div>
 
                 <MonacoEditor 
-                    className="editor--main__editor-body" 
+                    className="
+                        editor--main__editor-body
+                        flex-grow
+                        w-full
+                        h-full
+                    " 
                     ref={ref} 
                     options={{
                         minimap: { enabled: false },
+                        fontSize: editorSettings.fontSize,
                         wordWrap: "off"
                     }}
                     { ...props } 
@@ -426,9 +470,7 @@ export default function Editor() {
     }
 
     return (
-        <WideLayout
-            ref={ editorCtnRef }
-        >
+        <WideLayout>
             <div 
                 className="
                     editor
@@ -608,27 +650,6 @@ export default function Editor() {
                             ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
                             gap-4
                             ${ editorSettings.layout != "editor_top" && editorSettings.layout == "editor_right" ? "order-2" : "" }
-
-                            *:flex-grow
-                            *:flex
-                            *:flex-col
-                            *:rounded-md
-                            *:overflow-hidden
-                            
-                            [&_.editor--main\\_\\_editor-header]:bg-gray-100 [&_.editor--main\\_\\_editor-header]:dark:bg-gray-600
-                            [&_.editor--main\\_\\_editor-header]:flex
-                            [&_.editor--main\\_\\_editor-header]:justify-between
-                            [&_.editor--main\\_\\_editor-header]:items-center
-                            [&_.editor--main\\_\\_editor-header]:py-2 [&_.editor--main\\_\\_editor-header]:px-4
-
-                            [&_.editor--main\\_\\_editor-body]:flex-grow
-                            [&_.editor--main\\_\\_editor-body]:w-full
-                            [&_.editor--main\\_\\_editor-body]:h-full
-
-                            [&_.editor--main\\_\\_editor-name]:uppercase
-                            [&_.editor--main\\_\\_editor-name]:font-medium
-                            
-                            [&_.editor--main\\_\\_editor-close-btn]:text-xl
                         `}
                     >
                         { 
@@ -636,6 +657,7 @@ export default function Editor() {
                                 label="html" 
                                 defaultLanguage="html"
                                 onToggle={ toggleHTMLEditor }
+                                className="flex-grow"
                             />
                         }
                         { 
@@ -643,13 +665,15 @@ export default function Editor() {
                                 label="css" 
                                 defaultLanguage="css"
                                 onToggle={ toggleCSSEditor }
+                                className="flex-grow"
                             />
                         }
-                        { 
+                        {
                             editorSettings.editors.includes("js") && <MainEditor 
                                 label="js" 
                                 defaultLanguage="javascript"
                                 onToggle={ toggleJSEditor }
+                                className="flex-grow"
                             />
                         }
                     </div>
