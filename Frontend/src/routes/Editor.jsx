@@ -53,7 +53,7 @@ export default function Editor() {
         fontSize: 16,
         tabSize: '2',
         lineNumbers: true,
-        
+        autocomplete: true,
     } )
 
     function toggleFocusMode() {
@@ -164,7 +164,12 @@ export default function Editor() {
         }))
     }
 
-    
+    function toggleAutocomplete() {
+        setEditorSettings( ( prevEditorSettings ) => ({
+            ...prevEditorSettings,
+            autocomplete: !prevEditorSettings.autocomplete
+        }))
+    }
 
 
     function EditorSettingsPopover({ className }) {
@@ -330,7 +335,8 @@ export default function Editor() {
                             justify-between
                             mb-3
                         "
-                        
+                        checked={ editorSettings.autocomplete }
+                        onCheckedChange={ toggleAutocomplete }
                         label="Autocomplete"
                     />
                     
@@ -430,7 +436,12 @@ export default function Editor() {
                         wordWrap: "off",
                         tabSize: parseInt( editorSettings.tabSize ),
                         lineNumbers: editorSettings.lineNumbers ? "on" : "off",
-                        
+                        quickSuggestions: editorSettings.autocomplete,
+                        suggestOnTriggerCharacters: editorSettings.autocomplete,
+                        parameterHints: { enabled: editorSettings.autocomplete },
+                        hover: { enabled: editorSettings.autocomplete },
+                        wordBasedSuggestions: editorSettings.autocomplete,
+                        tabCompletion: editorSettings.autocomplete ? "on" : "off",
                     }}
                     { ...props } 
                 />
