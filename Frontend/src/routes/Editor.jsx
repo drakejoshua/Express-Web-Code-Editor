@@ -51,7 +51,9 @@ export default function Editor() {
         layout: "editor_top",
         editors: ["html", "css", "js"],
         fontSize: 16,
-        tabSize: '2'
+        tabSize: '2',
+        lineNumbers: true,
+        
     } )
 
     function toggleFocusMode() {
@@ -154,6 +156,15 @@ export default function Editor() {
             }))
         }
     }
+
+    function toggleLineNumbers() {
+        setEditorSettings( ( prevEditorSettings ) => ({
+            ...prevEditorSettings,
+            lineNumbers: !prevEditorSettings.lineNumbers
+        }))
+    }
+
+    
 
 
     function EditorSettingsPopover({ className }) {
@@ -319,6 +330,7 @@ export default function Editor() {
                             justify-between
                             mb-3
                         "
+                        
                         label="Autocomplete"
                     />
                     
@@ -328,6 +340,8 @@ export default function Editor() {
                             justify-between
                             mb-3
                         "
+                        checked={ editorSettings.lineNumbers }
+                        onCheckedChange={ toggleLineNumbers }
                         label="Line Number"
                     />
 
@@ -414,7 +428,9 @@ export default function Editor() {
                         minimap: { enabled: false },
                         fontSize: editorSettings.fontSize,
                         wordWrap: "off",
-                        tabSize: parseInt( editorSettings.tabSize )
+                        tabSize: parseInt( editorSettings.tabSize ),
+                        lineNumbers: editorSettings.lineNumbers ? "on" : "off",
+                        
                     }}
                     { ...props } 
                 />
