@@ -29,6 +29,8 @@ import RangeOption from "../components/RangeOption";
 import MonacoEditor from "@monaco-editor/react";
 import { createContext, forwardRef, useContext, useEffect, useRef, useState } from "react";
 import { useThemeProvider } from "../providers/ThemeProvider";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 
 
@@ -37,33 +39,9 @@ const EditorContext = createContext()
 
 
 export default function Editor() {
+    // editor state and data
     const { theme, toggleTheme } = useThemeProvider() 
     const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
-
-    function handleBreakpointResize() {
-        setMobileBreakpoint( window.innerWidth <= 1024 )
-    }
-
-    function initializeEditorThemes( monaco ) {
-        const themeValueToOmit = [ "vs", "vs-dark", "hc-black", "hc-light" ]
-
-        editorThemes.forEach( function( theme ) {
-            if ( themeValueToOmit.includes( theme.value ) ) {
-                return
-            } else {
-                monaco.editor.defineTheme( theme.value, theme.json )
-            }
-        })
-    }
-
-    useEffect( function() {
-        window.addEventListener( "resize", handleBreakpointResize )
-
-        return function() {
-            window.removeEventListener( "resize", handleBreakpointResize )
-        }
-    }, [])
-
 
     const [ editorContent, setEditorContent ] = useState( {
         html: "",
@@ -91,6 +69,32 @@ export default function Editor() {
         autoRun: false
     } )
 
+
+    // editor controllers
+
+    function handleBreakpointResize() {
+        setMobileBreakpoint( window.innerWidth <= 1024 )
+    }
+
+    function initializeEditorThemes( monaco ) {
+        const themeValueToOmit = [ "vs", "vs-dark", "hc-black", "hc-light" ]
+
+        editorThemes.forEach( function( theme ) {
+            if ( themeValueToOmit.includes( theme.value ) ) {
+                return
+            } else {
+                monaco.editor.defineTheme( theme.value, theme.json )
+            }
+        })
+    }
+
+    useEffect( function() {
+        window.addEventListener( "resize", handleBreakpointResize )
+
+        return function() {
+            window.removeEventListener( "resize", handleBreakpointResize )
+        }
+    }, [])
     
     function toggleFocusMode() {
         if ( !editorSettings.focusMode ) {
@@ -215,7 +219,6 @@ export default function Editor() {
     }
 
     function runEditorCode() {
-        console.log("running code...")
         setPreviewContent({ ...editorContent })
     }
 
@@ -237,6 +240,36 @@ export default function Editor() {
             }, 300 )
         }
     }, [ editorContent ])
+
+    async function exportAsZip() {
+        const zip = JSZip()
+        const htmlTemplateToExport = `
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>Codeblok Export</title>
+                    
+                    <!-- css file -->
+                    <link rel="stylesheet" href="./styles.css" />
+                </head>
+                <body>
+                    ${ editorContent.html }
+
+                    <!-- script file -->
+                    <script src="./script.js"></script>
+                </body>
+            </html>
+        `
+
+        zip.file( "index.html", htmlTemplateToExport )
+        zip.file( "styles.css", editorContent.css )
+        zip.file( "script.js", editorContent.js )
+
+        const blob = await zip.generateAsync({ type: "blob" })
+        saveAs( blob, "codeblok.zip" )
+    }
 
 
     return (
@@ -363,7 +396,7 @@ export default function Editor() {
                                             </>
                                         },
                                         {
-                                            action: function(){},
+                                            action: exportAsZip,
                                             content: <>
                                                 <FaDownload/>
 
