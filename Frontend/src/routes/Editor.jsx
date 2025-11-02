@@ -475,7 +475,7 @@ export default function Editor() {
                                     label="html" 
                                     defaultLanguage="html"
                                     onToggle={ toggleHTMLEditor }
-                                    className="flex-grow"
+                                    className="flex-1"
                                     value={ editorContent.html }
                                     onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
                                 />
@@ -485,7 +485,7 @@ export default function Editor() {
                                     label="css" 
                                     defaultLanguage="css"
                                     onToggle={ toggleCSSEditor }
-                                    className="flex-grow"
+                                    className="flex-1"
                                     value={ editorContent.css }
                                     onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
                                 />
@@ -495,7 +495,7 @@ export default function Editor() {
                                     label="js" 
                                     defaultLanguage="javascript"
                                     onToggle={ toggleJSEditor }
-                                    className="flex-grow"
+                                    className="flex-1"
                                     value={ editorContent.js }
                                     onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
                                 />
