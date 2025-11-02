@@ -24,7 +24,7 @@ import ToggleOption from "../components/ToggleOption";
 import { TbLayoutNavbar, TbLayoutSidebar, TbLayoutSidebarRight } from "react-icons/tb";
 import SwitchOption from "../components/SwitchOption";
 import SelectOption from "../components/SelectOption";
-import { editorThemes } from "../utils/editor_themes";
+import { editorThemes, generateIframeContent } from "../utils/editor_utils";
 import RangeOption from "../components/RangeOption";
 import MonacoEditor from "@monaco-editor/react";
 import { createContext, forwardRef, useContext, useEffect, useRef, useState } from "react";
@@ -55,7 +55,7 @@ export default function Editor() {
         js: ""
     })
 
-    let autoRunInterval = useRef( null )
+    let autoRunTimeout = useRef( null )
 
     const [ editorSettings, setEditorSettings ] = useState( { 
         focusMode: false,
@@ -66,12 +66,24 @@ export default function Editor() {
         lineNumbers: true,
         autocomplete: true,
         theme: "vs",
-        autoRun: false
+        autoRun: false,
+        isTabPreviewVisible: false,
     } )
 
+    let tabPreviewChannel = new BroadcastChannel("tab_preview_channel")
+
+    let previewChannelTimeout = useRef( null )
+
+    tabPreviewChannel.onmessage = function( event ) {
+        if ( event.data.type == "Request_Editor_Content" ) {
+            tabPreviewChannel.postMessage({
+                type: "Preview_Content",
+                payload: editorContent
+            })
+        }
+    }
 
     // editor controllers
-
     function handleBreakpointResize() {
         setMobileBreakpoint( window.innerWidth <= 1024 )
     }
@@ -93,6 +105,8 @@ export default function Editor() {
 
         return function() {
             window.removeEventListener( "resize", handleBreakpointResize )
+
+            tabPreviewChannel.close()
         }
     }, [])
     
@@ -229,14 +243,42 @@ export default function Editor() {
         }))
     }
 
+    function toggleTabPreviewVisibility() {
+        const frontendURL = import.meta.env.VITE_FRONTEND_URL || "http://localhost:5173"
+
+        if ( editorSettings.isTabPreviewVisible == false ) {
+            window.open(`${ frontendURL }/preview`, "_blank")
+        }
+
+        setEditorSettings( function( prevEditorSettings ) {
+            return {
+                ...prevEditorSettings,
+                isTabPreviewVisible: !prevEditorSettings.isTabPreviewVisible
+            }
+        })
+    }
+
     useEffect( function() {
         if ( editorSettings.autoRun ) {
-            if ( autoRunInterval.current ) {
-                clearInterval( autoRunInterval.current )
+            if ( autoRunTimeout.current ) {
+                clearInterval( autoRunTimeout.current )
             }
 
-            autoRunInterval.current = setTimeout( function() {
+            autoRunTimeout.current = setTimeout( function() {
                 runEditorCode()
+            }, 300 )
+        }
+
+        if ( editorSettings.isTabPreviewVisible ) {
+            if ( previewChannelTimeout.current ) {
+                clearInterval( previewChannelTimeout.current )
+            }
+
+            previewChannelTimeout.current = setTimeout( function() {
+                tabPreviewChannel.postMessage({
+                    type: "Preview_Content",
+                    payload: editorContent
+                })
             }, 300 )
         }
     }, [ editorContent ])
@@ -406,12 +448,12 @@ export default function Editor() {
                                             </>
                                         },
                                         {
-                                            action: function(){},
+                                            action: toggleTabPreviewVisibility,
                                             content: <>
                                                 <FaDesktop/>
 
                                                 <span>
-                                                    preview
+                                                    { editorSettings.isTabPreviewVisible ? <>previewing... </> : <>preview </> }
                                                 </span>
                                             </>
                                         },
@@ -455,7 +497,7 @@ export default function Editor() {
                     <div 
                         className={`
                             editor--main
-                            flex-grow
+                            flex-1
                             hidden lg:grid
                             ${ editorSettings.layout == "editor_top" ? "grid-rows-2" : "grid-cols-2" }
                             gap-4
@@ -503,26 +545,11 @@ export default function Editor() {
                         </div>
                         
                         <PreviewFrame 
-                            srcDoc={`
-                                <!DOCTYPE html>
-                                <html lang="en">
-                                    <head>
-                                        <meta charset="UTF-8" />
-                                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                                        <title>Preview</title>
-                                        <style>
-                                            ${ previewContent.css }
-                                        </style>
-                                    </head>
-                                    <body>
-                                        ${ previewContent.html }
-
-                                        <script>
-                                            ${ previewContent.js }
-                                        </script>
-                                    </body>
-                                </html>
-                            `}
+                            srcDoc={ generateIframeContent( 
+                                previewContent.html,
+                                previewContent.css,
+                                previewContent.js
+                            )}
                             className="
                                 border-2
                                 border-gray-400 dark:border-gray-600
@@ -533,7 +560,7 @@ export default function Editor() {
                     <Tabs.Root 
                         className="
                             editor--mobile-main
-                            flex-grow
+                            flex-1
                             flex lg:hidden
                             flex-col
                             border-2

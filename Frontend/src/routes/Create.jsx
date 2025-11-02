@@ -28,7 +28,7 @@ import {
 } from 'react-icons/tb'
 import { useRef, useState } from 'react'
 import BlankTemplatePreview from '../components/BlankTemplatePreview'
-import { editorThemes } from '../utils/editor_themes'
+import { editorThemes } from '../utils/editor_utils'
 import { FaMoon, FaRegSun, FaXmark } from 'react-icons/fa6'
 import { useThemeProvider } from '../providers/ThemeProvider'
 import WideLayout from '../components/WideLayout'
