@@ -7,6 +7,7 @@ import githubDark from "monaco-themes/themes/Github Dark.json"
 import monokai from "monaco-themes/themes/Monokai.json"
 import nightOwl from "monaco-themes/themes/Night Owl.json"
 import solarizedDark from "monaco-themes/themes/Solarized-dark.json"
+import { useThemeProvider } from "../providers/ThemeProvider"
 
 
 export const editorThemes = [
@@ -87,7 +88,69 @@ export const editorThemes = [
     },
 ]
 
-export function generateIframeContent( html, css, js ) {
+export function generateIframeContent( html, css, js, theme ) {
+    if ( !html && !css && !js ) {
+        if ( theme === "dark" ) {
+            return `
+                <body 
+                    style="
+                        all: unset
+                    "
+                >
+                    <div 
+                        style="
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: #1a202c;
+                            color: white;
+                        "
+                    >
+                        <p 
+                            style="
+                                font-family: sans-serif;
+                                font-size: 1.2rem;
+                                text-align: center
+                            "
+                        >
+                            There's Nothing to preview yet, Type Some Code to see something
+                        </p>
+                    </div>
+                </body>
+            `
+        } else {
+            return `
+                <body 
+                    style="
+                        all: unset
+                    "
+                >
+                    <div 
+                        style="
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: #f8f8f8;
+                            color: #111;
+                        "
+                    >
+                        <p 
+                            style="
+                                font-family: sans-serif;
+                                font-size: 1.2rem;
+                                text-align: center
+                            "
+                        >
+                            There's Nothing to preview yet, Type Some Code to see something
+                        </p>
+                    </div>
+                </body>
+            `
+        }
+    }
+
     return `<!DOCTYPE html>
             <html lang="en">
                 <head>

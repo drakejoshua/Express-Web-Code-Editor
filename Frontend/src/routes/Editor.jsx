@@ -12,7 +12,7 @@ import {
     FaPencil, 
     FaRegSun, 
     FaRotateLeft, 
-    FaShare, 
+    FaShareNodes, 
     FaXmark
 } from "react-icons/fa6";
 import NavMenu from "../components/NavMenu";
@@ -366,6 +366,7 @@ export default function Editor() {
                         pb-8
                     "
                 >
+                    {/* editor desktop content */}
                     <div 
                         className="
                             editor--header
@@ -415,7 +416,7 @@ export default function Editor() {
                                 items-center
 
                                 [&>button]:p-3
-                                [&>button]:bg-gray-100 [&>button]:dark:bg-gray-600
+                                [&>button]:bg-gray-300 [&>button]:dark:bg-gray-600
                                 [&>button]:text-xl
                                 [&>button]:dark:text-white
                                 [&>button]:rounded-md
@@ -579,17 +580,19 @@ export default function Editor() {
                             srcDoc={ generateIframeContent( 
                                 previewContent.html,
                                 previewContent.css,
-                                previewContent.js
+                                previewContent.js,
+                                theme
                             )}
                             className="
                                 border-2
-                                border-gray-400 dark:border-gray-600
+                                border-gray-300 dark:border-gray-600
                                 flex-1
                                 min-h-0
                             "
                         />
                     </div>
 
+                    {/* editor non-desktop coontent */}
                     <Tabs.Root 
                         className="
                             editor--mobile-main
@@ -598,7 +601,7 @@ export default function Editor() {
                             flex lg:hidden
                             flex-col
                             border-2
-                            border-gray-100 dark:border-gray-600
+                            border-gray-300 dark:border-gray-600
                             rounded-md
                             overflow-hidden
                         " 
@@ -614,7 +617,7 @@ export default function Editor() {
                                 overflow-x-auto
 
                                 *:py-2 *:px-5
-                                *:rounded-md
+                                *:rounded-t-md
                                 *:data-[state=active]:bg-gray-300 dark:*:data-[state=active]:bg-gray-800
                             "
                         >
@@ -691,7 +694,8 @@ export default function Editor() {
                                 srcDoc={ generateIframeContent( 
                                     editorContent.html,
                                     editorContent.css,
-                                    editorContent.js
+                                    editorContent.js,
+                                    theme
                                 )}
                                 className="
                                     h-full
@@ -750,7 +754,7 @@ function EditorSettingsPopover({
                         uppercase
                         text-sm
                         font-medium
-                        mb-3
+                        mb-4
                         inline-block
                     "
                 >
@@ -903,7 +907,7 @@ function EditorSettingsPopover({
                     label="Line Number"
                 />
 
-                <button 
+                { !mobileBreakpoint && <button 
                     className="
                         shortcut-option
                         w-full
@@ -922,7 +926,7 @@ function EditorSettingsPopover({
                     </span>
 
                     <FaArrowUpRightFromSquare/>
-                </button>
+                </button>}
             </Popover.Content>
         </Popover.Portal>
     </Popover.Root>
@@ -1069,9 +1073,9 @@ function PreviewFrame( { srcDoc, className } ) {
                     right-0
                     flex
                     gap-2
-                    bg-gray-400 dark:bg-gray-600
+                    bg-gray-300 dark:bg-gray-600
 
-                    *:text-white
+                    dark:*:text-white
                     *:capitalize
                     *:cursor-pointer
                 "
@@ -1085,7 +1089,7 @@ function PreviewFrame( { srcDoc, className } ) {
                         py-2 px-3
                     "
                 >
-                    share <FaShare />
+                    share <FaShareNodes />
                 </button>
 
                 <button 
