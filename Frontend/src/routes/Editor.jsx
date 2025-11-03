@@ -241,7 +241,6 @@ export default function Editor() {
         const frontendURL = import.meta.env.VITE_FRONTEND_URL || "http://localhost:5173"
 
         if ( editorSettings.isTabPreviewVisible == false ) {
-            console.log("preview tab created")
             tabPreviewChannelRef.current = new BroadcastChannel("tab_preview_channel")
 
             tabPreviewChannelRef.current.onmessage = function( event ) {
@@ -255,7 +254,6 @@ export default function Editor() {
 
             window.open(`${ frontendURL }/preview`, "_blank")
         } else {
-            console.log("preview tab closed")
             if ( tabPreviewChannelRef.current ) {
                 tabPreviewChannelRef.current.close()
             }
@@ -272,7 +270,7 @@ export default function Editor() {
     useEffect( function() {
         if ( editorSettings.autoRun ) {
             if ( autoRunTimeout.current ) {
-                clearInterval( autoRunTimeout.current )
+                clearTimeout( autoRunTimeout.current )
             }
 
             autoRunTimeout.current = setTimeout( function() {
@@ -282,18 +280,22 @@ export default function Editor() {
 
         if ( editorSettings.isTabPreviewVisible ) {
             if ( previewChannelTimeout.current ) {
-                clearInterval( previewChannelTimeout.current )
+                clearTimeout( previewChannelTimeout.current )
             }
 
             previewChannelTimeout.current = setTimeout( function() {
                 if ( tabPreviewChannelRef.current ) {
-                    console.log("posting tab message")
                     tabPreviewChannelRef.current.postMessage({
                         type: "Preview_Content",
                         payload: editorContent
                     })
                 }
             }, 300 )
+        }
+
+        return function() {
+            clearTimeout(autoRunTimeout.current);
+            clearTimeout(previewChannelTimeout.current);
         }
     }, [ editorContent ])
 
@@ -514,14 +516,17 @@ export default function Editor() {
                         className={`
                             editor--main
                             flex-1
-                            hidden lg:grid
-                            ${ editorSettings.layout == "editor_top" ? "grid-rows-2" : "grid-cols-2" }
+                            min-h-0
+                            hidden lg:flex
+                            ${ editorSettings.layout == "editor_top" ? "flex-col" : "" }
                             gap-4
                         `}
                     >
                         <div 
                             className={`
                                 editor--main__editors-ctn
+                                flex-1
+                                min-h-0
                                 flex
                                 ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
                                 gap-4
@@ -533,7 +538,7 @@ export default function Editor() {
                                     label="html" 
                                     defaultLanguage="html"
                                     onToggle={ toggleHTMLEditor }
-                                    className="flex-1"
+                                    className="flex-1 min-h-0"
                                     value={ editorContent.html }
                                     onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
                                 />
@@ -543,7 +548,7 @@ export default function Editor() {
                                     label="css" 
                                     defaultLanguage="css"
                                     onToggle={ toggleCSSEditor }
-                                    className="flex-1"
+                                    className="flex-1 min-h-0"
                                     value={ editorContent.css }
                                     onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
                                 />
@@ -553,7 +558,7 @@ export default function Editor() {
                                     label="js" 
                                     defaultLanguage="javascript"
                                     onToggle={ toggleJSEditor }
-                                    className="flex-1"
+                                    className="flex-1 min-h-0"
                                     value={ editorContent.js }
                                     onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
                                 />
@@ -569,6 +574,8 @@ export default function Editor() {
                             className="
                                 border-2
                                 border-gray-400 dark:border-gray-600
+                                flex-1
+                                min-h-0
                             "
                         />
                     </div>
