@@ -1,5 +1,6 @@
 import { 
     FaArrowUpRightFromSquare,
+    FaBan,
     FaCheck, 
     FaChevronDown, 
     FaCompress, 
@@ -70,18 +71,9 @@ export default function Editor() {
         isTabPreviewVisible: false,
     } )
 
-    let tabPreviewChannel = new BroadcastChannel("tab_preview_channel")
+    let tabPreviewChannelRef = useRef( null )
 
     let previewChannelTimeout = useRef( null )
-
-    tabPreviewChannel.onmessage = function( event ) {
-        if ( event.data.type == "Request_Editor_Content" ) {
-            tabPreviewChannel.postMessage({
-                type: "Preview_Content",
-                payload: editorContent
-            })
-        }
-    }
 
     // editor controllers
     function handleBreakpointResize() {
@@ -106,7 +98,9 @@ export default function Editor() {
         return function() {
             window.removeEventListener( "resize", handleBreakpointResize )
 
-            tabPreviewChannel.close()
+            if ( tabPreviewChannelRef.current ) {
+                tabPreviewChannelRef.current.close()
+            }
         }
     }, [])
     
@@ -247,7 +241,24 @@ export default function Editor() {
         const frontendURL = import.meta.env.VITE_FRONTEND_URL || "http://localhost:5173"
 
         if ( editorSettings.isTabPreviewVisible == false ) {
+            console.log("preview tab created")
+            tabPreviewChannelRef.current = new BroadcastChannel("tab_preview_channel")
+
+            tabPreviewChannelRef.current.onmessage = function( event ) {
+                if ( event.data.type == "Request_Editor_Content" ) {
+                    tabPreviewChannelRef.current.postMessage({
+                        type: "Request_Editor_Content",
+                        payload: editorContent
+                    })
+                }
+            }
+
             window.open(`${ frontendURL }/preview`, "_blank")
+        } else {
+            console.log("preview tab closed")
+            if ( tabPreviewChannelRef.current ) {
+                tabPreviewChannelRef.current.close()
+            }
         }
 
         setEditorSettings( function( prevEditorSettings ) {
@@ -275,10 +286,13 @@ export default function Editor() {
             }
 
             previewChannelTimeout.current = setTimeout( function() {
-                tabPreviewChannel.postMessage({
-                    type: "Preview_Content",
-                    payload: editorContent
-                })
+                if ( tabPreviewChannelRef.current ) {
+                    console.log("posting tab message")
+                    tabPreviewChannelRef.current.postMessage({
+                        type: "Preview_Content",
+                        payload: editorContent
+                    })
+                }
             }, 300 )
         }
     }, [ editorContent ])
@@ -326,7 +340,9 @@ export default function Editor() {
             changeTabSize,
             toggleAutocomplete,
             toggleLineNumbers,
-            initializeEditorThemes
+            initializeEditorThemes,
+            toggleTabPreviewVisibility,
+            exportAsZip
         } }>
             <WideLayout>
                 <div 
@@ -450,7 +466,7 @@ export default function Editor() {
                                         {
                                             action: toggleTabPreviewVisibility,
                                             content: <>
-                                                <FaDesktop/>
+                                                { editorSettings.isTabPreviewVisible ? <FaBan/> : <FaDesktop/> }
 
                                                 <span>
                                                     { editorSettings.isTabPreviewVisible ? <>previewing... </> : <>preview </> }
@@ -971,6 +987,8 @@ const MainEditor = forwardRef( function( {
 })
 
 function PreviewFrame( { srcDoc, className } ) {
+    const { editorSettings, toggleTabPreviewVisibility } = useContext( EditorContext )
+
     return (
         <div 
             className={`
@@ -1023,8 +1041,9 @@ function PreviewFrame( { srcDoc, className } ) {
                         editor--main__preview-btn
                         py-2 px-3
                     "
+                    onClick={ toggleTabPreviewVisibility }
                 >
-                    <FaArrowUpRightFromSquare />
+                    { editorSettings.isTabPreviewVisible ? <FaBan/> : <FaDesktop/> }
                 </button>
             </div>
         </div>
