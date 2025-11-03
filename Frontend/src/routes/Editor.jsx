@@ -66,7 +66,7 @@ export default function Editor() {
         tabSize: '2',
         lineNumbers: true,
         autocomplete: true,
-        theme: "vs",
+        theme: theme == "dark" ? "vs-dark" : "vs",
         autoRun: false,
         isTabPreviewVisible: false,
     } )
@@ -92,11 +92,23 @@ export default function Editor() {
         })
     }
 
+    function handleFullscreenChange() {
+        if ( document.fullscreenElement ) {
+            setEditorSettings( ( prev ) => ({ ...prev, focusMode: true }) )
+        } else {
+            setEditorSettings( ( prev ) => ({ ...prev, focusMode: false }) )
+        }
+    }
+
     useEffect( function() {
         window.addEventListener( "resize", handleBreakpointResize )
 
+        document.addEventListener( "fullscreenchange", handleFullscreenChange )
+
         return function() {
             window.removeEventListener( "resize", handleBreakpointResize )
+
+            document.removeEventListener( "fullscreenchange", handleFullscreenChange )
 
             if ( tabPreviewChannelRef.current ) {
                 tabPreviewChannelRef.current.close()
@@ -110,8 +122,6 @@ export default function Editor() {
         } else {
             document.exitFullscreen()
         }
-
-        setEditorSettings( function( prev ) { return { ...prev, focusMode: !prev.focusMode } })
     }
 
     function toggleHTMLEditor() {
@@ -584,6 +594,7 @@ export default function Editor() {
                         className="
                             editor--mobile-main
                             flex-1
+                            min-h-0
                             flex lg:hidden
                             flex-col
                             border-2
@@ -626,57 +637,62 @@ export default function Editor() {
                         <Tabs.Content 
                             value="html"
                             className="
-                                flex-grow
+                                flex-1
+                                min-h-0
                             "
 
                         >
-                            <MonacoEditor 
-                                options={{
-                                    minimap: { enabled: false }
-                                }}
+                            <MobileEditor 
+                                defaultLanguage="html"
+                                value={ editorContent.html }
+                                onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
                             />
                         </Tabs.Content>
 
                         <Tabs.Content 
                             value="css"
                             className="
-                                flex-grow
+                                flex-1
+                                min-h-0
                             "
 
                         >
-                            <MonacoEditor 
-                                options={{
-                                    minimap: { enabled: false }
-                                }}
+                            <MobileEditor 
+                                defaultLanguage="css"
+                                value={ editorContent.css }
+                                onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
                             />
                         </Tabs.Content>
 
                         <Tabs.Content 
                             value="js"
                             className="
-                                flex-grow
+                                flex-1
+                                min-h-0
                             "
 
                         >
-                            <MonacoEditor 
-                                options={{
-                                    minimap: { enabled: false }
-                                }}
+                            <MobileEditor 
+                                defaultLanguage="js"
+                                value={ editorContent.js }
+                                onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
                             />
                         </Tabs.Content>
 
                         <Tabs.Content 
                             value="preview"
                             className="
-                                flex-grow
+                                flex-1
+                                min-h-0
                             "
 
                         >
                             <PreviewFrame 
-                                srcDoc={`
-                                    <h1>hello</h1>
-                                    <p>this is a new blok</p>
-                                `}
+                                srcDoc={ generateIframeContent( 
+                                    editorContent.html,
+                                    editorContent.css,
+                                    editorContent.js
+                                )}
                                 className="
                                     h-full
                                 "
@@ -990,6 +1006,35 @@ const MainEditor = forwardRef( function( {
                 { ...props } 
             />
         </div>
+    )
+})
+
+const MobileEditor = forwardRef( function( props, ref ) {
+    const {
+        editorSettings,
+        initializeEditorThemes
+    } = useContext( EditorContext )
+
+    return (
+        <MonacoEditor 
+            options={{
+                minimap: { enabled: false },
+                fontSize: editorSettings.fontSize,
+                wordWrap: "off",
+                tabSize: parseInt( editorSettings.tabSize ),
+                lineNumbers: editorSettings.lineNumbers ? "on" : "off",
+                quickSuggestions: editorSettings.autocomplete,
+                suggestOnTriggerCharacters: editorSettings.autocomplete,
+                parameterHints: { enabled: editorSettings.autocomplete },
+                hover: { enabled: editorSettings.autocomplete },
+                wordBasedSuggestions: editorSettings.autocomplete,
+                tabCompletion: editorSettings.autocomplete ? "on" : "off"
+            }}
+            theme={ editorSettings.theme }
+            beforeMount={ initializeEditorThemes }
+            ref={ref}
+            { ...props }
+        />
     )
 })
 
