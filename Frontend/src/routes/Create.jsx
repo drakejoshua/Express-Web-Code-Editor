@@ -114,8 +114,8 @@ function MultiStepForm() {
     const [ blokName, setBlokName ] = useState("")
     const [ selectedTemplate, setSelectedTemplate ] = useState("blank")
     const [ defaultEditorSettings, setDefaultEditorSettings ] = useState({
-        layout: "editor-top",
-        theme: "vsc_dark",
+        layout: "editor_top",
+        theme: "vs-dark",
         font_size: 16,
         tab_size: "4",
         autocomplete: true
@@ -147,7 +147,7 @@ function MultiStepForm() {
     function handleDefaultSettingsChange(setting, value) {
         switch( setting ) {
             case "layout":
-                value = value != "" ? value : "editor-top"
+                value = value != "" ? value : "editor_top"
             break;
 
             case "tab_size":
@@ -366,21 +366,21 @@ function MultiStepForm() {
                                 label="Editor Layout:"
                                 options={[
                                     {
-                                        value: "editor-top",
+                                        value: "editor_top",
                                         content: <div className="flex items-center py-2">
                                             <TbLayoutNavbar className='text-2xl'/>
                                             <span className="ml-2">Editor on top</span>
                                         </div>
                                     },
                                     {
-                                        value: "editor-left",
+                                        value: "editor_left",
                                         content: <div className="flex items-center py-2">
                                             <TbLayoutSidebar className='text-2xl'/>
                                             <span className="ml-2">Editor on left</span>
                                         </div>
                                     },
                                     {
-                                        value: "editor-right",
+                                        value: "editor_right",
                                         content: <div className="flex items-center py-2">
                                             <TbLayoutSidebarRight className='text-2xl'/>
                                             <span className="ml-2">Editor on right</span>
