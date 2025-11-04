@@ -46,6 +46,7 @@ export default function Create() {
             <div 
                 className='
                     create
+                    pb-8
                 '
             >
                 {/* route heading */}
@@ -614,15 +615,15 @@ function MultiStepForm() {
                                         <div className="create--form__review-group-value">
                                             { 
                                                 {
-                                                    "editor-top": <div className="flex items-center">
+                                                    "editor_top": <div className="flex items-center">
                                                                     <TbLayoutNavbar className='text-2xl'/>
                                                                     <span className="ml-2">Editor on top</span>
                                                                 </div>,
-                                                    "editor-left": <div className="flex items-center">
+                                                    "editor_left": <div className="flex items-center">
                                                                     <TbLayoutSidebar className='text-2xl'/>
                                                                     <span className="ml-2">Editor on left</span>
                                                                 </div>,
-                                                    "editor-right": <div className="flex items-center">
+                                                    "editor_right": <div className="flex items-center">
                                                                     <TbLayoutSidebarRight className='text-2xl'/>
                                                                     <span className="ml-2">Editor on right</span>
                                                                 </div>,

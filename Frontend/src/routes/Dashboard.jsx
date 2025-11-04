@@ -8,7 +8,7 @@ import {
     FaMoon, 
     FaPencil, 
     FaPlus, 
-    FaSun, 
+    FaRegSun, 
     FaTrash, 
     FaUser, 
     FaXmark 
@@ -88,7 +88,7 @@ export default function Dashboard() {
                         onClick={toggleTheme}
                     >
                         { theme == "light" && <FaMoon className='dashboard--header__theme-toggle-icon' />}
-                        { theme == "dark" && <FaSun className='dashboard--header__theme-toggle-icon' />}
+                        { theme == "dark" && <FaRegSun className='dashboard--header__theme-toggle-icon' />}
                     </button>
 
                     <NavAvatar className="ml-4"/>
