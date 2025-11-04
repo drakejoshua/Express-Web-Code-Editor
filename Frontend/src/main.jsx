@@ -6,15 +6,18 @@ import { router } from './routes.jsx'
 import { RouterProvider } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import ToastProvider from './providers/ToastProvider.jsx'
+import DialogProvider from './providers/DialogProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
-        <ToastProvider>
-            <HelmetProvider>
-                <RouterProvider router={router} />
-            </HelmetProvider>
-        </ToastProvider>
+        <DialogProvider>
+            <ToastProvider>
+                <HelmetProvider>
+                    <RouterProvider router={router} />
+                </HelmetProvider>
+            </ToastProvider>
+        </DialogProvider>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 )

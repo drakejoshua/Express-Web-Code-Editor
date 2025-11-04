@@ -2,3 +2,12 @@
 
 /* add dark mode customizations */
 @custom-variant dark (&:where(.dark, .dark *));
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
