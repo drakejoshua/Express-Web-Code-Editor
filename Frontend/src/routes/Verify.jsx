@@ -11,13 +11,12 @@ import RouteContainer from '../components/RouteContainer';
 import Logo from '../components/Logo';
 import StatusCard from '../components/StatusCard';
 import { Helmet } from 'react-helmet-async'
-import { FaArrowLeft, FaArrowRotateLeft, FaMoon, FaRegSun } from 'react-icons/fa6';
-import RouteThemeToggle from '../components/RouteThemeToggle.jsx';
+import { FaArrowRotateLeft } from 'react-icons/fa6';
+import RouteThemeToggle from '../components/RouteThemeToggle';
 
 
 // email verify component
 export default function Verify() {
-
     return (
         <>
             {/* add page title and meta info using react-helmet library */}
