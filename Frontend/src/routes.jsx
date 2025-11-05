@@ -12,6 +12,7 @@ import Google from "./routes/Google";
 import Create from "./routes/Create";
 import Home from "./routes/Home";
 import Magiclink from './routes/Magiclink'
+import NotFound from "./routes/NotFound";
 
 
 export const router = createBrowserRouter([
@@ -66,5 +67,9 @@ export const router = createBrowserRouter([
     {
         path: "/settings",
         element: <Settings />
+    },
+    {
+        path: "*",
+        element: <NotFound />
     },
 ]);
