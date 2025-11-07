@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Logo from '../components/Logo'
 import Button from '../components/Button'
 import { 
@@ -29,8 +29,15 @@ export default function Home() {
     const manImageAddress = `https://images.unsplash.com/photo-1522556189639-b150ed9c4330?ixlib=rb-4.1.
     0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c21pbGluZyUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500`
 
+    useEffect( function() {
+        const track = document.querySelector('.home--clients-marquee__track');
+        const distance = track.getBoundingClientRect().width / 1; // move by one duplicate
+        console.log( 'distance: ', distance )
+        document.body.style.setProperty('--scroll-distance', `${distance}px`);
+    }, [])
+
     return (
-        <div
+        <div 
             className='
                 home 
                 h-screen 
@@ -171,9 +178,9 @@ export default function Home() {
                         home--clients-marquee__track
                         flex
                         gap-12
-                        [scroll_20s_linear_infinite]
-                        
-                        *:flex-[1_1_50%]
+        
+                        *:flex-[0_0_auto]
+                        *:animate-[scroll_15s_linear_infinite]
                     "
                 >
                     <div 
@@ -186,7 +193,6 @@ export default function Home() {
                             *:grayscale
                             *:h-14
                             *:w-auto
-                            *:block
                         '
                     >
                         <img src={ Logoipsum_a } alt="client-logo" />
