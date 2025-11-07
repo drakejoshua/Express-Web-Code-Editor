@@ -9,10 +9,13 @@
 import { DropdownMenu } from 'radix-ui'
 import { FaEllipsisVertical, FaPencil, FaTrash } from 'react-icons/fa6'
 import DropdownContent from './DropdownContent'
+import { useNavigate } from 'react-router-dom'
 
 
 // define NavMenuBlok component
 export default function Blok({ id, name, iframeContent }) {
+    const navigateTo = useNavigate()
+
     return (
         <div 
             // apply default and custom classes
@@ -60,7 +63,9 @@ export default function Blok({ id, name, iframeContent }) {
                         text-white
                         text-lg
                         font-medium
+                        cursor-pointer
                     "
+                    onClick={ () => navigateTo(`/editor/${id}`) }
                 >
                     { name }
                 </span>

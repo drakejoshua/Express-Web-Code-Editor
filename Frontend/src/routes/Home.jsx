@@ -8,7 +8,7 @@ import {
     FaMoon,
     FaRegSun,
 } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Adobe from '../assets/client_logos/adobe.svg'
 import Facebook from '../assets/client_logos/facebook.svg'
 import Instagram from '../assets/client_logos/instagram.svg'
@@ -36,6 +36,8 @@ export default function Home() {
     const { theme, toggleTheme } = useThemeProvider()
     const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
     const [ isNavLinksVisible, setIsNavLinksVisible ] = useState( true )
+
+    const navigateTo = useNavigate()
 
     return (
         <div 
@@ -97,11 +99,11 @@ export default function Home() {
                         "
                     >
 
-                        <a href="">
+                        <a href="#features">
                             about
                         </a>
 
-                        <a href="">
+                        <a href="#features">
                             features
                         </a>
 
@@ -111,6 +113,7 @@ export default function Home() {
                                 outline-blue-600 dark:outline-blue-800
                                 justify-start lg:justify-center
                             "
+                            onClick={ () => navigateTo("/auth/signup")}
                         >
                             sign up
                         </Button>
@@ -128,6 +131,7 @@ export default function Home() {
                                 text-blue-600 dark:text-white
                                 font-medium
                             '
+                            to="/api"
                         >
                             See API Docs
                         </Link>
@@ -275,6 +279,7 @@ export default function Home() {
             </div>
 
             <div
+                id='features'
                 class="
                     home--features
                     mt-32
@@ -330,7 +335,7 @@ export default function Home() {
                             An all-in-one platform for web development
                         </h2>
 
-                        <a 
+                        <Link 
                             href="" 
                             className="
                                 home--feature__heading-cta
@@ -345,9 +350,10 @@ export default function Home() {
                                 capitalize
                                 font-medium
                             "
+                            to="/features"
                         >
                             explore features
-                        </a>
+                        </Link>
                     </div>
 
                     <p 
@@ -521,7 +527,7 @@ export default function Home() {
                         "
                     >
                         <Link 
-                            to="/signup"
+                            to="/auth/signup"
                             className='
                                 home--admonition__get-started-cta
                                 inline-block
@@ -603,7 +609,7 @@ export default function Home() {
                         Terms of Service
                     </Link>
 
-                    <Link to="/signup">
+                    <Link to="/auth/signup">
                         Sign Up
                     </Link>
                 </div>

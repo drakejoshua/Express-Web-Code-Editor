@@ -32,6 +32,8 @@ import { editorThemes } from '../utils/editor_utils'
 import { FaMoon, FaRegSun, FaXmark } from 'react-icons/fa6'
 import { useThemeProvider } from '../providers/ThemeProvider'
 import WideLayout from '../components/WideLayout'
+import { Helmet } from 'react-helmet-async'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -40,69 +42,80 @@ export default function Create() {
     // retrieve theme and toggleTheme function for the theme context
     const { theme, toggleTheme } = useThemeProvider()
 
+    const navigateTo = useNavigate()
+
     return (
-        // wrap route content in a wideLayout
-        <WideLayout>
-            <div 
-                className='
-                    create
-                    pb-8
-                '
-            >
-                {/* route heading */}
-                <h1 
-                    className="
-                        create--heading
-                        text-gray-900 dark:text-white
-                        text-3xl
-                        font-semibold
-                        text-center
-                        capitalize
-                        mt-20 lg:mt-15
-                        mb-12
-                    "
-                >
-                    create a new blok
-                </h1>
+        <>
+            <Helmet>
+                <title>Create New Blok - CodeBloks</title>
+                <meta name="description" content="Create a new blok in your account by selecting a template and customizing default settings." />
+            </Helmet>
 
-                {/* 
-                    route multi-step form wrapped in a SimpleCarousel for multi-
-                    step functionality
-                */}
-                <SimpleCarousel.Root>
-                    <MultiStepForm />
-                </SimpleCarousel.Root>
-
-                {/* route action buttons container */}
+            <WideLayout>
                 <div 
-                    className="
-                        create--actions
-                        fixed
-                        top-6
-                        right-8
-                        flex
-                        gap-4
-
-                        **:text-2xl
-                    "
+                    className='
+                        create
+                        pb-8
+                    '
                 >
-                    {/* theme toggle container */}
-                    <button 
+                    {/* route heading */}
+                    <h1 
                         className="
-                            create--actions__theme-toggle
+                            create--heading
+                            text-gray-900 dark:text-white
+                            text-3xl
+                            font-semibold
+                            text-center
+                            capitalize
+                            mt-20 lg:mt-15
+                            mb-12
                         "
-                        onClick={ toggleTheme }
                     >
-                        {theme === 'dark' ? <FaMoon/> : <FaRegSun/>}
-                    </button>
+                        create a new blok
+                    </h1>
 
-                    {/* cancel button */}
-                    <button className="create--actions__cancel-btn">
-                        <FaXmark/>
-                    </button>
+                    {/* 
+                        route multi-step form wrapped in a SimpleCarousel for multi-
+                        step functionality
+                    */}
+                    <SimpleCarousel.Root>
+                        <MultiStepForm />
+                    </SimpleCarousel.Root>
+
+                    {/* route action buttons container */}
+                    <div 
+                        className="
+                            create--actions
+                            fixed
+                            top-6
+                            right-8
+                            flex
+                            gap-4
+
+                            **:text-2xl
+                        "
+                    >
+                        {/* theme toggle container */}
+                        <button 
+                            className="
+                                create--actions__theme-toggle
+                            "
+                            onClick={ toggleTheme }
+                        >
+                            {theme === 'dark' ? <FaMoon/> : <FaRegSun/>}
+                        </button>
+
+                        {/* cancel button */}
+                        <button 
+                            className="create--actions__cancel-btn"
+                            onClick={ () => navigateTo(-1) }
+                        >
+                            <FaXmark/>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </WideLayout>
+            </WideLayout>
+        </>
     )
 }
 
