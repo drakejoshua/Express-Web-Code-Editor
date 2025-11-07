@@ -17,6 +17,7 @@ import RouteThemeToggle from '../components/RouteThemeToggle';
 
 // email verify component
 export default function Verify() {
+    
     return (
         <>
             {/* add page title and meta info using react-helmet library */}

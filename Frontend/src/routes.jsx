@@ -13,63 +13,72 @@ import Create from "./routes/Create";
 import Home from "./routes/Home";
 import Magiclink from './routes/Magiclink'
 import NotFound from "./routes/NotFound";
+import App from "./routes/App";
+import ErrorElement from "./components/ErrorElement";
 
 
 export const router = createBrowserRouter([
     {
-        path: "/dashboard",
-        element: <Dashboard />
-    },
-    {
-        path: "/editor",
-        element: <Editor />
-    },
-    {
-        path: "/preview",
-        element: <Preview />
-    },
-    {
-        path: "/share",
-        element: <Share />
-    },
-    {
-        path: "/auth/verify",
-        element: <Verify />
-    },
-    {
-        path: "/auth/reset-password",
-        element: <ResetPassword />
-    },
-    {
-        path: "/auth/signin",
-        element: <Signin />
-    },
-    {
-        path: "/auth/signup",
-        element: <Signup />
-    },
-    {
-        path: "/auth/google",
-        element: <Google />
-    },
-    {
-        path: "/auth/magiclink",
-        element: <Magiclink />
-    },
-    {
-        path: "/create",
-        element: <Create />
-    },
-    {
         path: "/",
-        element: <Home />
-    },
-    {
-        path: "/settings",
-        element: <Settings />
-    },
-    {
-        path: "*",
-        element: <NotFound />
-    },
+        element: <App/>,
+        children: [
+            {
+                path: "/dashboard",
+                element: <Dashboard />
+            },
+            {
+                path: "/editor",
+                element: <Editor />
+            },
+            {
+                path: "/preview",
+                element: <Preview />
+            },
+            {
+                path: "/share",
+                element: <Share />
+            },
+            {
+                path: "/auth/verify",
+                element: <Verify />
+            },
+            {
+                path: "/auth/reset-password",
+                element: <ResetPassword />
+            },
+            {
+                path: "/auth/signin",
+                element: <Signin />
+            },
+            {
+                path: "/auth/signup",
+                element: <Signup />
+            },
+            {
+                path: "/auth/google",
+                element: <Google />
+            },
+            {
+                path: "/auth/magiclink",
+                element: <Magiclink />
+            },
+            {
+                path: "/create",
+                element: <Create />
+            },
+            {
+                path: "/",
+                element: <Home />
+            },
+            {
+                path: "/settings",
+                element: <Settings />
+            },
+            {
+                path: "*",
+                element: <NotFound />
+            },
+        ],
+        errorElement: <ErrorElement />
+    }
 ]);

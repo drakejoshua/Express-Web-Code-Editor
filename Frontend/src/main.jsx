@@ -7,17 +7,20 @@ import { RouterProvider } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import ToastProvider from './providers/ToastProvider.jsx'
 import DialogProvider from './providers/DialogProvider.jsx'
+import ErrorBoundary from './routes/ErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider>
-        <DialogProvider>
-            <ToastProvider>
-                <HelmetProvider>
-                    <RouterProvider router={router} />
-                </HelmetProvider>
-            </ToastProvider>
-        </DialogProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+        <ThemeProvider>
+            <DialogProvider>
+                <ToastProvider>
+                    <HelmetProvider>
+                        <RouterProvider router={router} />
+                    </HelmetProvider>
+                </ToastProvider>
+            </DialogProvider>
+        </ThemeProvider>
+    </ErrorBoundary>
   </StrictMode>
 )
