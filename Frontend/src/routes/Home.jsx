@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
 import Logo from '../components/Logo'
 import Button from '../components/Button'
 import { 
+    FaBars,
     FaCodeFork,
     FaDisplay,
     FaFileExport,
@@ -25,6 +25,7 @@ import Logoipsum_e from '../assets/client_logos/logoipsum-e.png'
 import Logoipsum_f from '../assets/client_logos/logoipsum-f.png'
 import Logoipsum_j from '../assets/client_logos/logoipsum-j.png'
 import { useThemeProvider } from '../providers/ThemeProvider'
+import { useState } from 'react'
 
 
 
@@ -33,6 +34,8 @@ export default function Home() {
     0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c21pbGluZyUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500`
 
     const { theme, toggleTheme } = useThemeProvider()
+    const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
+    const [ isNavLinksVisible, setIsNavLinksVisible ] = useState( true )
 
     return (
         <div 
@@ -49,68 +52,87 @@ export default function Home() {
                 className="
                     home--navbar
                     flex
+                    flex-wrap lg:flex-nowrap
                     items-center
                     justify-between
-                    px-8
-                    py-4
+                    gap-4 lg:gap-8
+                    px-4 lg:px-8
+                    py-6 lg:py-4
                 "
             >
                 <Logo />
 
-                <div 
+                <button 
                     className="
-                        home--navbar__links
-                        flex
-                        items-center
-                        gap-6
-                        *:capitalize
-                    "
+                        home--navbar__theme-toggle
+                        text-xl
+                        text-gray-800 dark:text-white
+                        ml-auto
+                    " 
+                    onClick={toggleTheme}
                 >
-                    <button 
+                    { theme === 'light' ? <FaMoon/> : <FaRegSun/> }
+                </button>
+
+                { mobileBreakpoint && <button
+                    className='
+                        home--navbar__mobile-toggle
+                        text-2xl
+                    '
+                    onClick={ () => setIsNavLinksVisible( !isNavLinksVisible )}
+                >
+                    <FaBars />
+                </button>}
+
+                { ( !mobileBreakpoint || isNavLinksVisible ) && 
+                    <div 
                         className="
-                            home--navbar__theme-toggle
-                            text-xl
-                            text-gray-800 dark:text-white
-                        " 
-                        onClick={toggleTheme}
-                    >
-                        { theme === 'light' ? <FaMoon/> : <FaRegSun/> }
-                    </button>
-
-                    <a href="">
-                        about
-                    </a>
-
-                    <a href="">
-                        features
-                    </a>
-
-                    <Button
-                        className="
-                            outline-2
-                            outline-blue-600 dark:outline-blue-800
+                            home--navbar__links
+                            flex
+                            flex-col lg:flex-row
+                            w-full lg:w-auto
+                            items-stretch lg:items-center
+                            gap-4.5 lg:gap-6
+                            *:capitalize
                         "
                     >
-                        sign up
-                    </Button>
 
-                    <Link
-                        className='
-                            outline-2
-                            outline-blue-600 dark:outline-blue-800
-                            p-2
-                            px-6
-                            rounded-md
-                            hover:bg-blue-600 dark:hover:bg-blue-800
-                            hover:text-white
-                            transition-all
-                            text-blue-600 dark:text-white
-                            font-medium
-                        '
-                    >
-                        See API Docs
-                    </Link>
-                </div>
+                        <a href="">
+                            about
+                        </a>
+
+                        <a href="">
+                            features
+                        </a>
+
+                        <Button
+                            className="
+                                outline-2
+                                outline-blue-600 dark:outline-blue-800
+                                justify-start lg:justify-center
+                            "
+                        >
+                            sign up
+                        </Button>
+
+                        <Link
+                            className='
+                                outline-2
+                                outline-blue-600 dark:outline-blue-800
+                                p-2
+                                px-6
+                                rounded-md
+                                hover:bg-blue-600 dark:hover:bg-blue-800
+                                hover:text-white
+                                transition-all
+                                text-blue-600 dark:text-white
+                                font-medium
+                            '
+                        >
+                            See API Docs
+                        </Link>
+                    </div>
+                }
             </div>
 
             <div 
@@ -120,6 +142,7 @@ export default function Home() {
                     flex-col
                     items-center
                     mt-8
+                    px-4
                 "
             >
                 <h3
@@ -137,7 +160,7 @@ export default function Home() {
                     className='
                         home--hero__main-text
                         mt-2
-                        text-6xl
+                        text-4xl lg:text-6xl
                         font-medium
                         text-center
                         leading-[1.1]
@@ -167,7 +190,7 @@ export default function Home() {
                     className='
                         home--hero__image
                         mt-10
-                        w-[80%]
+                        w-full lg:w-[80%]
                         rounded-lg
                         shadow-lg
                         dark:shadow-blue-800
@@ -255,8 +278,8 @@ export default function Home() {
                 class="
                     home--features
                     mt-32
-                    px-16
-                    py-28
+                    px-4 lg:px-16
+                    py-16 lg:py-28
                     bg-[linear-gradient(to_right,rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('https://images.pexels.com/photos/990423/pexels-photo-990423.jpeg')]
                     bg-cover
                     bg-center
@@ -267,8 +290,10 @@ export default function Home() {
                     className="
                         home--feature__heading
                         flex
-                        items-end
+                        flex-col lg:flex-row
+                        lg:items-end
                         justify-between
+                        gap-8
                     "
                 >
                     <div
@@ -293,7 +318,7 @@ export default function Home() {
                         <h2 
                             className="
                                 home--feature__main-text
-                                text-6xl
+                                text-5xl lg:text-6xl
                                 max-w-2xl
                                 font-medium
                                 mt-3
@@ -338,19 +363,18 @@ export default function Home() {
                     </p>
                 </div>
 
-
                 <div 
                     className="
                         home--feature__list
-                        mt-32
+                        mt-14 lg:mt-32
                         grid
-                        grid-cols-3
+                        grid-cols-1 lg:grid-cols-3
                         gap-12
 
                         
                         [&_.home--feature\_\_item]:outline-2
                         [&_.home--feature\_\_item]:outline-blue-200/50
-                        [&_.home--feature\_\_item]:p-10 [&_.home--feature\_\_item]:py-14
+                        [&_.home--feature\_\_item]:p-8 lg:[&_.home--feature\_\_item]:p-10 [&_.home--feature\_\_item]:py-12 lg:[&_.home--feature\_\_item]:py-14
                         [&_.home--feature\_\_item]:rounded-lg
                         [&_.home--feature\_\_item]:transition-all
                         [&_.home--feature\_\_item]:bg-[linear-gradient(to_right,rgba(0,0,0,0.9),rgba(0,0,0,0.9)),url('https://images.pexels.com/photos/990423/pexels-photo-990423.jpeg')]
@@ -361,7 +385,7 @@ export default function Home() {
                         [&_.home--feature\_\_item-icon]:text-4xl
                         [&_.home--feature\_\_item-icon]:text-white
                         
-                        [&_.home--feature\_\_item-subject]:mt-18
+                        [&_.home--feature\_\_item-subject]:mt-10 lg:[&_.home--feature\_\_item-subject]:mt-18
                         [&_.home--feature\_\_item-subject]:text-2xl
                         [&_.home--feature\_\_item-subject]:font-medium
                         [&_.home--feature\_\_item-subject]:text-white
@@ -447,9 +471,12 @@ export default function Home() {
                 className="
                     home--admonition
                     flex
+                    flex-col lg:flex-row
                     items-center
                     justify-between
-                    px-16
+                    px-4 lg:px-16
+                    py-14 lg:py-0
+                    gap-12 lg:gap-0
 
                     *:flex-[1_1_50%]
                 "
@@ -462,7 +489,7 @@ export default function Home() {
                     <h2
                         className='
                             home--admonition__main-text
-                            text-5xl
+                            text-4xl lg:text-5xl
                             font-medium
                             leading-[1.1]
                             max-w-lg
@@ -541,6 +568,7 @@ export default function Home() {
                 className="
                     home--footer
                     flex
+                    flex-col lg:flex-row
                     items-center
                     p-6
                     gap-4
@@ -557,8 +585,10 @@ export default function Home() {
                 <div 
                     className="
                         home--footer__links 
-                        ml-auto
+                        lg:ml-auto
                         flex
+                        flex-wrap
+                        justify-center
                         items-center
                         gap-3
 
