@@ -5,6 +5,8 @@ import {
     FaCodeFork,
     FaDisplay,
     FaFileExport,
+    FaMoon,
+    FaRegSun,
 } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import Adobe from '../assets/client_logos/adobe.svg'
@@ -22,6 +24,7 @@ import Logoipsum_d from '../assets/client_logos/logoipsum-d.png'
 import Logoipsum_e from '../assets/client_logos/logoipsum-e.png'
 import Logoipsum_f from '../assets/client_logos/logoipsum-f.png'
 import Logoipsum_j from '../assets/client_logos/logoipsum-j.png'
+import { useThemeProvider } from '../providers/ThemeProvider'
 
 
 
@@ -29,12 +32,7 @@ export default function Home() {
     const manImageAddress = `https://images.unsplash.com/photo-1522556189639-b150ed9c4330?ixlib=rb-4.1.
     0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c21pbGluZyUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500`
 
-    useEffect( function() {
-        const track = document.querySelector('.home--clients-marquee__track');
-        const distance = track.getBoundingClientRect().width / 1; // move by one duplicate
-        console.log( 'distance: ', distance )
-        document.body.style.setProperty('--scroll-distance', `${distance}px`);
-    }, [])
+    const { theme, toggleTheme } = useThemeProvider()
 
     return (
         <div 
@@ -61,13 +59,24 @@ export default function Home() {
 
                 <div 
                     className="
-                        home--nav-links
+                        home--navbar__links
                         flex
                         items-center
                         gap-6
                         *:capitalize
                     "
                 >
+                    <button 
+                        className="
+                            home--navbar__theme-toggle
+                            text-xl
+                            text-gray-800 dark:text-white
+                        " 
+                        onClick={toggleTheme}
+                    >
+                        { theme === 'light' ? <FaMoon/> : <FaRegSun/> }
+                    </button>
+
                     <a href="">
                         about
                     </a>
@@ -79,7 +88,7 @@ export default function Home() {
                     <Button
                         className="
                             outline-2
-                            outline-blue-600
+                            outline-blue-600 dark:outline-blue-800
                         "
                     >
                         sign up
@@ -88,18 +97,18 @@ export default function Home() {
                     <Link
                         className='
                             outline-2
-                            outline-blue-600
+                            outline-blue-600 dark:outline-blue-800
                             p-2
                             px-6
                             rounded-md
-                            hover:bg-blue-600
+                            hover:bg-blue-600 dark:hover:bg-blue-800
                             hover:text-white
                             transition-all
-                            text-blue-600
+                            text-blue-600 dark:text-white
                             font-medium
                         '
                     >
-                        sign in
+                        See API Docs
                     </Link>
                 </div>
             </div>
@@ -133,7 +142,7 @@ export default function Home() {
                         text-center
                         leading-[1.1]
                         max-w-2xl
-                        text-gray-800
+                        text-gray-800 dark:text-white
                     '
                 >
                     Experience the future of web code editing
@@ -161,6 +170,7 @@ export default function Home() {
                         w-[80%]
                         rounded-lg
                         shadow-lg
+                        dark:shadow-blue-800
                     '
                 />
             </div>
@@ -190,7 +200,7 @@ export default function Home() {
                             items-center
                             gap-12
 
-                            *:grayscale
+                            *:grayscale dark:*:grayscale-50
                             *:h-14
                             *:w-auto
                         '
@@ -456,7 +466,7 @@ export default function Home() {
                             font-medium
                             leading-[1.1]
                             max-w-lg
-                            text-gray-800
+                            text-gray-800 dark:text-white
                         '
                     >
                         Ready to elevate your web development experience?
