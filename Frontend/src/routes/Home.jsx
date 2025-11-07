@@ -1,21 +1,66 @@
 import React from 'react'
 import Logo from '../components/Logo'
 import Button from '../components/Button'
+import { 
+    FaCodeFork,
+    FaDisplay,
+    FaFileExport,
+} from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
+import Adobe from '../assets/client_logos/adobe.svg'
+import Facebook from '../assets/client_logos/facebook.svg'
+import Instagram from '../assets/client_logos/instagram.svg'
+import Javascript from '../assets/client_logos/javascript.svg'
+import Microsoft from '../assets/client_logos/microsoft.svg'
+import ReactLogo from '../assets/client_logos/react.svg'
+import Twitter from '../assets/client_logos/twitter.svg'
+import HeroImage from '../assets/hero-image.png'
+import Logoipsum_a from '../assets/client_logos/logoipsum-a.png'
+import Logoipsum_b from '../assets/client_logos/logoipsum-b.png'
+import Logoipsum_c from '../assets/client_logos/logoipsum-c.png'
+import Logoipsum_d from '../assets/client_logos/logoipsum-d.png'
+import Logoipsum_e from '../assets/client_logos/logoipsum-e.png'
+import Logoipsum_f from '../assets/client_logos/logoipsum-f.png'
+import Logoipsum_j from '../assets/client_logos/logoipsum-j.png'
+
+
 
 export default function Home() {
+    const manImageAddress = `https://images.unsplash.com/photo-1522556189639-b150ed9c4330?ixlib=rb-4.1.
+    0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c21pbGluZyUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500`
+
     return (
         <div
             className='
                 home 
                 h-screen 
-                w-full
+                w-full 
+                bg-neutral-100 dark:bg-gray-900 
+                dark:text-white 
+                overflow-auto
             '
         >
-            <div className="home--navbar">
+            <div 
+                className="
+                    home--navbar
+                    flex
+                    items-center
+                    justify-between
+                    px-8
+                    py-4
+                "
+            >
                 <Logo />
 
-                <div className="home--nav-links">
+                <div 
+                    className="
+                        home--nav-links
+                        flex
+                        items-center
+                        gap-6
+                        *:capitalize
+                    "
+                >
                     <a href="">
                         about
                     </a>
@@ -24,36 +69,499 @@ export default function Home() {
                         features
                     </a>
 
-                    <Button>
+                    <Button
+                        className="
+                            outline-2
+                            outline-blue-600
+                        "
+                    >
                         sign up
                     </Button>
 
-                    <Link>
+                    <Link
+                        className='
+                            outline-2
+                            outline-blue-600
+                            p-2
+                            px-6
+                            rounded-md
+                            hover:bg-blue-600
+                            hover:text-white
+                            transition-all
+                            text-blue-600
+                            font-medium
+                        '
+                    >
                         sign in
                     </Link>
                 </div>
             </div>
 
-            <div className="home--hero">
-                <h3>
+            <div 
+                className="
+                    home--hero
+                    flex
+                    flex-col
+                    items-center
+                    mt-8
+                "
+            >
+                <h3
+                    className='
+                        home--hero__pre-text
+                        text-blue-600
+                        font-semibold
+                        capitalize
+                    '
+                >
                     the ultimate web code editor
                 </h3>
 
-                <h1>
+                <h1
+                    className='
+                        home--hero__main-text
+                        mt-2
+                        text-6xl
+                        font-medium
+                        text-center
+                        leading-[1.1]
+                        max-w-2xl
+                        text-gray-800
+                    '
+                >
                     Experience the future of web code editing
                 </h1>
 
-                <p>
+                <p
+                    className='
+                        home--hero__sub-text
+                        mt-4
+                        max-w-3xl
+                        text-center
+                        text-lg
+                    '
+                >
                     CodeBloks is a powerful web code editor designed to streamline your development workflow.
                     With an intuitive interface, real-time collaboration, and seamless deployment options.
                 </p>
 
-                <img src="" alt="" />
+                <img 
+                    src={ HeroImage } 
+                    alt="image of the hero section" 
+                    className='
+                        home--hero__image
+                        mt-10
+                        w-[80%]
+                        rounded-lg
+                        shadow-lg
+                    '
+                />
             </div>
 
-            <div className="home--clients-marquee">
-                
+            <div 
+                className="
+                    home--clients-marquee
+                    mt-32
+                    px-10
+                    overflow-hidden
+                "
+            >
+                <div 
+                    className="
+                        home--clients-marquee__track
+                        flex
+                        gap-12
+                        [scroll_20s_linear_infinite]
+                        
+                        *:flex-[1_1_50%]
+                    "
+                >
+                    <div 
+                        className='
+                            home--clients-marquee__track-copy
+                            flex
+                            items-center
+                            gap-12
+
+                            *:grayscale
+                            *:h-14
+                            *:w-auto
+                            *:block
+                        '
+                    >
+                        <img src={ Logoipsum_a } alt="client-logo" />
+                        <img src={ Logoipsum_b } alt="client-logo" />
+                        <img src={ Logoipsum_c } alt="client-logo" />
+                        <img src={ Logoipsum_d } alt="client-logo" />
+                        <img src={ Logoipsum_e } alt="client-logo" />
+                        <img src={ Logoipsum_f } alt="client-logo" />
+                        <img src={ Logoipsum_j } alt="client-logo" />
+                        <img src={ Adobe } alt="client-logo" />
+                        <img src={ Facebook } alt="client-logo" />
+                        <img src={ Instagram } alt="client-logo" />
+                        <img src={ Javascript } alt="client-logo" />
+                        <img src={ Microsoft } alt="client-logo" />
+                        <img src={ ReactLogo } alt="client-logo" />
+                        <img src={ Twitter } alt="client-logo" />
+                    </div>
+                    
+                    <div 
+                        className='
+                            home--clients-marquee__track-copy
+                            flex
+                            items-center
+                            gap-12
+
+                            *:grayscale
+                            *:h-14
+                            *:w-auto
+                        '
+                    >
+                        <img src={ Logoipsum_a } alt="client-logo" />
+                        <img src={ Logoipsum_b } alt="client-logo" />
+                        <img src={ Logoipsum_c } alt="client-logo" />
+                        <img src={ Logoipsum_d } alt="client-logo" />
+                        <img src={ Logoipsum_e } alt="client-logo" />
+                        <img src={ Logoipsum_f } alt="client-logo" />
+                        <img src={ Logoipsum_j } alt="client-logo" />
+                        <img src={ Adobe } alt="client-logo" />
+                        <img src={ Facebook } alt="client-logo" />
+                        <img src={ Instagram } alt="client-logo" />
+                        <img src={ Javascript } alt="client-logo" />
+                        <img src={ Microsoft } alt="client-logo" />
+                        <img src={ ReactLogo } alt="client-logo" />
+                        <img src={ Twitter } alt="client-logo" />
+                    </div>
+                </div>
             </div>
+
+            <div
+                class="
+                    home--features
+                    mt-32
+                    px-16
+                    py-28
+                    bg-[linear-gradient(to_right,rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('https://images.pexels.com/photos/990423/pexels-photo-990423.jpeg')]
+                    bg-cover
+                    bg-center
+                "
+            >
+
+                <div 
+                    className="
+                        home--feature__heading
+                        flex
+                        items-end
+                        justify-between
+                    "
+                >
+                    <div
+                        className='
+                            home--feature__text-group
+                            flex
+                            flex-col
+                            items-start
+                        '
+                    >
+                        <h4 
+                            className="
+                                home--feature__pre-text
+                                text-blue-200
+                                font-semibold
+                                capitalize
+                            "
+                        >
+                            coding reimagined
+                        </h4>
+
+                        <h2 
+                            className="
+                                home--feature__main-text
+                                text-6xl
+                                max-w-2xl
+                                font-medium
+                                mt-3
+                                capitalize
+                                [&]:text-white
+                                leading-[1.1]
+                            "
+                        >
+                            An all-in-one platform for web development
+                        </h2>
+
+                        <a 
+                            href="" 
+                            className="
+                                home--feature__heading-cta
+                                mt-10
+                                inline-block
+                                p-2 px-6
+                                bg-blue-600
+                                text-white
+                                rounded-md
+                                hover:bg-blue-700
+                                transition-all
+                                capitalize
+                                font-medium
+                            "
+                        >
+                            explore features
+                        </a>
+                    </div>
+
+                    <p 
+                        className="
+                            home--feature__sub-text
+                            max-w-lg
+                            [&]:text-white
+                        "
+                    >
+                        CodeBloks offers a comprehensive suite of tools to enhance your coding experience.
+                        From syntax highlighting and code completion to version control and deployment options,
+                        everything you need is just a click away.
+                    </p>
+                </div>
+
+
+                <div 
+                    className="
+                        home--feature__list
+                        mt-32
+                        grid
+                        grid-cols-3
+                        gap-12
+
+                        
+                        [&_.home--feature\_\_item]:outline-2
+                        [&_.home--feature\_\_item]:outline-blue-200/50
+                        [&_.home--feature\_\_item]:p-10 [&_.home--feature\_\_item]:py-14
+                        [&_.home--feature\_\_item]:rounded-lg
+                        [&_.home--feature\_\_item]:transition-all
+                        [&_.home--feature\_\_item]:bg-[linear-gradient(to_right,rgba(0,0,0,0.9),rgba(0,0,0,0.9)),url('https://images.pexels.com/photos/990423/pexels-photo-990423.jpeg')]
+                        [&_.home--feature\_\_item]:bg-cover
+                        [&_.home--feature\_\_item]:bg-center
+                        [&_.home--feature\_\_item]:hover:scale-105
+                        
+                        [&_.home--feature\_\_item-icon]:text-4xl
+                        [&_.home--feature\_\_item-icon]:text-white
+                        
+                        [&_.home--feature\_\_item-subject]:mt-18
+                        [&_.home--feature\_\_item-subject]:text-2xl
+                        [&_.home--feature\_\_item-subject]:font-medium
+                        [&_.home--feature\_\_item-subject]:text-white
+                        [&_.home--feature\_\_item-subject]:capitalize
+                        
+                        [&_.home--feature\_\_item-description]:mt-4
+                        [&_.home--feature\_\_item-description]:text-white
+                    "
+                >
+                    {/* run code, share code, export code */}
+                    <div 
+                        className="
+                            home--feature__item
+                        "
+                    >
+                        <FaDisplay
+                            className="
+                                home--feature__item-icon
+                            "
+                        />
+
+                        <h3
+                            className='
+                                home--feature__item-subject
+                            '
+                        >
+                            Run Code directly in the Browser
+                        </h3>
+
+                        <p
+                            className='
+                                home--feature__item-description
+                            '
+                        >
+                            Instantly execute your code within the editor.
+                            See the results in real-time without any external tools.
+                        </p>
+                    </div>
+
+                    <div className="home--feature__item">
+                        <FaCodeFork className='home--feature__item-icon' />
+
+                        <h3
+                            className='
+                                home--feature__item-subject
+                            '
+                        >
+                            Share your code with anyone
+                        </h3>
+                        <p
+                            className='
+                                home--feature__item-description
+                            '
+                        >
+                            Effortlessly share your code snippets with others.
+                            Get feedback and collaborate on projects with ease.
+                        </p>
+                    </div>
+
+                    <div className="home--feature__item">
+                        <FaFileExport className='home--feature__item-icon' />
+
+                        <h3
+                            className='
+                                home--feature__item-subject
+                            '
+                        >
+                            Export your code seamlessly
+                        </h3>
+                        <p
+                            className='
+                                home--feature__item-description
+                            '
+                        >
+                            Export your code in various formats.
+                            Whether it's for deployment or sharing, we've got you covered.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div 
+                className="
+                    home--admonition
+                    flex
+                    items-center
+                    justify-between
+                    px-16
+
+                    *:flex-[1_1_50%]
+                "
+            >
+                <div 
+                    className="
+                        home--admonition__content
+                    "
+                >
+                    <h2
+                        className='
+                            home--admonition__main-text
+                            text-5xl
+                            font-medium
+                            leading-[1.1]
+                            max-w-lg
+                            text-gray-800
+                        '
+                    >
+                        Ready to elevate your web development experience?
+                    </h2>
+
+                    <p
+                        className='
+                            home--admonition__sub-text
+                            mt-6
+                            max-w-md
+                            text-lg
+                        '
+                    >
+                        Join CodeBloks today and unlock the full potential of web coding.
+                        Everything you need to create, collaborate, and deploy is right at your fingertips.
+                    </p>
+
+                    <div 
+                        className="
+                            home--admonition__cta-group
+                            mt-8
+                            flex
+                            items-center
+                            gap-6
+                        "
+                    >
+                        <Link 
+                            to="/signup"
+                            className='
+                                home--admonition__get-started-cta
+                                inline-block
+                                p-2 px-6
+                                bg-blue-600
+                                text-white
+                                rounded-md
+                                capitalize
+                                font-medium
+                                hover:bg-blue-700
+                                transition-all
+                            '
+                        >
+                            get started
+                        </Link>
+
+                        <Link 
+                            to="/features"
+                            className='
+                                home--admonition__explore-features-cta
+                                inline-block
+                                capitalize
+                                font-medium
+                            '
+                        >
+                            explore features
+                        </Link>
+                    </div>
+                </div>
+
+                <img 
+                    src={ manImageAddress } 
+                    alt="" 
+                    className="
+                        home--admonition__image
+                        h-[100vh]
+                        object-cover
+
+                    " 
+                />
+            </div>
+
+            <footer 
+                className="
+                    home--footer
+                    flex
+                    items-center
+                    p-6
+                    gap-4
+                    border-t-2
+                    border-gray-300/50
+                "
+            >
+                <Logo />
+
+                <p>
+                    &copy; 2024 CodeBloks. All rights reserved.
+                </p>
+
+                <div 
+                    className="
+                        home--footer__links 
+                        ml-auto
+                        flex
+                        items-center
+                        gap-3
+
+                        *:capitalize
+                    "
+                >
+                    <Link to="/privacy-policy">
+                        Privacy Policy
+                    </Link>
+
+                    <Link to="/terms-of-service">
+                        Terms of Service
+                    </Link>
+
+                    <Link to="/signup">
+                        Sign Up
+                    </Link>
+                </div>
+            </footer>
         </div>
     )
 }
