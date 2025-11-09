@@ -9,10 +9,13 @@ import FinishButton from "../components/FinishButton";
 import ScrollSpy from "react-ui-scrollspy";
 import { useRef } from "react";
 import { useThemeProvider } from '../providers/ThemeProvider'
+import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
     const parentRef = useRef(null)
     const { theme, toggleTheme } = useThemeProvider()
+
+    const navigateTo = useNavigate() 
     
     return (
         <WideLayout>
@@ -37,7 +40,10 @@ export default function Settings() {
                         capitalize
                     "
                 >
-                    <FaXmark className="settings--header__icon" />
+                    <FaXmark 
+                        className="settings--header__icon" 
+                        onClick={ () => navigateTo(-1) }
+                    />
 
                     <h1 className="settings--header__text">
                         settings
