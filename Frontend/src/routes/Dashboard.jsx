@@ -24,11 +24,14 @@ import Blok from '../components/Blok'
 import WideLayout from '../components/WideLayout'
 import NavMenu from '../components/NavMenu'
 import NavAvatar from '../components/NavAvatar'
+import { useNavigate } from 'react-router-dom'
 
 
 export default function Dashboard() {
     
     const { theme, toggleTheme } = useThemeProvider()
+
+    const navigateTo = useNavigate()
 
     return (
         <WideLayout>
@@ -111,9 +114,7 @@ export default function Dashboard() {
                     />
 
                     <Button
-                        className="
-                            
-                        "
+                        onClick={ () => navigateTo('/create') }
                     >
                         <FaPlus className='dashboard--filter-bar__add-btn-icon' />
 

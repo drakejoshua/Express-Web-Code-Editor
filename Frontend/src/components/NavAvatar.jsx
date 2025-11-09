@@ -10,10 +10,14 @@
 import { DropdownMenu } from 'radix-ui'
 import { FaArrowsRotate, FaArrowRightFromBracket } from 'react-icons/fa6'
 import UserAvatar from './UserAvatar'
+import { useNavigate } from 'react-router-dom'
 
 
 // define and export NavAvatar component
 export default function NavAvatar({ className }) {
+
+    const navigateTo = useNavigate()
+
     return (
         <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
@@ -69,7 +73,7 @@ export default function NavAvatar({ className }) {
                             </span>
                             
                             <span 
-                            className="
+                                className="
                                     dashboard--header__profile-email
                                     inline-block
                                     text-gray-600 dark:text-gray-300
@@ -102,6 +106,7 @@ export default function NavAvatar({ className }) {
                             className='
                                 dashboard--header__profile-option
                             '
+                            onClick={ () => navigateTo("/settings#account") }
                         >
                             <FaArrowsRotate className="dashboard--header__option-icon" /> 
 

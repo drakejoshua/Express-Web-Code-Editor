@@ -12,10 +12,14 @@ import NavMenuBlok from "./NavMenuBlok";
 import SearchInput from "./SearchInput";
 import { Dialog } from "radix-ui";
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 
 
 // define and export NavMenu component
 export default function NavMenu() {
+
+    const navigateTo = useNavigate()
+
   return (
     <Dialog.Root>
         <Dialog.Trigger className='dashboard--header__menu-trigger'>
@@ -101,6 +105,7 @@ export default function NavMenu() {
                     className="
                         mt-auto
                     "
+                    onClick={ () => navigateTo("/create") }
                 >
                     <FaPlus/>
 
