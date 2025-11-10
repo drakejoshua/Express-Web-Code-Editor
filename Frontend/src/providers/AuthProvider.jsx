@@ -290,13 +290,34 @@ export default function AuthProvider({ children }) {
     }
 
     async function signOutUser() {
-        // clear user state and remove saved user token from local storage
-        setUser( "logout" )
-        localStorage.removeItem( "codebloks-token" )
+        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
 
-        // clear any existing auth refresh timeout
-        if ( authRefreshTimeout.current ) {
-            clearTimeout( authRefreshTimeout.current )
+        try {
+            const resp = await fetch( `${ backendURL }/auth/signout`, {
+                method: "POST",
+                headers: {
+                    "x-app-id": appId
+                },
+                credentials: "include"
+            })
+
+            if ( resp.ok ) {
+                // clear user state and remove saved user token from local storage
+                setUser( "logout" )
+
+                // clear any existing auth refresh timeout
+                if ( authRefreshTimeout.current ) {
+                    clearTimeout( authRefreshTimeout.current )
+                }
+
+                return { status: "success" }
+            } else {
+                const errorData = await resp.json()
+
+                return { status: "error", error: errorData.error.message || "Signout failed" }
+            }
+        } catch ( error ) {
+            return { status: "error", error: error.message }
         }
     }
 
