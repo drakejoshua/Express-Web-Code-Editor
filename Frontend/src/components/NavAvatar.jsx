@@ -11,12 +11,15 @@ import { DropdownMenu } from 'radix-ui'
 import { FaArrowsRotate, FaArrowRightFromBracket } from 'react-icons/fa6'
 import UserAvatar from './UserAvatar'
 import { useNavigate } from 'react-router-dom'
+import { useAuthProvider } from '../providers/AuthProvider'
 
 
 // define and export NavAvatar component
 export default function NavAvatar({ className }) {
 
     const navigateTo = useNavigate()
+
+    const { signOutUser } = useAuthProvider()
 
     return (
         <DropdownMenu.Root>
@@ -119,6 +122,7 @@ export default function NavAvatar({ className }) {
                             className='
                                 dashboard--header__profile-option
                             '
+                            onClick={ () => signOutUser() }
                         >
                             <FaArrowRightFromBracket className="dashboard--header__option-icon" /> 
 

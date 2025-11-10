@@ -25,6 +25,7 @@ import WideLayout from '../components/WideLayout'
 import NavMenu from '../components/NavMenu'
 import NavAvatar from '../components/NavAvatar'
 import { useNavigate } from 'react-router-dom'
+import { useAuthProvider } from '../providers/AuthProvider'
 
 
 export default function Dashboard() {

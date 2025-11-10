@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import ToastProvider from './providers/ToastProvider.jsx'
 import DialogProvider from './providers/DialogProvider.jsx'
 import ErrorBoundary from './routes/ErrorBoundary.jsx'
+import AuthProvider from './providers/AuthProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -16,7 +17,9 @@ createRoot(document.getElementById('root')).render(
             <DialogProvider>
                 <ToastProvider>
                     <HelmetProvider>
-                        <RouterProvider router={router} />
+                        <AuthProvider>
+                            <RouterProvider router={router} />
+                        </AuthProvider>
                     </HelmetProvider>
                 </ToastProvider>
             </DialogProvider>

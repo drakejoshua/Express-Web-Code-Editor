@@ -18,13 +18,46 @@ import EmailField from '../components/EmailField'
 import Carousel from '../components/Carousel'
 import RouteThemeToggle from '../components/RouteThemeToggle'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import GoogleBtn from '../components/GoogleBtn'
 import MagiclinkBtn from '../components/MagiclinkBtn'
+import { useState } from 'react'
+import { useAuthProvider } from '../providers/AuthProvider'
+import { useToastProvider } from '../providers/ToastProvider'
 
 
 // define signin route component
 export default function Signin() {
+    const [ email, setEmail ] = useState("")
+    const [ password, setPassword ] = useState("")
+
+    const { signInUser } = useAuthProvider()
+
+    const navigateTo = useNavigate()
+
+    const { showToast } = useToastProvider()
+
+    async function handleSubmit( e ) {
+        e.preventDefault()
+        // handle signin form submission logic here
+        
+        const { status, data, error } = await signInUser( {
+            email,
+            password
+        } )
+
+        if ( status === 'success' ) {
+            // redirect user to dashboard upon successful signin
+            navigateTo( '/dashboard' )
+        } else {
+            // use a toast to display error message to user upon failed signin
+            showToast({
+                message: error,
+                type: "error"
+            })
+        }
+    }
+
     return (
         <>
             {/* add page title and meta info using react-helmet library */}
@@ -52,6 +85,7 @@ export default function Signin() {
                         w-2/3 lg:w-2/4 xl:w-1/3 min-w-[320px]
                         p-4 py-12 xl:p-10 xl:py-16
                     '
+                    onSubmit={ handleSubmit }
                 >
                     {/* Form Logo */}
                     <Logo
@@ -101,6 +135,8 @@ export default function Signin() {
                         name="email"
                         emptyValidationMessage="Please enter your email"
                         invalidValidationMessage="Please enter a valid email"
+                        value={ email }
+                        onChange={ ( e ) => setEmail( e.target.value ) }
                     />
                     
                     {/* PasswordField for collecting user password */}
@@ -112,10 +148,12 @@ export default function Signin() {
                         className="
                             mt-3.5
                         "
+                        value={ password }
+                        onChange={ ( e ) => setPassword( e.target.value ) }
                     />
 
                     {/* forgot password link to trigger password reset dialog */}
-                    <a href="#" className='
+                    <a href="javascript:void(0)" className='
                         signin--form__forgot-password
                         mt-4
                         font-medium

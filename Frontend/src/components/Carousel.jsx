@@ -27,7 +27,7 @@ import {
 const Carousel = React.forwardRef(({
     className,
     ...props
-}) => {
+}, ref ) => {
 
     // ref and state to manage typing effect in code example
     const typedElement = useRef(null);
@@ -111,6 +111,7 @@ const Carousel = React.forwardRef(({
             p-16 px-20
             ${className}
         `}
+        ref={ ref }
         {...props}
     >
         {/* hidden carousel button to move to next slide */}

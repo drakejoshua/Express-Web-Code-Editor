@@ -15,6 +15,7 @@ import Magiclink from './routes/Magiclink'
 import NotFound from "./routes/NotFound";
 import App from "./routes/App";
 import ErrorElement from "./components/ErrorElement";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 export const router = createBrowserRouter([
@@ -24,19 +25,19 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/dashboard",
-                element: <Dashboard />
+                element: <ProtectedRoute> <Dashboard /> </ProtectedRoute>
             },
             {
-                path: "/editor",
-                element: <Editor />
+                path: "/editor/:id",
+                element: <ProtectedRoute> <Editor /> </ProtectedRoute>
             },
             {
                 path: "/preview",
-                element: <Preview />
+                element: <ProtectedRoute> <Preview /> </ProtectedRoute>
             },
             {
                 path: "/share",
-                element: <Share />
+                element: <ProtectedRoute> <Share /> </ProtectedRoute>
             },
             {
                 path: "/auth/verify",
@@ -64,7 +65,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/create",
-                element: <Create />
+                element: <ProtectedRoute> <Create /> </ProtectedRoute>
             },
             {
                 path: "/",
@@ -72,7 +73,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/settings",
-                element: <Settings />
+                element: <ProtectedRoute> <Settings /> </ProtectedRoute>
             },
             {
                 path: "*",
