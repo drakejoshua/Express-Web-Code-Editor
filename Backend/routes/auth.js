@@ -340,9 +340,9 @@ async function( req, res, next ) {
         // set refresh token in HTTP-only cookie
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            path: '/auth/refresh',
+            path: '/auth',
             secure: nodeEnv === 'production', // use secure cookies in production
-            sameSite: 'strict',
+            sameSite: 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
         })
 
@@ -442,9 +442,9 @@ async function( req, res, next )  {
         // set refresh token in HTTP-only cookie
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            path: '/auth/refresh',
+            path: '/auth',
             secure: nodeEnv === 'production', // use secure cookies in production
-            sameSite: 'strict',
+            sameSite: 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
         })
 
@@ -614,8 +614,8 @@ router.post("/reset-password/:token",
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production', // use secure cookies in production
-                sameSite: 'strict',
-                path: '/auth/refresh',
+                sameSite: 'lax',
+                path: '/auth',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // cookie valid for 7 days
             })
 
@@ -804,8 +804,8 @@ router.get("/magiclink/:token",
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                path: '/auth/refresh',
-                sameSite: 'strict',
+                path: '/auth',
+                sameSite: 'lax',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             })
 
@@ -857,7 +857,7 @@ router.get('/google/callback',
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                sameSite: 'lax',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
                 path: '/auth/refresh'
             })

@@ -261,6 +261,7 @@ export default function AuthProvider({ children }) {
         try {
             const resp = await fetch( `${ backendURL }/auth/signin`, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                     "x-app-id": appId

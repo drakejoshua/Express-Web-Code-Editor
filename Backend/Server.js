@@ -28,7 +28,10 @@ connectDB()
 server.use( helmet() )
 
 // initialize cors middleware on server for cross-origin requests
-server.use( cors() )
+server.use( cors({
+    credentials: true,
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+}) )
 
 // initialize passport middleware on server
 server.use( passport.initialize() )
