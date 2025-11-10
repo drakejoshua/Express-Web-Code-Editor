@@ -92,7 +92,9 @@ export default function ToastProvider({ children }) {
                                 </Button>
                             </Toast.Action> }
 
-                            <Toast.Close>
+                            <Toast.Close
+                                className='ml-auto'
+                            >
                                 <FaXmark 
                                     className='
                                         text-2xl

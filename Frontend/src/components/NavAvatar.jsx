@@ -12,6 +12,7 @@ import { FaArrowsRotate, FaArrowRightFromBracket } from 'react-icons/fa6'
 import UserAvatar from './UserAvatar'
 import { useNavigate } from 'react-router-dom'
 import { useAuthProvider } from '../providers/AuthProvider'
+import { useToastProvider } from '../providers/ToastProvider'
 
 
 // define and export NavAvatar component
@@ -20,6 +21,24 @@ export default function NavAvatar({ className }) {
     const navigateTo = useNavigate()
 
     const { signOutUser } = useAuthProvider()
+
+    const { showToast } = useToastProvider()
+
+    async function signOut() {
+        const { status, error } = await signOutUser()
+
+        if ( status == "success" ) {
+            showToast({
+                message: "User logged out successfully",
+                type: "success"
+            })
+        } else {
+            showToast({
+                message: error,
+                type: "success"
+            })
+        }
+    }
 
     return (
         <DropdownMenu.Root>
@@ -122,7 +141,7 @@ export default function NavAvatar({ className }) {
                             className='
                                 dashboard--header__profile-option
                             '
-                            onClick={ () => signOutUser() }
+                            onClick={ signOut }
                         >
                             <FaArrowRightFromBracket className="dashboard--header__option-icon" /> 
 
