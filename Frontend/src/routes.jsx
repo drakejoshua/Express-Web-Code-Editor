@@ -40,11 +40,11 @@ export const router = createBrowserRouter([
                 element: <ProtectedRoute> <Share /> </ProtectedRoute>
             },
             {
-                path: "/auth/verify",
+                path: "/auth/verify/:token",
                 element: <Verify />
             },
             {
-                path: "/auth/reset-password",
+                path: "/auth/reset-password/:token",
                 element: <ResetPassword />
             },
             {
@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
                 element: <Google />
             },
             {
-                path: "/auth/magiclink",
+                path: "/auth/magiclink/:token",
                 element: <Magiclink />
             },
             {

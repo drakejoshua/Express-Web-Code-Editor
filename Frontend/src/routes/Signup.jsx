@@ -20,18 +20,20 @@ import EmailField from '../components/EmailField'
 import Carousel from '../components/Carousel'
 import RouteThemeToggle from '../components/RouteThemeToggle'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import GoogleBtn from '../components/GoogleBtn'
 import MagiclinkBtn from '../components/MagiclinkBtn'
 import { SimpleCarousel, useCarousel } from '../components/simpleCarousel'
 import TextField from '../components/TextField'
-import { forwardRef, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import MultiStepTabs from '../components/MultiStepTabs'
 import FinishButton from '../components/FinishButton'
 import StepActions from '../components/StepActions'
 import PreviousButton from '../components/PreviousButton'
 import NextButton from '../components/NextButton'
 import Step from '../components/Step'
+import { useAuthProvider } from '../providers/AuthProvider'
+import { useToastProvider } from '../providers/ToastProvider'
 
 
 // define signup route component
@@ -88,9 +90,20 @@ export default function Signup() {
 
 // multi-step signup form component
 // handles form steps, validation and submission with carousel integration
-function MultiStepForm({ onSubmit = () => {} }) {
+function MultiStepForm() {
     // get carousel navigation handlers and slides state from carousel context
     const { handleNext, handlePrev, slides } = useCarousel()
+
+    const { signUpUser } = useAuthProvider()
+
+    const { showToast } = useToastProvider()
+
+    const navigateTo = useNavigate()
+
+    // form field states
+    const [ email, setEmail ] = useState('')
+    const [ username, setUsername ] = useState('')
+    const [ password, setPassword ] = useState('')
 
     // refs for form fields
     const passwordFieldRef = useRef(null)
@@ -133,14 +146,30 @@ function MultiStepForm({ onSubmit = () => {} }) {
     }
 
     // handleSubmit() - handles final form submission
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         // prevent default form submission behaviour
         e.preventDefault();
 
-        alert("Form Submitted!")
+        // send signup request to backend
+        const { status, error, data } = await signUpUser({
+            username,
+            email,
+            password,
+            photo: selectedFile
+        })
 
-        // final step submit
-        onSubmit();
+        if ( status === 'success' ) {
+            // redirect to dashboard on successful signup
+            showToast({
+                type: 'success',
+                message: data.message
+            })
+        } else {
+            showToast({
+                type: 'error',
+                message: error.message
+            })
+        }
     }
 
     // render component
@@ -225,6 +254,8 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             label="Username"
                             name="username"
                             emptyValidationMessage="Please enter your username"
+                            value={ username }
+                            onChange={ (e) => setUsername( e.target.value ) }
                         />
 
                         {/* form actions container */}
@@ -254,6 +285,8 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             name="email"
                             emptyValidationMessage="Please enter your email"
                             invalidValidationMessage="Please enter a valid email"
+                            value={ email }
+                            onChange={ (e) => setEmail( e.target.value ) }
                         />
 
                         {/* form actions container */}
@@ -381,6 +414,8 @@ function MultiStepForm({ onSubmit = () => {} }) {
                             name="password"
                             emptyValidationMessage="Please enter your password"
                             shortValidationMessage="The password can't be lower than 6 characters"
+                            value={ password }
+                            onChange={ (e) => setPassword( e.target.value ) }
                         />
 
                         {/* form actions container */}

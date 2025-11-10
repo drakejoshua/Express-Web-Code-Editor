@@ -41,7 +41,7 @@ export default function Signin() {
         e.preventDefault()
         // handle signin form submission logic here
         
-        const { status, data, error } = await signInUser( {
+        const { status, error } = await signInUser( {
             email,
             password
         } )
@@ -52,7 +52,7 @@ export default function Signin() {
         } else {
             // use a toast to display error message to user upon failed signin
             showToast({
-                message: error,
+                message: error.message,
                 type: "error"
             })
         }

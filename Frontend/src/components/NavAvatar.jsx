@@ -34,7 +34,7 @@ export default function NavAvatar({ className }) {
             })
         } else {
             showToast({
-                message: error,
+                message: error.message,
                 type: "success"
             })
         }

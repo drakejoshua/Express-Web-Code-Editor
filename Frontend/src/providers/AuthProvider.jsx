@@ -199,7 +199,6 @@ export default function AuthProvider({ children }) {
             const resp = await fetch( `${ backendURL }/auth/signup`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "multipart/form-data",
                     "x-app-id": appId
                 },
                 body: signupFormData
@@ -208,14 +207,14 @@ export default function AuthProvider({ children }) {
             if ( resp.ok ) {
                 const json = await resp.json()
                 
-                return { status: "success", data: json.data.message }
+                return { status: "success", data: json.data }
             } else {
                 const errorData = await resp.json()
-                return { status: "error", error: errorData.error.message || "Signup failed" }
+                return { status: "error", error: errorData.error || "Signup failed" }
             }
         } catch ( error ) {
             console.log( "error signing up user: ", error )
-            return { status: "error", error: error.message }
+            return { status: "error", error: error }
         }
     }
 
@@ -235,15 +234,15 @@ export default function AuthProvider({ children }) {
 
                 setUser( json.data.user )
 
-                return { status: "success", data: json.data.user }
+                return { status: "success", data: json.data }
             } else {
                 const errorData = await resp.json()
 
-                return { status: "error", error: errorData.error.message || "Email verification failed" }
+                return { status: "error", error: errorData.error || "Email verification failed" }
             }
         } catch ( error ) {
             console.log( "error verifying email token: ", error )
-            return { status: "error", error: error.message }
+            return { status: "error", error: error }
         }
     }
 
@@ -278,15 +277,15 @@ export default function AuthProvider({ children }) {
 
                 setUser( json.data.user )
 
-                return { status: "success", data: json.data.user }
+                return { status: "success", data: json.data }
             } else {
                 const errorData = await resp.json()
 
-                return { status: "error", error: errorData.error.message || "Signin failed" }
+                return { status: "error", error: errorData.error || "Signin failed" }
             }
         } catch( error ) {
             console.log( "error signing in user: ", error )
-            return { status: "error", error: error.message }
+            return { status: "error", error: error }
         }
     }
 
@@ -315,10 +314,10 @@ export default function AuthProvider({ children }) {
             } else {
                 const errorData = await resp.json()
 
-                return { status: "error", error: errorData.error.message || "Signout failed" }
+                return { status: "error", error: errorData.error || "Signout failed" }
             }
         } catch ( error ) {
-            return { status: "error", error: error.message }
+            return { status: "error", error: error }
         }
     }
 
