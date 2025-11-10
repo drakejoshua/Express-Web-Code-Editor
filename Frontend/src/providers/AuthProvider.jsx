@@ -19,6 +19,8 @@ export function useAuthProvider() {
 export default function AuthProvider({ children }) {
     const [ user, setUser ] = useState( "loading" )
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
+    const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
+    
 
     const authRefreshTimeout = useRef()
 
@@ -63,14 +65,14 @@ export default function AuthProvider({ children }) {
     async function fetchCurrentUser() { 
         // retrieve saved user token from local storage if any
         const savedUserToken = localStorage.getItem( "codebloks-token" )
-        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
+        
 
         console.log("saved codebloks token", savedUserToken )
 
         // if no saved user token, set user state to logout and return
         if ( !savedUserToken || savedUserToken === "logout" ) {
             setUser( "logout" )
-            return { status: "error", error: "No saved user token" }
+            return { status: "error", error: { message: "No saved user token" } }
         }
 
         try {
@@ -93,7 +95,7 @@ export default function AuthProvider({ children }) {
                 setUser( json.data.user )
 
                 // return success from function
-                return { status: "success", data: json.data.user }
+                return { status: "success", data: json.data }
             } else {
                 if ( resp.status === 401 ) {
                     // if 401 unauthorized error, attempt to refresh user token
@@ -103,7 +105,7 @@ export default function AuthProvider({ children }) {
 
                     // if other http error, set user state to logout
                     setUser( "logout" )
-                    return { status: "error", error: errorData.error.message || "Failed to fetch current user"}
+                    return { status: "error", error: errorData.error || "Failed to fetch current user"}
                 }
             }
 
@@ -111,18 +113,23 @@ export default function AuthProvider({ children }) {
             // if non-http error occurs, set user state to unavailable
             setUser( "unavailable" )
             console.log( "error fetching current user: ", error )
-            return { status: "error", error: error.message || "Failed to fetch current user" }
+            return { status: "error", error: error }
         }
     }
 
     async function refreshUserToken( maxRetries, count = 1 ) {
         const savedUserToken = localStorage.getItem( "codebloks-token" )
-        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
+        
 
         // check if saved user token exists or is set to logout
         if ( !savedUserToken || savedUserToken === "logout" ) {
             setUser( "logout" )
-            return { status: "error", error: "No saved user token" }
+            return { 
+                status: "error", 
+                error: {
+                    message: "No saved user token"
+                }
+            }
         }
 
         if ( authRefreshTimeout.current ) {
@@ -154,7 +161,7 @@ export default function AuthProvider({ children }) {
                 if ( count >= maxRetries ) {
                     // if max retries reached, set user state to logout
                     setUser( "logout" )
-                    return { status: "error", error: "Failed to refresh user token" }
+                    return { status: "error", error: { message: "Failed to refresh user token" } }
                 } else {
                     // if max retries not reached, recursively call refreshUserToken
                     await refreshUserToken( maxRetries, count + 1 )
@@ -164,31 +171,44 @@ export default function AuthProvider({ children }) {
             // if non-http error occurs, set user state to unavailable
             setUser( "unavailable" )
             console.log( "error refreshing user token: ", error )
-            return { status: "error", error: error.message }
+            return { status: "error", error: error }
         }
     }
 
     async function signUpUser( signupData ) {
-        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
-
         const signupFormData = new FormData()
 
         if ( signupData.username ) {
             signupFormData.append( "username", signupData.username )
         } else {
-            return { status: "error", error: "Username is required for signup" }
+            return { 
+                status: "error", 
+                error: {
+                    message: "Username is required for signup"
+                }
+            } 
         }
 
         if ( signupData.email ) {
             signupFormData.append( "email", signupData.email )
         } else {
-            return { status: "error", error: "Email is required for signup" }
+            return { 
+                status: "error", 
+                error: {
+                    message: "Email is required for signup"
+                }
+            }
         }
 
         if ( signupData.password ) {
             signupFormData.append( "password", signupData.password )
         } else {
-            return { status: "error", error: "Password is required for signup" }
+            return { 
+                status: "error", 
+                error: {
+                    message: "Password is required for signup"
+                }
+            }
         }
 
         if ( signupData.photo ) {
@@ -219,7 +239,7 @@ export default function AuthProvider({ children }) {
     }
 
     async function verifyEmailToken( token ) {
-        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
+        
 
         try {
             const resp = await fetch( `${ backendURL }/auth/verify-email/${ token }`, {
@@ -247,8 +267,6 @@ export default function AuthProvider({ children }) {
     }
 
     async function signInUser( signInData ) {
-        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
-
         if ( !signInData.email ) {
             return { status: "error", error: "Email is required for signin" }
         }
@@ -289,8 +307,52 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    async function resendEmailVerification( email ) {
+        if ( !email ) {
+            return {
+                status: "error",
+                error: {
+                    message: "Email is required to re-send verification"
+                }
+            }
+        }
+
+        try {
+            const resp = await fetch(`${ backendURL }/auth/verify-email`, {
+                method: "POST",
+                headers: {
+                    'x-app-id': appId,
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({ email })
+            })
+
+
+            if ( resp.ok ) {
+                const json = await resp.json()
+
+                return {
+                    status: "success",
+                    data: json.data
+                }
+            } else {
+                const errorData = await resp.json()
+
+                return {
+                    status: "error",
+                    error: errorData.error
+                }
+            }
+        } catch( error ) {
+            return {
+                status: "error",
+                error: error
+            }
+        }
+    }
+
     async function signOutUser() {
-        const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
+        
 
         try {
             const resp = await fetch( `${ backendURL }/auth/signout`, {
@@ -330,7 +392,8 @@ export default function AuthProvider({ children }) {
             signUpUser,
             verifyEmailToken,
             signInUser,
-            signOutUser
+            signOutUser,
+            resendEmailVerification
         }}>
             { children }
         </AuthContext.Provider>

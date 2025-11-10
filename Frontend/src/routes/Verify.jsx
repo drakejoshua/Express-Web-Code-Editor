@@ -13,10 +13,58 @@ import StatusCard from '../components/StatusCard';
 import { Helmet } from 'react-helmet-async'
 import { FaArrowRotateLeft } from 'react-icons/fa6';
 import RouteThemeToggle from '../components/RouteThemeToggle';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useAuthProvider } from '../providers/AuthProvider';
 
 
 // email verify component
 export default function Verify() {
+    const { token } = useParams()
+    const [ searchParams, setSearchParams ] = useSearchParams()
+
+    const { verifyEmailToken } = useAuthProvider()
+
+    const [ verificationState, setVerificationState ] = useState("loading")
+    const [ verificationError, setVerificationError ] = useState("")
+
+    const renderCount = useRef(1)
+
+    const navigateTo = useNavigate()
+
+    async function verifyEmail() {
+        if ( token ) {
+            const { status, error } = await verifyEmailToken( token )
+
+            if ( status === 'success' ) {
+                setVerificationState("loaded")
+
+                setTimeout( function() {
+                    navigateTo("/dashboard")
+                }, 1000)
+            } else {
+                setVerificationState("error")
+                setVerificationError( error.message )
+            }
+        } else {
+            setVerificationState("error")
+            setVerificationError("Invalid Email Verification Token found in request")
+        }
+    }
+
+    useEffect( function() {
+        if ( renderCount.current < 2 ) {
+            verifyEmail()
+
+            renderCount.current += 1
+        }
+
+        return function() {
+            if ( renderCount.current ) {
+                renderCount.current += 1
+            }
+        }
+    }, [])
     
     return (
         <>
@@ -43,7 +91,7 @@ export default function Verify() {
                     <Logo/>
 
                     {/* status card for email confirmation loading state */}
-                    {/* <StatusCard
+                    { verificationState === "loading" && <StatusCard
                         status={{
                             heading: 'Confirming your Email address...',
                             text: `
@@ -53,10 +101,10 @@ export default function Verify() {
                             type: "loading"
                         }}
                         className="mt-8"
-                    /> */}
+                    /> }
 
                     {/* status card for email confirmation error state */}
-                    <StatusCard
+                    { verificationState === "error" && <StatusCard
                         status={{
                             heading: 'There was an issue confirming your email address.',
                             text: `
@@ -64,7 +112,7 @@ export default function Verify() {
                                 Please try again.
                                 If the issue persists, 
                                 please check your internet connection or contact support.
-                                Error: Invalid or expired token.
+                                Error: ${ verificationError }
                             `,
                             type: "error",
                             action: function() {
@@ -76,10 +124,10 @@ export default function Verify() {
                             </>
                         }}
                         className="mt-8"
-                    />
+                    /> }
                     
                     {/* status card for email confirmation success state */}
-                    {/* <StatusCard
+                    { verificationState === "loaded" && <StatusCard
                         status={{
                             heading: 'Email Confirmed Successfully!',
                             text: `
@@ -94,7 +142,7 @@ export default function Verify() {
                             </>
                         }}
                         className="mt-8"
-                    /> */}
+                    /> }
                 </RouteContainer>
 
                 {/* theme toggle button for switching between light and dark mode */}

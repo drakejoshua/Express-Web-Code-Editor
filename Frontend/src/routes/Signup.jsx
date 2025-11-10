@@ -34,6 +34,8 @@ import NextButton from '../components/NextButton'
 import Step from '../components/Step'
 import { useAuthProvider } from '../providers/AuthProvider'
 import { useToastProvider } from '../providers/ToastProvider'
+import { useDialogProvider } from '../providers/DialogProvider'
+import { BACKEND_ERROR_CODES } from '../utils/error_util'
 
 
 // define signup route component
@@ -97,6 +99,7 @@ function MultiStepForm() {
     const { signUpUser } = useAuthProvider()
 
     const { showToast } = useToastProvider()
+    const { showDialog, hideDialog } = useDialogProvider()
 
     const navigateTo = useNavigate()
 
@@ -145,6 +148,64 @@ function MultiStepForm() {
         }
     }
 
+    function showEmailVerificationDialog( message ) {
+        const dialogId = showDialog({
+            title: 'Verify your email',
+            description: message,
+            content: (
+                <div 
+                    className="
+                        email-verify-dialog
+                        mt-6
+                    "
+                >
+                    <Button
+                        className="
+                            w-full
+                        "
+                        onClick={ handleOpenEmailApp }
+                    >
+                        Open Email App
+                    </Button>
+                </div>
+            )
+        })
+
+        function handleOpenEmailApp() {
+            // open user's default email app
+            window.open('mailto:', '_blank')
+
+            // close the dialog
+            hideDialog( dialogId )
+        }
+            
+    }
+
+    function showEmailAlreadyExistsDialog( message ) {
+        const dialogId = showDialog({
+            title: 'User Account Already Exists',
+            description: message,
+            content: (
+                <div 
+                    className="
+                        email-exists-dialog
+                        mt-6
+                    "
+                >
+                    <Button
+                        className="
+                            w-full
+                        "
+                        onClick={ () => hideDialog( dialogId ) }
+                    >
+                        Retry with different email
+                    </Button>
+                </div>
+            )
+        })
+    }
+
+
     // handleSubmit() - handles final form submission
     async function handleSubmit(e) {
         // prevent default form submission behaviour
@@ -159,16 +220,17 @@ function MultiStepForm() {
         })
 
         if ( status === 'success' ) {
-            // redirect to dashboard on successful signup
-            showToast({
-                type: 'success',
-                message: data.message
-            })
+            // show email verification dialog to user upon successful signup
+            showEmailVerificationDialog( data.message )
         } else {
-            showToast({
-                type: 'error',
-                message: error.message
-            })
+            if ( error.code === BACKEND_ERROR_CODES.EMAIL_ALREADY_EXISTS ) {
+                showEmailAlreadyExistsDialog( error.message )
+            } else {
+                showToast({
+                    type: 'error',
+                    message: error.message
+                })
+            }
         }
     }
 

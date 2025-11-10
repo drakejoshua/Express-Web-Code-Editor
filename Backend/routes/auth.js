@@ -167,7 +167,7 @@ async function( req, res, next ) {
         const hashedPassword = await bcrypt.hash( password, bcryptRounds )
 
         // send verification email to user email
-        await sendVerificationEmail( email, `${frontendURL}/auth/verify-email/${verifyEmailToken}`)
+        await sendVerificationEmail( email, `${frontendURL}/auth/verify/${verifyEmailToken}?email=${email}`)
 
         // create new user in the database
         const createdUser = await Users.create({
@@ -245,7 +245,7 @@ async function( req, res, next ) {
         const verifyEmailExpiry = Date.now() + 5 * 60 * 1000 // token valid for 5 minutes
 
         // send verification email to user email
-        await sendVerificationEmail( email, `${frontendURL}/auth/verify-email/${verifyEmailToken}`)
+        await sendVerificationEmail( email, `${frontendURL}/auth/verify/${verifyEmailToken}?email=${email}`)
 
         // get user document matching the email
         const user = await Users.findOne({ email })

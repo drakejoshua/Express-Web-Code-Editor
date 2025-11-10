@@ -24,6 +24,8 @@ import MagiclinkBtn from '../components/MagiclinkBtn'
 import { useState } from 'react'
 import { useAuthProvider } from '../providers/AuthProvider'
 import { useToastProvider } from '../providers/ToastProvider'
+import { useDialogProvider } from '../providers/DialogProvider'
+import { BACKEND_ERROR_CODES } from '../utils/error_util'
 
 
 // define signin route component
@@ -31,11 +33,54 @@ export default function Signin() {
     const [ email, setEmail ] = useState("")
     const [ password, setPassword ] = useState("")
 
-    const { signInUser } = useAuthProvider()
+    const { signInUser, resendEmailVerification } = useAuthProvider()
 
     const navigateTo = useNavigate()
 
     const { showToast } = useToastProvider()
+
+    const { showDialog, hideDialog } = useDialogProvider()
+
+    function showEmailNotVerifiedDialog( message ) {
+        const dialogId = showDialog({
+            title: "Your Email Has Not Been Verified",
+            description: message,
+            content: (
+                        <div 
+                            className="
+                                email-verify-dialog
+                                mt-6
+                            "
+                        >
+                            <Button
+                                className="w-full"
+                                onClick={ handleResendEmail }
+                            >
+                                Resend Email Verification
+                            </Button>
+                        </div>
+                    )
+        })
+
+
+        async function handleResendEmail() {
+            const { status, data, error } = await resendEmailVerification( email )
+
+            if ( status === "success" ) {
+                showToast({
+                    type: "success",
+                    message: data.message || "Email Verification Resent Successfully"
+                })
+
+                hideDialog( dialogId )
+            } else {
+                showToast({
+                    type: "error",
+                    message: error.message
+                })
+            }
+        }
+    }
 
     async function handleSubmit( e ) {
         e.preventDefault()
@@ -50,11 +95,15 @@ export default function Signin() {
             // redirect user to dashboard upon successful signin
             navigateTo( '/dashboard' )
         } else {
-            // use a toast to display error message to user upon failed signin
-            showToast({
-                message: error.message,
-                type: "error"
-            })
+            if ( error.code === BACKEND_ERROR_CODES.EMAIL_NOT_VERIFIED ) {
+                showEmailNotVerifiedDialog( error.message )
+            } else {
+                // use a toast to display error message to user upon failed signin
+                showToast({
+                    message: error.message,
+                    type: "error"
+                })
+            }
         }
     }
 
