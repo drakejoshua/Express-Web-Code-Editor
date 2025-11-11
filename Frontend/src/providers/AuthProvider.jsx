@@ -488,6 +488,103 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    async function resetPassword( email ) {
+        if ( !email ) {
+            return {
+                status: "error",
+                error: {
+                    message: "An email is required to reset the password for that account"
+                }
+            }
+        }
+
+        try {
+            const resp = await fetch(`${ backendURL }/auth/reset-password`, {
+                method: "POST",
+                headers: {
+                    "x-app-id": appId,
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({ email })
+            })
+
+            if ( resp.ok ) {
+                const jsonData = await resp.json()
+
+                return {
+                    status: "success",
+                    data: jsonData.data
+                }
+            } else {
+                const errorData = await resp.json()
+
+                return {
+                    status: "error",
+                    error: errorData.error
+                }
+            }
+        } catch( error ) {
+            return {
+                status: "error",
+                error: error
+            }
+        }
+    }
+    
+    async function changePasswordUsingResetToken( token, password ) {
+        if ( !token ) {
+            return {
+                status: "error",
+                error: {
+                    message: "Invalid password reset token. The token is required to change user password"
+                }
+            }
+        }
+        
+        if ( !password ) {
+            return {
+                status: "error",
+                error: {
+                    message: "Invalid Password. A valid Password is required for password chnage"
+                }
+            }
+        }
+
+        try {
+            const resp = await fetch(`${ backendURL }/auth/reset-password/${token}`, {
+                method: "POST",
+                headers: {
+                    "x-app-id": appId,
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({ password })
+            })
+
+            if ( resp.ok ) {
+                const jsonData = await resp.json()
+
+                setUser( jsonData.data.user )
+
+                return {
+                    status: "success",
+                    data: jsonData.data
+                }
+            } else {
+                const errorData = await resp.json()
+
+                return {
+                    status: "error",
+                    error: errorData.error
+                }
+            }
+        } catch( error ) {
+            return {
+                status: "error",
+                error: error
+            }
+        }
+    }
+
 
     return (
         <AuthContext.Provider value={ { 
@@ -502,7 +599,9 @@ export default function AuthProvider({ children }) {
             signInWithMagicLink,
             verifyMagicLinkToken,
             signInWithGoogle,
-            verifyGoogleToken
+            verifyGoogleToken,
+            resetPassword,
+            changePasswordUsingResetToken
         }}>
             { children }
         </AuthContext.Provider>

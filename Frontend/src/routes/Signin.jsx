@@ -33,25 +33,28 @@ export default function Signin() {
     const [ email, setEmail ] = useState("")
     const [ password, setPassword ] = useState("")
     const [ magicLinkEmail, setMagicLinkEmail ] = useState("")
+    const [ passwordResetEmail, setPasswordResetEmail ] = useState("")
     
+    const [ isPasswordResetDialogVisible, setIsPasswordResetDialogVisible ] = useState( false )
     const [ isEmailSignInDialogVisible, setIsEmailSignInDialogVisible ] = useState( false )
     const [ isEmailNotVerifiedDialogVisible, setIsEmailNotVerifiedDialogVisible ] = useState( false )
     const [ isSigningIn, setIsSigningIn ] = useState( false )
     const [ isResendingEmail, setIsResendingEmail ] = useState( false )
     const [ isSendingMagiclink, setIsSendingMagiclink ] = useState( false )
+    const [ isSendingPasswordReset, setIsSendingPasswordReset ] = useState( false )
 
     const { 
         signInUser, 
         resendEmailVerification, 
         signInWithMagicLink,
-        signInWithGoogle
+        signInWithGoogle,
+        resetPassword
     } = useAuthProvider()
 
     const navigateTo = useNavigate()
 
     const { showToast } = useToastProvider()
-
-    const { showDialog, hideDialog } = useDialogProvider()
+    
 
     async function handleResendEmail() {
         setIsResendingEmail( true )
@@ -63,8 +66,6 @@ export default function Signin() {
                 type: "success",
                 message: data.message || "Email Verification Resent Successfully"
             })
-
-            setIsEmailNotVerifiedDialogVisible( false )
         } else {
             showToast({
                 type: "error",
@@ -72,6 +73,7 @@ export default function Signin() {
             })
         }
 
+        setIsEmailNotVerifiedDialogVisible( false )
         setIsResendingEmail( false )
     }
 
@@ -114,8 +116,6 @@ export default function Signin() {
                 type: "success",
                 message: "Magic Link Sent Successfully. Please check your email."
             })
-
-            setIsEmailSignInDialogVisible( false )
         } else {
             showToast({
                 type: "error",
@@ -123,7 +123,31 @@ export default function Signin() {
             })
         }
 
+        setIsEmailSignInDialogVisible( false )
         setIsSendingMagiclink( false )
+    }
+
+    async function handlePasswordReset( e ) {
+        e.preventDefault()
+
+        setIsSendingPasswordReset( true )
+
+        const { status, error } = await resetPassword( passwordResetEmail )
+
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: "A password reset link has just been sent to your email. it will expire in 5 mins"
+            })
+        } else {
+            showToast({
+                type: "error",
+                message: error.message
+            })
+        }
+
+        setIsPasswordResetDialogVisible( false )
+        setIsSendingPasswordReset( false )
     }
 
     return (
@@ -221,17 +245,22 @@ export default function Signin() {
                     />
 
                     {/* forgot password link to trigger password reset dialog */}
-                    <a href="javascript:void(0)" className='
-                        signin--form__forgot-password
-                        mt-4
-                        font-medium
-                        text-blue-900 dark:text-blue-100
-                        hover:underline
-                        block
-                        text-right
-                    '>
+                    <button 
+                        onClick={ () => setIsPasswordResetDialogVisible( true ) } 
+                        className='
+                            signin--form__forgot-password
+                            mt-4
+                            font-medium
+                            text-blue-900 dark:text-blue-100
+                            hover:underline
+                            block
+                            w-full
+                            text-right
+                        '
+                        type='button'
+                    >
                         Forgot password?
-                    </a>
+                    </button>
 
                     {/* Form submit/signin button */}
                     <Button 
@@ -334,6 +363,40 @@ export default function Signin() {
                             onClick={ handleSendMagiclink }
                         >
                             { isSendingMagiclink ? "Sending..." : "Send Magic Link" }
+                        </Button>
+                    </Form.Root>
+                )}
+            />
+            
+            {/* Password Reset Dialog */}
+            <DialogComponent 
+                open={ isPasswordResetDialogVisible }
+                onOpenChange={ setIsPasswordResetDialogVisible }
+                title="Reset Your Password"
+                description={`
+                    Enter your email address to receive a password reset link
+                    to change your account password.
+                `}
+                content={(
+                    <Form.Root
+                        className="
+                            password-reset-dialog
+                            mt-2
+                        "
+                        onSubmit={ handleSendMagiclink }
+                    >
+                        <EmailField
+                            label="Email"
+                            name="email"
+                            value={ passwordResetEmail }
+                            onChange={ ( e ) => setPasswordResetEmail( e.target.value ) }
+                        />
+
+                        <Button
+                            className="w-full mt-4"
+                            onClick={ handlePasswordReset }
+                        >
+                            { isSendingPasswordReset ? "Sending..." : "Send Password Reset" }
                         </Button>
                     </Form.Root>
                 )}

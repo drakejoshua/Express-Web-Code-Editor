@@ -28,14 +28,58 @@ import Button from '../components/Button'
 import { Helmet } from 'react-helmet-async'
 import PasswordField from '../components/PasswordField'
 import RouteThemeToggle from '../components/RouteThemeToggle'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useAuthProvider } from '../providers/AuthProvider'
+import { useToastProvider } from '../providers/ToastProvider'
 
 
 // reset password component
 export default function ResetPassword() {
+    const [ isChangingPassword, setIsChangingPassword ] = useState( false )
+    const { token } = useParams()
 
     // state for new password and confirm password fields
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const { changePasswordUsingResetToken } = useAuthProvider()
+
+    const { showToast } = useToastProvider()
+
+    const navigateTo = useNavigate()
+
+    async function handleResetPassword( e ) {
+        e.preventDefault()
+
+        setIsChangingPassword( true )
+
+        if ( token && ( newPassword === confirmPassword ) ) {
+            const { status, error } = await changePasswordUsingResetToken( token, newPassword )
+
+            if ( status === 'success' ) {
+                showToast({
+                    type: "success",
+                    message: "Account Password successfully reset, you will be redirected to the dashboard"
+                })
+
+                setTimeout( function() {
+                    navigateTo("/dashboard")
+                }, 1000)
+            } else {
+                showToast({
+                    type: "error",
+                    message: error.message
+                })
+            }
+        } else {
+            showToast({
+                type: "error",
+                message: "There was an error resetting your password due to token unavailablity"
+            })
+        }
+
+        setIsChangingPassword( false )
+    }
 
     return (
         <>
@@ -97,6 +141,7 @@ export default function ResetPassword() {
                             flex-col
                             gap-2
                         '
+                        onSubmit={ handleResetPassword }
                     >
                         {/* new password input */}
                         <PasswordField
@@ -143,7 +188,7 @@ export default function ResetPassword() {
                                 mt-4.5
                             "
                         >
-                            Reset Password
+                            { isChangingPassword ? "Resetting Password..." : "Reset Password" }
                         </Button>
                     </Form.Root>
 
