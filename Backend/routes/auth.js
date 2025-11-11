@@ -710,7 +710,7 @@ router.post("/magiclink",
             const magicLinkExpiry = Date.now() + 5 * 60 * 1000 // token valid for 5 minutes
 
             // send magic link email
-            await sendMagicLinkEmail( user.email, `${frontendURL}/auth/magic-link/${magicLinkToken}`)
+            await sendMagicLinkEmail( user.email, `${frontendURL}/auth/magiclink/${magicLinkToken}`)
 
             // update user document with magic link token and expiry
             user.magiclink_token = magicLinkToken

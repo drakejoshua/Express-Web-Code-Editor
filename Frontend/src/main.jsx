@@ -14,15 +14,15 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
         <ThemeProvider>
-            <DialogProvider>
-                <ToastProvider>
+            <ToastProvider>
+                <DialogProvider>
                     <HelmetProvider>
                         <AuthProvider>
                             <RouterProvider router={router} />
                         </AuthProvider>
                     </HelmetProvider>
-                </ToastProvider>
-            </DialogProvider>
+                </DialogProvider>
+            </ToastProvider>
         </ThemeProvider>
     </ErrorBoundary>
   </StrictMode>

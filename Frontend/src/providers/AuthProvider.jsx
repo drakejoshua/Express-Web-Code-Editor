@@ -383,6 +383,69 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    async function signInWithMagicLink( email ) {
+        if ( !email ) {
+            return { status: "error", error: { message: "Email is required for magic link signin"} }
+        }
+
+        try {
+            const resp = await fetch( `${ backendURL }/auth/magiclink`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-app-id": appId
+                },
+                body: JSON.stringify({ email })
+            })
+
+            if ( resp.ok ) {
+                const json = await resp.json()
+
+                return { status: "success", data: json.data }
+            } else {
+                const errorData = await resp.json()
+
+                return { status: "error", error: errorData.error || { message: "Magic link signin failed" } }
+            }
+        } catch ( error ) {
+            return { status: "error", error: error }
+        }
+    }
+
+    async function verifyMagicLinkToken( token ) {
+        if ( !token ) {
+            return { 
+                status: "error", 
+                error: { 
+                    message: "Invalid magic link token. Magic link token is required for verification" 
+                } 
+            }
+        }
+
+        try {
+            const resp = await fetch( `${ backendURL }/auth/magiclink/${ token }`, {
+                method: "GET",
+                headers: {
+                    "x-app-id": appId
+                }
+            })
+
+            if ( resp.ok ) {
+                const json = await resp.json()
+
+                setUser( json.data.user )
+
+                return { status: "success", data: json.data }
+            } else {
+                const errorData = await resp.json()
+
+                return { status: "error", error: errorData.error || { message: "Magic link verification failed"} }
+            }
+        } catch ( error ) {
+            return { status: "error", error: error }
+        }
+    }
+
 
     return (
         <AuthContext.Provider value={ { 
@@ -393,7 +456,9 @@ export default function AuthProvider({ children }) {
             verifyEmailToken,
             signInUser,
             signOutUser,
-            resendEmailVerification
+            resendEmailVerification,
+            signInWithMagicLink,
+            verifyMagicLinkToken
         }}>
             { children }
         </AuthContext.Provider>

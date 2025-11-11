@@ -32,6 +32,7 @@ import { BACKEND_ERROR_CODES } from '../utils/error_util'
 export default function Signin() {
     const [ email, setEmail ] = useState("")
     const [ password, setPassword ] = useState("")
+    const [ magicLinkEmail, setMagicLinkEmail ] = useState("")
     
     const [ isEmailSignInDialogVisible, setIsEmailSignInDialogVisible ] = useState( false )
     const [ isEmailNotVerifiedDialogVisible, setIsEmailNotVerifiedDialogVisible ] = useState( false )
@@ -39,7 +40,7 @@ export default function Signin() {
     const [ isResendingEmail, setIsResendingEmail ] = useState( false )
     const [ isSendingMagiclink, setIsSendingMagiclink ] = useState( false )
 
-    const { signInUser, resendEmailVerification } = useAuthProvider()
+    const { signInUser, resendEmailVerification, signInWithMagicLink } = useAuthProvider()
 
     const navigateTo = useNavigate()
 
@@ -96,8 +97,28 @@ export default function Signin() {
         setIsSigningIn( false )
     }
 
-    async function handleSendMagiclink() {
+    async function handleSendMagiclink( e ) {
+        e.preventDefault()
+
         setIsSendingMagiclink( true )
+
+        const { status, error } = await signInWithMagicLink( magicLinkEmail )
+
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: "Magic Link Sent Successfully. Please check your email."
+            })
+
+            setIsEmailSignInDialogVisible( false )
+        } else {
+            showToast({
+                type: "error",
+                message: error.message
+            })
+        }
+
+        setIsSendingMagiclink( false )
     }
 
     return (
@@ -223,6 +244,7 @@ export default function Signin() {
                         className='
                             mt-8
                         '
+                        type="button"
                         text="Sign in with Google"
                     />
 
@@ -231,6 +253,8 @@ export default function Signin() {
                         className='
                             mt-3
                         '
+                        type="button"
+                        onClick={ () => setIsEmailSignInDialogVisible( true ) }
                         text="Sign in with Email"
                     />
                 </Form.Root>
@@ -250,7 +274,9 @@ export default function Signin() {
             </div>
 
             {/* Email Not Verified Dialog */}
-            { isEmailNotVerifiedDialogVisible && <DialogComponent 
+            <DialogComponent 
+                open={ isEmailNotVerifiedDialogVisible }
+                onOpenChange={ setIsEmailNotVerifiedDialogVisible }
                 title="Your Email Has Not Been Verified"
                 description={`
                     The email address ${ email } has not been verified yet.
@@ -267,35 +293,45 @@ export default function Signin() {
                             className="w-full"
                             onClick={ handleResendEmail }
                         >
-                            { isResendingEmail ? "Resending..." : "Resend Email Verification" }
+                            { isResendingEmail ? "Sending..." : "Send Email Verification" }
                         </Button>
                     </div>
                 )}
-            /> }
+            />
 
             {/* Sign in With Email Dialog */}
-            { isEmailSignInDialogVisible && <DialogComponent 
+            <DialogComponent 
+                open={ isEmailSignInDialogVisible }
+                onOpenChange={ setIsEmailSignInDialogVisible }
                 title="Sign in with Email"
                 description={`
                     Enter your email address to receive a magic link
                     for signing in to your account.
                 `}
                 content={(
-                    <div 
+                    <Form.Root
                         className="
                             email-signin-dialog
-                            mt-6
+                            mt-2
                         "
+                        onSubmit={ handleSendMagiclink }
                     >
+                        <EmailField
+                            label="Email"
+                            name="email"
+                            value={ magicLinkEmail }
+                            onChange={ ( e ) => setMagicLinkEmail( e.target.value ) }
+                        />
+
                         <Button
-                            className="w-full"
+                            className="w-full mt-4"
                             onClick={ handleSendMagiclink }
                         >
                             { isSendingMagiclink ? "Sending..." : "Send Magic Link" }
                         </Button>
-                    </div>
+                    </Form.Root>
                 )}
-            /> }
+            />
         </>
     )
 }

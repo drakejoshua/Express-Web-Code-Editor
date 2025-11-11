@@ -86,6 +86,7 @@ export default function DialogProvider({ children }) {
                                         { dialog.title && <Dialog.Title
                                             className='
                                                 text-2xl
+                                                text-center
                                                 dark:text-white
                                             '
                                         >
@@ -126,6 +127,7 @@ export function DialogComponent({ content, title, description, ...props }) {
                         backdrop-blur-sm
                     '
                 />
+
                 <Dialog.Content
                     className='
                         fixed
@@ -136,7 +138,7 @@ export function DialogComponent({ content, title, description, ...props }) {
                         w-full
                         min-w-[290px]
                         max-w-[400px]
-                        bg-white
+                        bg-white dark:bg-gray-900
                         p-8 
                         rounded-md
                         data-[state=open]:animate-[scaleIn_0.2s_ease-in-out]
@@ -147,6 +149,7 @@ export function DialogComponent({ content, title, description, ...props }) {
                             absolute
                             top-4
                             right-4
+                            dark:text-white
                         '
                     >
                         <FaXmark className='text-2xl'/>
@@ -156,7 +159,7 @@ export function DialogComponent({ content, title, description, ...props }) {
                         className="
                             flex
                             flex-col
-                            gap-1
+                            gap-2
                             items-center
                             mt-4
                         "
@@ -164,6 +167,8 @@ export function DialogComponent({ content, title, description, ...props }) {
                         { title && <Dialog.Title
                             className='
                                 text-2xl
+                                text-center
+                                dark:text-white
                             '
                         >
                             {title}
@@ -172,6 +177,7 @@ export function DialogComponent({ content, title, description, ...props }) {
                         { description && <Dialog.Description
                             className='
                                 text-center
+                                dark:text-white
                             '
                         >
                             {description}

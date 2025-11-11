@@ -12,10 +12,59 @@ import StatusCard from '../components/StatusCard';
 import { Helmet } from 'react-helmet-async'
 import { FaArrowLeft, FaMoon, FaRegSun } from 'react-icons/fa6';
 import RouteThemeToggle from '../components/RouteThemeToggle.jsx';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useToastProvider } from '../providers/ToastProvider.jsx';
+import { useAuthProvider } from '../providers/AuthProvider.jsx';
 
 
 // magiclink component
 export default function Magiclink() {
+    const { token } = useParams()
+
+    const { verifyMagicLinkToken } = useAuthProvider()
+
+    const [ verificationState, setVerificationState ] = useState("loading")
+    const [ verificationError, setVerificationError ] = useState("")
+
+    const renderCount = useRef(1)
+
+    const navigateTo = useNavigate()
+
+    async function verifyMagicLink() {
+        if ( token ) {
+            const { status, error } = await verifyMagicLinkToken( token )
+
+            if ( status === 'success' ) {
+                setVerificationState("loaded")
+
+                setTimeout( function() {
+                    navigateTo("/dashboard")
+                }, 1000)
+            } else {
+                setVerificationState("error")
+                setVerificationError( error.message )
+            }
+        } else {
+            setVerificationState("error")
+            setVerificationError("Invalid Magiclink Token found in request")
+        }
+    }
+
+    useEffect( function() {
+        if ( renderCount.current < 2 ) {
+            verifyMagicLink()
+
+            renderCount.current += 1
+        }
+
+        return function() {
+            if ( renderCount.current ) {
+                renderCount.current += 1
+            }
+        }
+    }, [])
+
 
     return (
         <>
@@ -42,7 +91,7 @@ export default function Magiclink() {
                     <Logo/>
 
                     {/* status card - loading */}
-                    {/* <StatusCard
+                    { verificationState === "loading" && <StatusCard
                         status={{
                             heading: 'Authenticating your account via magiclink...',
                             text: `
@@ -52,10 +101,10 @@ export default function Magiclink() {
                             type: "loading"
                         }}
                         className="mt-8"
-                    /> */}
+                    /> }
                     
                     {/* status card - error */}
-                    <StatusCard
+                    { verificationState === "error" && <StatusCard
                         status={{
                             heading: 'There was an issue authenticating your account via magiclink.',
                             text: `
@@ -63,20 +112,20 @@ export default function Magiclink() {
                                 Please try again.
                                 If the issue persists, 
                                 please check your internet connection or contact support.
-                                Error: Invalid or expired token.
+                                Error: ${ verificationError }
                             `,
                             type: "error",
-                            redirect: "/signin",
+                            redirect: "/auth/signin",
                             redirect_content: <>
                                 <FaArrowLeft/>
                                 Go Back to Signin
                             </>
                         }}
                         className="mt-8"
-                    />
+                    />}
                     
                     {/* status card - success */}
-                    {/* <StatusCard
+                    { verificationState === "loaded" && <StatusCard
                         status={{
                             heading: 'Successfully authenticated via magiclink!',
                             text: `
@@ -91,7 +140,7 @@ export default function Magiclink() {
                             </>
                         }}
                         className="mt-8"
-                    /> */}
+                    />}
                 </RouteContainer>
 
                 {/* theme toggle button for switching between light and dark mode */}
