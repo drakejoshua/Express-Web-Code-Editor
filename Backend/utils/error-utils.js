@@ -65,7 +65,7 @@ export function reportInvalidAppIdError( next ) {
 
 // predefined invalid email error - used to report
 // invalid email format or missing email error with 400 status code
-export const invalidEmailError = new Error("The email provided in the request is invalid.")
+export const invalidEmailError = new Error("The email provided in the request is invalid/not found")
     invalidEmailError.statusCode = 400
     invalidEmailError.errorCode = ERROR_CODES.INVALID_EMAIL
 

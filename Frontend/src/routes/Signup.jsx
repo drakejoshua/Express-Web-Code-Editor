@@ -34,7 +34,7 @@ import NextButton from '../components/NextButton'
 import Step from '../components/Step'
 import { useAuthProvider } from '../providers/AuthProvider'
 import { useToastProvider } from '../providers/ToastProvider'
-import { useDialogProvider } from '../providers/DialogProvider'
+import { DialogComponent, useDialogProvider } from '../providers/DialogProvider'
 import { BACKEND_ERROR_CODES } from '../utils/error_util'
 
 
@@ -107,6 +107,8 @@ function MultiStepForm() {
     const [ email, setEmail ] = useState('')
     const [ username, setUsername ] = useState('')
     const [ password, setPassword ] = useState('')
+    const [ isCreatingAccount, setIsCreatingAccount ] = useState( false )
+
 
     // refs for form fields
     const passwordFieldRef = useRef(null)
@@ -211,6 +213,8 @@ function MultiStepForm() {
         // prevent default form submission behaviour
         e.preventDefault();
 
+        setIsCreatingAccount( true )
+
         // send signup request to backend
         const { status, error, data } = await signUpUser({
             username,
@@ -232,10 +236,13 @@ function MultiStepForm() {
                 })
             }
         }
+
+        setIsCreatingAccount( false )
     }
 
     // render component
-    return <Form.Root 
+    return (
+        <Form.Root 
             className='
                 signup--form
             '
@@ -493,7 +500,7 @@ function MultiStepForm() {
 
                             {/* <FinishButton> for final form submission */}
                             <FinishButton>
-                                Create Account
+                                { isCreatingAccount ? "Creating Account..." : "Create Account" }
                             </FinishButton>
                         </StepActions>
                     </Step>
@@ -516,4 +523,5 @@ function MultiStepForm() {
                 text="Sign up with email"
             />
         </Form.Root>
+    )
 }

@@ -24,7 +24,7 @@ import MagiclinkBtn from '../components/MagiclinkBtn'
 import { useState } from 'react'
 import { useAuthProvider } from '../providers/AuthProvider'
 import { useToastProvider } from '../providers/ToastProvider'
-import { useDialogProvider } from '../providers/DialogProvider'
+import { useDialogProvider, DialogComponent } from '../providers/DialogProvider'
 import { BACKEND_ERROR_CODES } from '../utils/error_util'
 
 
@@ -32,6 +32,12 @@ import { BACKEND_ERROR_CODES } from '../utils/error_util'
 export default function Signin() {
     const [ email, setEmail ] = useState("")
     const [ password, setPassword ] = useState("")
+    
+    const [ isEmailSignInDialogVisible, setIsEmailSignInDialogVisible ] = useState( false )
+    const [ isEmailNotVerifiedDialogVisible, setIsEmailNotVerifiedDialogVisible ] = useState( false )
+    const [ isSigningIn, setIsSigningIn ] = useState( false )
+    const [ isResendingEmail, setIsResendingEmail ] = useState( false )
+    const [ isSendingMagiclink, setIsSendingMagiclink ] = useState( false )
 
     const { signInUser, resendEmailVerification } = useAuthProvider()
 
@@ -41,50 +47,31 @@ export default function Signin() {
 
     const { showDialog, hideDialog } = useDialogProvider()
 
-    function showEmailNotVerifiedDialog( message ) {
-        const dialogId = showDialog({
-            title: "Your Email Has Not Been Verified",
-            description: message,
-            content: (
-                        <div 
-                            className="
-                                email-verify-dialog
-                                mt-6
-                            "
-                        >
-                            <Button
-                                className="w-full"
-                                onClick={ handleResendEmail }
-                            >
-                                Resend Email Verification
-                            </Button>
-                        </div>
-                    )
-        })
+    async function handleResendEmail() {
+        setIsResendingEmail( true )
 
+        const { status, data, error } = await resendEmailVerification( email )
 
-        async function handleResendEmail() {
-            const { status, data, error } = await resendEmailVerification( email )
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: data.message || "Email Verification Resent Successfully"
+            })
 
-            if ( status === "success" ) {
-                showToast({
-                    type: "success",
-                    message: data.message || "Email Verification Resent Successfully"
-                })
-
-                hideDialog( dialogId )
-            } else {
-                showToast({
-                    type: "error",
-                    message: error.message
-                })
-            }
+            setIsEmailNotVerifiedDialogVisible( false )
+        } else {
+            showToast({
+                type: "error",
+                message: error.message
+            })
         }
+
+        setIsResendingEmail( false )
     }
 
     async function handleSubmit( e ) {
         e.preventDefault()
-        // handle signin form submission logic here
+        setIsSigningIn( true )
         
         const { status, error } = await signInUser( {
             email,
@@ -96,7 +83,7 @@ export default function Signin() {
             navigateTo( '/dashboard' )
         } else {
             if ( error.code === BACKEND_ERROR_CODES.EMAIL_NOT_VERIFIED ) {
-                showEmailNotVerifiedDialog( error.message )
+                setIsEmailNotVerifiedDialogVisible( true )
             } else {
                 // use a toast to display error message to user upon failed signin
                 showToast({
@@ -105,6 +92,12 @@ export default function Signin() {
                 })
             }
         }
+
+        setIsSigningIn( false )
+    }
+
+    async function handleSendMagiclink() {
+        setIsSendingMagiclink( true )
     }
 
     return (
@@ -222,7 +215,7 @@ export default function Signin() {
                             mt-6
                         '
                     >
-                        Sign in
+                        { isSigningIn ? "Signing in..." : "Sign in" }
                     </Button>
 
                     {/* sign in with google */}
@@ -255,6 +248,54 @@ export default function Signin() {
                 {/* theme toggle */}
                 <RouteThemeToggle />
             </div>
+
+            {/* Email Not Verified Dialog */}
+            { isEmailNotVerifiedDialogVisible && <DialogComponent 
+                title="Your Email Has Not Been Verified"
+                description={`
+                    The email address ${ email } has not been verified yet.
+                    Please verify your email to proceed.
+                `}
+                content={(
+                    <div 
+                        className="
+                            email-verify-dialog
+                            mt-6
+                        "
+                    >
+                        <Button
+                            className="w-full"
+                            onClick={ handleResendEmail }
+                        >
+                            { isResendingEmail ? "Resending..." : "Resend Email Verification" }
+                        </Button>
+                    </div>
+                )}
+            /> }
+
+            {/* Sign in With Email Dialog */}
+            { isEmailSignInDialogVisible && <DialogComponent 
+                title="Sign in with Email"
+                description={`
+                    Enter your email address to receive a magic link
+                    for signing in to your account.
+                `}
+                content={(
+                    <div 
+                        className="
+                            email-signin-dialog
+                            mt-6
+                        "
+                    >
+                        <Button
+                            className="w-full"
+                            onClick={ handleSendMagiclink }
+                        >
+                            { isSendingMagiclink ? "Sending..." : "Send Magic Link" }
+                        </Button>
+                    </div>
+                )}
+            /> }
         </>
     )
 }

@@ -16,6 +16,7 @@ import RouteThemeToggle from '../components/RouteThemeToggle';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useAuthProvider } from '../providers/AuthProvider';
+import { useToastProvider } from '../providers/ToastProvider';
 
 
 // email verify component
@@ -23,10 +24,12 @@ export default function Verify() {
     const { token } = useParams()
     const [ searchParams, setSearchParams ] = useSearchParams()
 
-    const { verifyEmailToken } = useAuthProvider()
+    const { verifyEmailToken, resendEmailVerification } = useAuthProvider()
 
     const [ verificationState, setVerificationState ] = useState("loading")
     const [ verificationError, setVerificationError ] = useState("")
+
+    const { showToast } = useToastProvider()
 
     const renderCount = useRef(1)
 
@@ -49,6 +52,31 @@ export default function Verify() {
         } else {
             setVerificationState("error")
             setVerificationError("Invalid Email Verification Token found in request")
+        }
+    }
+
+    async function resendVerificationEmail() {
+        const email = searchParams.get("email")
+
+        if ( email ) {
+            const { status, error } = await resendEmailVerification( email )
+
+            if ( status === "success" ) {
+                showToast({
+                    type: "success",
+                    message: "Verification Email Resent Successfully"
+                })
+            } else {
+                showToast({
+                    type: "error",
+                    message: error.message
+                })
+            }
+        } else {
+            showToast({
+                type: "error",
+                message: "No email found to resend verification, Try signing in again."
+            })
         }
     }
 
@@ -116,7 +144,7 @@ export default function Verify() {
                             `,
                             type: "error",
                             action: function() {
-                                alert("trying again")
+                                resendVerificationEmail()
                             },
                             action_content: <>
                                 <FaArrowRotateLeft/>
