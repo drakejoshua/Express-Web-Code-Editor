@@ -96,18 +96,43 @@ function MultiStepForm() {
     // get carousel navigation handlers and slides state from carousel context
     const { handleNext, handlePrev, slides } = useCarousel()
 
-    const { signUpUser } = useAuthProvider()
+    const { signUpUser, signInWithGoogle, signInWithMagicLink } = useAuthProvider()
 
     const { showToast } = useToastProvider()
     const { showDialog, hideDialog } = useDialogProvider()
-
-    const navigateTo = useNavigate()
 
     // form field states
     const [ email, setEmail ] = useState('')
     const [ username, setUsername ] = useState('')
     const [ password, setPassword ] = useState('')
     const [ isCreatingAccount, setIsCreatingAccount ] = useState( false )
+
+    const [ magicLinkEmail, setMagicLinkEmail ] = useState("")
+    const [ isSendingMagiclink, setIsSendingMagiclink ] = useState( false )
+    const [ isEmailSignInDialogVisible, setIsEmailSignInDialogVisible ] = useState( false )
+
+    async function handleSendMagiclink( e ) {
+        e.preventDefault()
+
+        setIsSendingMagiclink( true )
+
+        const { status, error } = await signInWithMagicLink( magicLinkEmail )
+
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: "Magic Link Sent Successfully. Please check your email."
+            })
+        } else {
+            showToast({
+                type: "error",
+                message: error.message
+            })
+        }
+
+        setIsEmailSignInDialogVisible( false )
+        setIsSendingMagiclink( false )
+    }
 
 
     // refs for form fields
@@ -242,286 +267,326 @@ function MultiStepForm() {
 
     // render component
     return (
-        <Form.Root 
-            className='
-                signup--form
-            '
-            onSubmit={ handleSubmit }
-        >
-            {/* Form Logo */}
-            <Logo
+        <>
+            <Form.Root 
                 className='
-                    justify-center xl:justify-start
+                    signup--form
                 '
-            />
-
-            {/* form heading */}
-            <h1 className='
-                signup--form__heading
-                font-medium
-                text-gray-900 dark:text-white
-                text-3xl
-                mt-9
-                text-center xl:text-left
-            '>
-                Sign up for an account
-            </h1>
-
-            {/* form text */}
-            <p className='
-                signup--form__text
-                mt-4 mb-8
-                text-lg
-                leading-6
-                text-center xl:text-left
-            '>
-                Welcome back! 
-                Please enter your details to sign up for an account.
-
-                Already have an account? 
-                <Link 
-                    to="/auth/signin" 
-                    className='
-                        text-blue-900 dark:text-blue-100
-                        hover:underline
-                    '
-                >
-                    Sign in
-                </Link>
-            </p>
-
-            {/* multi-step form indicators for progress and navigation */}
-            <MultiStepTabs 
-                slides={slides}
-                className="mt-4"
-            />
-
-            {/* form steps parent container */}
-            <SimpleCarousel.Scroller
-                className="
-                    overflow-x-hidden
-                    scroll-smooth
-                    snap-x 
-                    snap-mandatory
-                    mt-3.5
-                "
+                onSubmit={ handleSubmit }
             >
-                {/* form steps track */}
-                <SimpleCarousel.Track
+                {/* Form Logo */}
+                <Logo
+                    className='
+                        justify-center xl:justify-start
+                    '
+                />
+
+                {/* form heading */}
+                <h1 className='
+                    signup--form__heading
+                    font-medium
+                    text-gray-900 dark:text-white
+                    text-3xl
+                    mt-9
+                    text-center xl:text-left
+                '>
+                    Sign up for an account
+                </h1>
+
+                {/* form text */}
+                <p className='
+                    signup--form__text
+                    mt-4 mb-8
+                    text-lg
+                    leading-6
+                    text-center xl:text-left
+                '>
+                    Welcome back! 
+                    Please enter your details to sign up for an account.
+
+                    Already have an account? 
+                    <Link 
+                        to="/auth/signin" 
+                        className='
+                            text-blue-900 dark:text-blue-100
+                            hover:underline
+                        '
+                    >
+                        Sign in
+                    </Link>
+                </p>
+
+                {/* multi-step form indicators for progress and navigation */}
+                <MultiStepTabs 
+                    slides={slides}
+                    className="mt-4"
+                />
+
+                {/* form steps parent container */}
+                <SimpleCarousel.Scroller
                     className="
-                        flex
-                        transition-transform
-                        duration-500
-                        ease-in-out
+                        overflow-x-hidden
+                        scroll-smooth
+                        snap-x 
+                        snap-mandatory
+                        mt-3.5
                     "
                 >
-                    {/* username step */}
-                    <Step>
-                        {/* TextField for username */}
-                        <TextField
-                            ref={usernameFieldRef}
-                            label="Username"
-                            name="username"
-                            emptyValidationMessage="Please enter your username"
-                            value={ username }
-                            onChange={ (e) => setUsername( e.target.value ) }
-                        />
-
-                        {/* form actions container */}
-                        <StepActions
-                            className="mt-4"
-                        >
-                            {/* <NextButton> for next step */}
-                            <NextButton
-                                onClick={ moveToEmailSlide }
-                            >
-                                Next
-                            </NextButton>
-                        </StepActions>
-                    </Step>
-
-                    {/* email step */}
-                    <Step
+                    {/* form steps track */}
+                    <SimpleCarousel.Track
                         className="
-                            flex-[0_0_100%]
-                            snap-start
+                            flex
+                            transition-transform
+                            duration-500
+                            ease-in-out
                         "
                     >
-                        {/* EmailField for email */}
+                        {/* username step */}
+                        <Step>
+                            {/* TextField for username */}
+                            <TextField
+                                ref={usernameFieldRef}
+                                label="Username"
+                                name="username"
+                                emptyValidationMessage="Please enter your username"
+                                value={ username }
+                                onChange={ (e) => setUsername( e.target.value ) }
+                            />
+
+                            {/* form actions container */}
+                            <StepActions
+                                className="mt-4"
+                            >
+                                {/* <NextButton> for next step */}
+                                <NextButton
+                                    onClick={ moveToEmailSlide }
+                                >
+                                    Next
+                                </NextButton>
+                            </StepActions>
+                        </Step>
+
+                        {/* email step */}
+                        <Step
+                            className="
+                                flex-[0_0_100%]
+                                snap-start
+                            "
+                        >
+                            {/* EmailField for email */}
+                            <EmailField
+                                ref={emailFieldRef}
+                                label="Email"
+                                name="email"
+                                emptyValidationMessage="Please enter your email"
+                                invalidValidationMessage="Please enter a valid email"
+                                value={ email }
+                                onChange={ (e) => setEmail( e.target.value ) }
+                            />
+
+                            {/* form actions container */}
+                            <StepActions
+                                className="mt-4"
+                            >
+                                {/* <PreviousButton> for previous step */}
+                                <PreviousButton 
+                                    onClick={ handlePrev }
+                                >
+                                    Previous
+                                </PreviousButton>
+
+                                {/* <NextButton> for next step */}
+                                <NextButton
+                                    onClick={ moveToPasswordSlide }
+                                >
+                                    Next
+                                </NextButton>
+                            </StepActions>
+                        </Step>
+
+                        {/* image upload step */}
+                        <Step
+                            className="
+                                flex-[0_0_100%]
+                                snap-start
+                            "
+                        >
+                            {/* custom form field for file upload */}
+                            <Form.Field
+                                className={`
+                                    form__file-field
+                                    flex 
+                                    flex-col
+                                    gap-2
+                                `}
+                            >
+                                {/* image upload field label */}
+                                <Form.Label
+                                    className='
+                                        form__file-label
+                                        font-medium
+                                    '
+                                >
+                                    Upload Profile Picture ( optional )
+                                </Form.Label>
+
+                                {/* file input */}
+                                <Form.Control asChild>
+                                    <input 
+                                        type="file" 
+                                        accept="image/*"
+                                        className='
+                                            form__file-input
+                                            border-2
+                                            border-gray-600 dark:border-gray-300
+                                            rounded-sm
+                                            py-2 px-3
+                                            bg-gray-600 dark:bg-gray-300
+                                            text-white dark:text-black
+                                            font-medium
+                                            outline-none
+                                            w-full
+                                        '
+                                        // handle file selection and set selected file state to show preview
+                                        onChange={ (e) => setSelectedFile( e.target.files[0] )}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
+
+                            {/* show image preview if selectedFile state is not null */}
+                            { selectedFile && 
+                                <img
+                                    className='
+                                        h-30
+                                        w-30
+                                        mt-4
+                                        rounded-lg
+                                        object-cover
+                                        object-center
+                                        block
+                                    '
+                                    // display preview from url using URL.createObjectURL()
+                                    src={ URL.createObjectURL( selectedFile )}
+                                />
+                            }
+
+                            {/* form actions container */}
+                            <div 
+                                className='
+                                    form-actions-ctn
+                                    flex
+                                    gap-2
+                                    mt-4
+                                '
+                            >
+                                {/* <PreviousButton> for previous step */}
+                                <PreviousButton 
+                                    onClick={ handlePrev }
+                                >
+                                    Previous
+                                </PreviousButton>
+
+                                {/* <NextButton> for next step */}
+                                <NextButton
+                                    onClick={ handleNext }
+                                >
+                                    Next
+                                </NextButton>
+                            </div>
+                        </Step>
+
+                        {/* password step */}
+                        <Step
+                            className="
+                                flex-[0_0_100%]
+                                snap-start
+                            "
+                        >
+                            {/* PasswordField for password */}
+                            <PasswordField
+                                ref={passwordFieldRef}
+                                label="Password"
+                                name="password"
+                                emptyValidationMessage="Please enter your password"
+                                shortValidationMessage="The password can't be lower than 6 characters"
+                                value={ password }
+                                onChange={ (e) => setPassword( e.target.value ) }
+                            />
+
+                            {/* form actions container */}
+                            <StepActions
+                                className="mt-4"
+                            >
+                                {/* <PreviousButton> for previous step */}
+                                <PreviousButton 
+                                    onClick={ handlePrev }
+                                >
+                                    Previous
+                                </PreviousButton>
+
+                                {/* <FinishButton> for final form submission */}
+                                <FinishButton>
+                                    { isCreatingAccount ? "Creating Account..." : "Create Account" }
+                                </FinishButton>
+                            </StepActions>
+                        </Step>
+                    </SimpleCarousel.Track>
+                </SimpleCarousel.Scroller>
+
+                {/* sign in with google */}
+                <GoogleBtn
+                    className='
+                        mt-8
+                    '
+                    type="button"
+                    text="Sign up with Google"
+                    onClick={ () => signInWithGoogle() }
+                />
+
+                {/* sign in with email */}
+                <MagiclinkBtn
+                    className='
+                        mt-3
+                    '
+                    type="button"
+                    onClick={ () => setIsEmailSignInDialogVisible( true ) }
+                    text="Sign up with Email"
+                />
+            </Form.Root>
+
+            {/* Sign in With Email Dialog */}
+            <DialogComponent 
+                open={ isEmailSignInDialogVisible }
+                onOpenChange={ setIsEmailSignInDialogVisible }
+                title="Sign in with Email"
+                description={`
+                    Enter your email address to receive a magic link
+                    for signing in to your account.
+                `}
+                content={(
+                    <Form.Root
+                        className="
+                            email-signin-dialog
+                            mt-2
+                        "
+                        onSubmit={ handleSendMagiclink }
+                    >
                         <EmailField
-                            ref={emailFieldRef}
                             label="Email"
                             name="email"
-                            emptyValidationMessage="Please enter your email"
-                            invalidValidationMessage="Please enter a valid email"
-                            value={ email }
-                            onChange={ (e) => setEmail( e.target.value ) }
+                            value={ magicLinkEmail }
+                            onChange={ ( e ) => setMagicLinkEmail( e.target.value ) }
                         />
 
-                        {/* form actions container */}
-                        <StepActions
-                            className="mt-4"
+                        <Button
+                            className="w-full mt-4"
+                            onClick={ handleSendMagiclink }
                         >
-                            {/* <PreviousButton> for previous step */}
-                            <PreviousButton 
-                                onClick={ handlePrev }
-                            >
-                                Previous
-                            </PreviousButton>
-
-                            {/* <NextButton> for next step */}
-                            <NextButton
-                                onClick={ moveToPasswordSlide }
-                            >
-                                Next
-                            </NextButton>
-                        </StepActions>
-                    </Step>
-
-                    {/* image upload step */}
-                    <Step
-                        className="
-                            flex-[0_0_100%]
-                            snap-start
-                        "
-                    >
-                        {/* custom form field for file upload */}
-                        <Form.Field
-                            className={`
-                                form__file-field
-                                flex 
-                                flex-col
-                                gap-2
-                            `}
-                        >
-                            {/* image upload field label */}
-                            <Form.Label
-                                className='
-                                    form__file-label
-                                    font-medium
-                                '
-                            >
-                                Upload Profile Picture ( optional )
-                            </Form.Label>
-
-                            {/* file input */}
-                            <Form.Control asChild>
-                                <input 
-                                    type="file" 
-                                    accept="image/*"
-                                    className='
-                                        form__file-input
-                                        border-2
-                                        border-gray-600 dark:border-gray-300
-                                        rounded-sm
-                                        py-2 px-3
-                                        bg-gray-600 dark:bg-gray-300
-                                        text-white dark:text-black
-                                        font-medium
-                                        outline-none
-                                        w-full
-                                    '
-                                    // handle file selection and set selected file state to show preview
-                                    onChange={ (e) => setSelectedFile( e.target.files[0] )}
-                                />
-                            </Form.Control>
-                        </Form.Field>
-
-                        {/* show image preview if selectedFile state is not null */}
-                        { selectedFile && 
-                            <img
-                                className='
-                                    h-30
-                                    w-30
-                                    mt-4
-                                    rounded-lg
-                                    object-cover
-                                    object-center
-                                    block
-                                '
-                                // display preview from url using URL.createObjectURL()
-                                src={ URL.createObjectURL( selectedFile )}
-                            />
-                        }
-
-                        {/* form actions container */}
-                        <div 
-                            className='
-                                form-actions-ctn
-                                flex
-                                gap-2
-                                mt-4
-                            '
-                        >
-                            {/* <PreviousButton> for previous step */}
-                            <PreviousButton 
-                                onClick={ handlePrev }
-                            >
-                                Previous
-                            </PreviousButton>
-
-                            {/* <NextButton> for next step */}
-                            <NextButton
-                                onClick={ handleNext }
-                            >
-                                Next
-                            </NextButton>
-                        </div>
-                    </Step>
-
-                    {/* password step */}
-                    <Step
-                        className="
-                            flex-[0_0_100%]
-                            snap-start
-                        "
-                    >
-                        {/* PasswordField for password */}
-                        <PasswordField
-                            ref={passwordFieldRef}
-                            label="Password"
-                            name="password"
-                            emptyValidationMessage="Please enter your password"
-                            shortValidationMessage="The password can't be lower than 6 characters"
-                            value={ password }
-                            onChange={ (e) => setPassword( e.target.value ) }
-                        />
-
-                        {/* form actions container */}
-                        <StepActions
-                            className="mt-4"
-                        >
-                            {/* <PreviousButton> for previous step */}
-                            <PreviousButton 
-                                onClick={ handlePrev }
-                            >
-                                Previous
-                            </PreviousButton>
-
-                            {/* <FinishButton> for final form submission */}
-                            <FinishButton>
-                                { isCreatingAccount ? "Creating Account..." : "Create Account" }
-                            </FinishButton>
-                        </StepActions>
-                    </Step>
-                </SimpleCarousel.Track>
-            </SimpleCarousel.Scroller>
-
-            {/* sign in with google */}
-            <GoogleBtn
-                className='
-                    mt-8
-                '
-                text="Sign up with Google"
+                            { isSendingMagiclink ? "Sending..." : "Send Magic Link" }
+                        </Button>
+                    </Form.Root>
+                )}
             />
-
-            {/* sign in with email */}
-            <MagiclinkBtn
-                className='
-                    mt-3
-                '
-                text="Sign up with email"
-            />
-        </Form.Root>
+        </>
     )
 }
