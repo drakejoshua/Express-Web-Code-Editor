@@ -56,7 +56,7 @@ export const router = createBrowserRouter([
                 element: <Signup />
             },
             {
-                path: "/auth/google",
+                path: "/auth/google/:token",
                 element: <Google />
             },
             {

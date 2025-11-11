@@ -445,6 +445,48 @@ export default function AuthProvider({ children }) {
             return { status: "error", error: error }
         }
     }
+    
+    function signInWithGoogle() {
+        window.open( `${ backendURL }/auth/google`, "_self" )
+    }
+
+    async function verifyGoogleToken( token ) {
+        if ( !token ) {
+            return { 
+                status: "error",
+                error: {
+                    message: "Invalid Google token. Google token is required for verification"
+                }
+            }
+        }
+
+        try {
+            const resp = await fetch( `${ backendURL }/auth/me`, {
+                method: "POST",
+                headers: {
+                    "x-app-id": appId,
+                    'Authorization': `Bearer ${ token }`
+                }
+            })
+
+            if ( resp.ok ) {
+                const json = await resp.json()
+
+                setUser( { 
+                    ...json.data.user, 
+                    access_token: token 
+                } )
+            
+                return { status: "success", data: json.data }
+            } else {
+                const errorData = await resp.json()
+
+                return { status: "error", error: errorData.error || { message: "Google token verification failed" } }
+            }
+        } catch ( error ) {
+            return { status: "error", error: error }
+        }
+    }
 
 
     return (
@@ -458,7 +500,9 @@ export default function AuthProvider({ children }) {
             signOutUser,
             resendEmailVerification,
             signInWithMagicLink,
-            verifyMagicLinkToken
+            verifyMagicLinkToken,
+            signInWithGoogle,
+            verifyGoogleToken
         }}>
             { children }
         </AuthContext.Provider>

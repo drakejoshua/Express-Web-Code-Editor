@@ -9,12 +9,61 @@ import RouteContainer from '../components/RouteContainer';
 import Logo from '../components/Logo';
 import StatusCard from '../components/StatusCard';
 import { Helmet } from 'react-helmet-async'
-import { FaArrowLeft, FaMoon, FaRegSun } from 'react-icons/fa6';
+import { FaArrowLeft } from 'react-icons/fa6';
 import RouteThemeToggle from '../components/RouteThemeToggle.jsx';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuthProvider } from '../providers/AuthProvider.jsx';
+import { useState } from 'react';
+import { useRef } from 'react';
+import { useEffect } from 'react';
 
 
 // google oauth component
 export default function Google() {
+    const { token } = useParams()
+
+    const { verifyGoogleToken } = useAuthProvider()
+
+    const [ verificationState, setVerificationState ] = useState("loading")
+    const [ verificationError, setVerificationError ] = useState("")
+
+    const renderCount = useRef(1)
+
+    const navigateTo = useNavigate()
+
+    async function verifyGoogleOAuth() {
+        if ( token ) {
+            const { status, error } = await verifyGoogleToken( token )
+
+            if ( status === 'success' ) {
+                setVerificationState("loaded")
+
+                setTimeout( function() {
+                    navigateTo("/dashboard")
+                }, 1000)
+            } else {
+                setVerificationState("error")
+                setVerificationError( error.message )
+            }
+        } else {
+            setVerificationState("error")
+            setVerificationError("Invalid Email Verification Token found in request")
+        }
+    }
+
+    useEffect( function() {
+        if ( renderCount.current < 2 ) {
+            verifyGoogleOAuth()
+
+            renderCount.current += 1
+        }
+
+        return function() {
+            if ( renderCount.current ) {
+                renderCount.current += 1
+            }
+        }
+    }, [])
 
     return (
         <>
@@ -41,7 +90,7 @@ export default function Google() {
                     <Logo/>
 
                     {/* status card - loading */}
-                    {/* <StatusCard
+                    { verificationState === "loading" && <StatusCard
                         status={{
                             heading: 'Authenticating your Google account...',
                             text: `
@@ -51,10 +100,10 @@ export default function Google() {
                             type: "loading"
                         }}
                         className="mt-8"
-                    /> */}
+                    />}
                     
                     {/* status card - error */}
-                    <StatusCard
+                    { verificationState === "error" && <StatusCard
                         status={{
                             heading: 'There was an issue authenticating your Google account.',
                             text: `
@@ -62,20 +111,20 @@ export default function Google() {
                                 Please try again.
                                 If the issue persists, 
                                 please check your internet connection or contact support.
-                                Error: Invalid or expired token.
+                                Error: ${ verificationError }
                             `,
                             type: "error",
-                            redirect: "/signin",
+                            redirect: "/auth/signin",
                             redirect_content: <>
                                 <FaArrowLeft/>
                                 Go Back to Signin
                             </>
                         }}
                         className="mt-8"
-                    />
+                    />}
                     
                     {/* status card - success */}
-                    {/* <StatusCard
+                    { verificationState === "loaded" && <StatusCard
                         status={{
                             heading: 'Successfully authenticated with Google!',
                             text: `
@@ -90,7 +139,7 @@ export default function Google() {
                             </>
                         }}
                         className="mt-8"
-                    /> */}
+                    />}
                 </RouteContainer>
 
                 {/* theme toggle button for switching between light and dark mode */}

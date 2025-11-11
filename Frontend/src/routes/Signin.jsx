@@ -40,7 +40,12 @@ export default function Signin() {
     const [ isResendingEmail, setIsResendingEmail ] = useState( false )
     const [ isSendingMagiclink, setIsSendingMagiclink ] = useState( false )
 
-    const { signInUser, resendEmailVerification, signInWithMagicLink } = useAuthProvider()
+    const { 
+        signInUser, 
+        resendEmailVerification, 
+        signInWithMagicLink,
+        signInWithGoogle
+    } = useAuthProvider()
 
     const navigateTo = useNavigate()
 
@@ -246,6 +251,7 @@ export default function Signin() {
                         '
                         type="button"
                         text="Sign in with Google"
+                        onClick={ () => signInWithGoogle() }
                     />
 
                     {/* sign in with email */}
