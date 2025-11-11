@@ -880,7 +880,12 @@ router.post("/signout",
     function( req, res, next ) {
         try {
             // clear the refresh token cookie by setting it to empty
-            res.clearCookie('refresh_token')
+            res.clearCookie('refresh_token', {
+                httpOnly: true,
+                path: '/auth',               // must match the original
+                secure: nodeEnv === 'production',
+                sameSite: 'lax',         // or 'none' in prod
+            });
 
             // send success response
             res.status(200).json({

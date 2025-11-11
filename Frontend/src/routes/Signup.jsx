@@ -558,10 +558,10 @@ function MultiStepForm() {
             <DialogComponent 
                 open={ isEmailSignInDialogVisible }
                 onOpenChange={ setIsEmailSignInDialogVisible }
-                title="Sign in with Email"
+                title="Sign up with Email"
                 description={`
                     Enter your email address to receive a magic link
-                    for signing in to your account.
+                    to sign up for an account.
                 `}
                 content={(
                     <Form.Root
