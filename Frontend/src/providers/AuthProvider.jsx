@@ -117,7 +117,7 @@ export default function AuthProvider({ children }) {
         }
     }
 
-    async function refreshUserToken( maxRetries, count = 1 ) {
+    async function refreshUserToken( maxRetries = 3, count = 1 ) {
         const savedUserToken = localStorage.getItem( "codebloks-token" )
         
 

@@ -9,6 +9,7 @@ import ToastProvider from './providers/ToastProvider.jsx'
 import DialogProvider from './providers/DialogProvider.jsx'
 import ErrorBoundary from './routes/ErrorBoundary.jsx'
 import AuthProvider from './providers/AuthProvider.jsx'
+import BlokProvider from './providers/BlokProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -18,7 +19,9 @@ createRoot(document.getElementById('root')).render(
                 <DialogProvider>
                     <HelmetProvider>
                         <AuthProvider>
-                            <RouterProvider router={router} />
+                            <BlokProvider>
+                                <RouterProvider router={router} />
+                            </BlokProvider>
                         </AuthProvider>
                     </HelmetProvider>
                 </DialogProvider>
