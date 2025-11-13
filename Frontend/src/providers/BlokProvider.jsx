@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useAuthProvider } from './AuthProvider'
 
 const BlokContext = createContext()
@@ -19,10 +19,14 @@ function BlokProvider({ children }) {
 
 
     async function getBloks( limit = 10, filter = "" ) {
+        if ( bloks !== "loading" ) {
+            setBloks("loading")
+        }
+
         // retrieve saved user token from local storage if any
         const savedUserToken = localStorage.getItem( "codebloks-token" )
 
-        if ( parseInt( limit )) {
+        if ( isNaN( parseInt( limit ) ) ) {
             return {
                 status: "error",
                 error: {
@@ -44,7 +48,7 @@ function BlokProvider({ children }) {
             })
 
             if ( resp.ok ) {
-                const jsonData = resp.json()
+                const jsonData = await resp.json()
 
                 setBloks( jsonData.data.bloks )
                 setTotalBloksCount( jsonData.data.totalBloks )
@@ -60,6 +64,8 @@ function BlokProvider({ children }) {
                     if ( status === "success" ) {
                         return getBloks( limit )
                     } else {
+                        setBloks( "error" )
+
                         return {
                             status: "error",
                             error
@@ -68,6 +74,8 @@ function BlokProvider({ children }) {
                 } else {
                     const errorData = await resp.json()
 
+                    setBloks( "error" )
+
                     return {
                         status: "error",
                         error: errorData.error
@@ -75,6 +83,8 @@ function BlokProvider({ children }) {
                 }
             }
         } catch( error ) {
+            setBloks( "error" )
+
             return {
                 status: "error",
                 error: error

@@ -1,15 +1,19 @@
 // import route dependencies
 import { 
     FaArrowRightFromBracket, 
+    FaArrowRotateLeft, 
     FaArrowsRotate, 
     FaBars, 
+    FaClipboardList, 
     FaEllipsisVertical, 
     FaMagnifyingGlass, 
     FaMoon, 
     FaPencil, 
     FaPlus, 
     FaRegSun, 
+    FaSpinner, 
     FaTrash, 
+    FaTriangleExclamation, 
     FaUser, 
     FaXmark 
 } from 'react-icons/fa6'
@@ -26,13 +30,38 @@ import NavMenu from '../components/NavMenu'
 import NavAvatar from '../components/NavAvatar'
 import { useNavigate } from 'react-router-dom'
 import { useAuthProvider } from '../providers/AuthProvider'
+import { useBlokProvider } from '../providers/BlokProvider'
+import { generateIframeContent } from '../utils/editor_utils'
+import { useEffect, useState } from 'react'
 
 
 export default function Dashboard() {
-    
-    const { theme, toggleTheme } = useThemeProvider()
-
     const navigateTo = useNavigate()
+
+    const { theme, toggleTheme } = useThemeProvider()
+    const { 
+        bloks,
+        totalBloksCount,
+        getBloks
+    } = useBlokProvider()
+
+    const defaultLimit = 10
+    const [ filter, setFilter ] = useState("")
+    const [ limit, setLimit ] = useState( defaultLimit )
+    
+    useEffect( function() {
+        getBloks( limit, filter )
+    }, [ limit, filter ])
+
+    function loadMoreBloks() {
+        if ( limit < totalBloksCount ) {
+            if ( totalBloksCount - limit <= 10 ) {
+                setLimit( ( prevLimit ) => prevLimit + ( totalBloksCount - prevLimit ) )
+            } else {
+                setLimit( limit + 10 )
+            }
+        }
+    }
 
     return (
         <WideLayout>
@@ -131,107 +160,169 @@ export default function Dashboard() {
                         mt-8
                     "
                 >
-                    <div 
+                    { ( bloks === "loading" && bloks !== "error" ) && <div 
                         className="
-                            dashboard--blok-list-ctn__blok-list
-                            grid
-                            grid-cols-1 md:grid-cols-2 lg:grid-cols-3
-                            gap-6 lg:gap-10
+                            dashboard--blok-list-ctn__loading-state
+                            flex
+                            flex-col
+                            gap-6
+                            items-center
                         "
                     >
-                        <Blok 
-                            name="blok_1" 
-                            iframeContent={`<body class="text-white bg-black">
-                                    <!-- Tailwind CDN -->
-                                    <script src="https://cdn.tailwindcss.com"></script>
-
-                                    <h1 class="text-2xl font-medium mb-2">Welcome !!!</h1>
-                                    <p class="text-gray-300 mb-8">
-                                        Experience code-editing in the browser
-                                    </p>
-
-                                    <button class="bg-blue-500 text-white px-3 py-1.5 rounded">
-                                        Only Available At Codebloks
-                                    </button>
-                                </body>`}
+                        <FaSpinner 
+                            className='
+                                text-2xl
+                                animate-spin
+                            '
                         />
 
-                        <Blok 
-                            name="simple_one" 
-                            iframeContent={`<body class="text-white bg-neutral-500">
-                                    <!-- Tailwind CDN -->
-                                    <script src="https://cdn.tailwindcss.com"></script>
-
-                                    <h1 class="text-2xl font-medium mb-2">Simple One</h1>
-                                    <p class="text-gray-300 mb-8">
-                                        Hello Codebloks User
-                                    </p>
-
-                                    <a class="bg-amber-800 text-white px-3 py-1.5 rounded">
-                                        Explore More
-                                    </a>
-                                </body>`}
-                        />
-
-                        <Blok 
-                            name="animation" 
-                            iframeContent={`<body class="text-white bg-amber-800">
-                                    <!-- Tailwind CDN -->
-                                    <script src="https://cdn.tailwindcss.com"></script>
-
-                                    <h1 class="text-2xl font-medium mb-2">Animation Example</h1>
-                                    <p class="text-gray-300 mb-8 animate-pulse">
-                                        Head out With animation
-                                    </p>
-
-                                    <button class="bg-gray-800 text-white px-3 py-1.5 rounded animate-bounce">
-                                        Only Available At Codebloks
-                                    </button>
-                                </body>`}
-                        />
-                        <Blok 
-                            name="color_riot_example" 
-                            iframeContent={`<body class="text-white bg-red-400">
-                                    <!-- Tailwind CDN -->
-                                    <script src="https://cdn.tailwindcss.com"></script>
-
-                                    <h1 class="text-2xl text-gray-800 font-medium mb-2">Color Riot!!</h1>
-                                    <p class="text-gray-300 mb-8">
-                                        Experience code-editing in the browser
-                                    </p>
-
-                                    <button class="bg-amber-900 text-white px-3 py-1.5 rounded">
-                                        Only Available At Codebloks
-                                    </button>
-                                </body>`}
-                        />
-                        <Blok 
-                            name="image_example" 
-                            iframeContent={`<body class="text-white bg-black">
-                                    <!-- Tailwind CDN -->
-                                    <script src="https://cdn.tailwindcss.com"></script>
-
-                                    <img class="text-2xl font-medium mb-2" height=100 width=100
-                                        src="https://images.unsplash.com/photo-1480455624313-e29b44bbfde1?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z3V5fGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=500" alt="Code Example" />
-                                    <code class="text-gray-300 mb-8 px-4">
-                                        > Image of some guy
-                                    </code>
-                                </body>`}
-                        />
-                    </div>
-
-                    <Button
-                        className='
-                            mt-14
-                            mx-auto
-                        '
-                    >
-                        <FaArrowsRotate className='dashboard--blok-list-ctn__refresh-icon' />
-
-                        <span className="dashboard--blok-list-ctn__refresh-text">
-                            load more bloks
+                        <span 
+                            className="
+                                dashboard--blok-list-ctn__loading-text
+                            "
+                        >
+                            loading your bloks...
                         </span>
-                    </Button>
+                    </div> }
+                    
+                    { ( bloks === "error" && bloks !== "loading" ) && <div 
+                        className="
+                            dashboard--blok-list-ctn__error-state
+                            flex
+                            flex-col
+                            gap-6
+                            items-center
+                        "
+                    >
+                        <FaTriangleExclamation 
+                            className='
+                                text-2xl
+                            '
+                        />
+
+                        <span 
+                            className="
+                                dashboard--blok-list-ctn__loading-text
+                                text-xl
+                                capitalize
+                            "
+                        >
+                            There was an error loading your bloks
+                        </span>
+
+                        <Button
+                            className="
+                                gap-2
+                            "
+                        >
+                            <FaArrowRotateLeft
+                                className='
+                                    text-xl
+                                '
+                            />
+
+                            <span>
+                                retry
+                            </span>
+                        </Button>
+                    </div> }
+                    
+                    { ( bloks !== "error" && bloks !== "loading" && bloks.length == 0 ) && 
+                        <div 
+                            className="
+                                dashboard--blok-list-ctn__error-state
+                                flex
+                                flex-col
+                                gap-6
+                                items-center
+                            "
+                        >
+                            <FaClipboardList 
+                                className='
+                                    text-2xl
+                                '
+                            />
+
+                            <span 
+                                className="
+                                    dashboard--blok-list-ctn__loading-text
+                                    text-xl
+                                    capitalize
+                                "
+                            >
+                                You have not created any bloks yet
+                            </span>
+
+                            <Button
+                                className="
+                                    gap-2
+                                "
+                            >
+                                <FaPlus
+                                    className='
+                                        text-xl
+                                    '
+                                />
+
+                                <span>
+                                    create your first blok
+                                </span>
+                            </Button>
+
+                        </div> 
+                    }
+
+                    { ( bloks !== "loading" && bloks !== "error" && bloks.length != 0 ) &&
+                        <div 
+                            className="
+                                dashboard--blok-list-ctn__blok-list
+                                grid
+                                grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+                                gap-6 lg:gap-10
+                            "
+                        >
+                            { ( bloks !== "loading" && bloks !== "error" ) && 
+                                bloks.map(
+                                    function( blok ) {
+                                        return (
+                                            <Blok 
+                                                name={ blok.name } 
+                                                iframeContent={ generateIframeContent( 
+                                                    blok.html,
+                                                    blok.css,
+                                                    blok.js,
+                                                    theme
+                                                )}
+                                            /> 
+                                        )
+                                    }
+                                ) 
+                            }
+                        </div>
+                    }
+
+                    { 
+                        ( 
+                            bloks !== 'loading' &&
+                            bloks !== "error" && 
+                            limit > totalBloksCount &&
+                            totalBloksCount > defaultLimit
+                        ) 
+                        && 
+                        <Button
+                            className='
+                                mt-14
+                                mx-auto
+                            '
+                            onClick={ loadMoreBloks }
+                        >
+                            <FaArrowsRotate className='dashboard--blok-list-ctn__refresh-icon' />
+
+                            <span className="dashboard--blok-list-ctn__refresh-text">
+                                load more bloks
+                            </span>
+                        </Button>
+                    }
                 </div>
             </div>
         </WideLayout>
