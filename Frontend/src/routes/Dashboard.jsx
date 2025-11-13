@@ -33,6 +33,7 @@ import { useAuthProvider } from '../providers/AuthProvider'
 import { useBlokProvider } from '../providers/BlokProvider'
 import { generateIframeContent } from '../utils/editor_utils'
 import { useEffect, useState } from 'react'
+import useDebounce from '../hooks/useDebounce'
 
 
 export default function Dashboard() {
@@ -49,10 +50,11 @@ export default function Dashboard() {
     const defaultLimit = 10
     const [ filter, setFilter ] = useState("")
     const [ limit, setLimit ] = useState( defaultLimit )
+    const debouncedFilter = useDebounce( filter )
     
     useEffect( function() {
         fetchBloks()
-    }, [ limit, filter ])
+    }, [ limit, debouncedFilter ])
 
     function loadMoreBloks() {
         if ( limit < totalBloksCount ) {
@@ -65,7 +67,7 @@ export default function Dashboard() {
     }
 
     async function fetchBloks() {
-        const { status, data } = await getBloks( limit, filter )
+        const { status, data } = await getBloks( limit, debouncedFilter )
 
         if ( status === "success" ) {
             setBloks( data.bloks )
@@ -153,6 +155,8 @@ export default function Dashboard() {
                             flex-1
                             min-w-0
                         "
+                        value={ filter }
+                        onChange={ (e) => setFilter( e.target.value ) }
                     />
 
                     <Button
@@ -172,74 +176,94 @@ export default function Dashboard() {
                         mt-8
                     "
                 >
-                    { ( bloks === "loading" && bloks !== "error" ) && <div 
-                        className="
-                            dashboard--blok-list-ctn__loading-state
-                            flex
-                            flex-col
-                            gap-6
-                            items-center
-                        "
-                    >
-                        <FaSpinner 
-                            className='
-                                text-2xl
-                                animate-spin
-                            '
-                        />
-
-                        <span 
+                    { 
+                        ( 
+                            bloks === "loading" && 
+                            bloks !== "error" 
+                        ) && <div 
                             className="
-                                dashboard--blok-list-ctn__loading-text
+                                dashboard--blok-list-ctn__loading-state
+                                flex
+                                flex-col
+                                gap-6
+                                items-center
                             "
                         >
-                            loading your bloks...
-                        </span>
-                    </div> }
-                    
-                    { ( bloks === "error" && bloks !== "loading" ) && <div 
-                        className="
-                            dashboard--blok-list-ctn__error-state
-                            flex
-                            flex-col
-                            gap-6
-                            items-center
-                        "
-                    >
-                        <FaTriangleExclamation 
-                            className='
-                                text-2xl
-                            '
-                        />
-
-                        <span 
-                            className="
-                                dashboard--blok-list-ctn__loading-text
-                                text-xl
-                                capitalize
-                            "
-                        >
-                            There was an error loading your bloks
-                        </span>
-
-                        <Button
-                            className="
-                                gap-2
-                            "
-                        >
-                            <FaArrowRotateLeft
+                            <FaSpinner 
                                 className='
-                                    text-xl
+                                    text-2xl
+                                    animate-spin
                                 '
                             />
 
-                            <span>
-                                retry
+                            <span 
+                                className="
+                                    dashboard--blok-list-ctn__loading-text
+                                "
+                            >
+                                { filter === "" ? "loading your bloks..." : "searching bloks..."}
                             </span>
-                        </Button>
-                    </div> }
+                        </div> 
+                    }
                     
-                    { ( bloks !== "error" && bloks !== "loading" && bloks.length == 0 ) && 
+                    { 
+                        ( 
+                            bloks === "error" && 
+                            bloks !== "loading"
+                        ) && 
+                        <div 
+                            className="
+                                dashboard--blok-list-ctn__error-state
+                                flex
+                                flex-col
+                                gap-6
+                                items-center
+                            "
+                        >
+                            <FaTriangleExclamation 
+                                className='
+                                    text-2xl
+                                '
+                            />
+
+                            <span 
+                                className="
+                                    dashboard--blok-list-ctn__loading-text
+                                    text-xl
+                                    capitalize
+                                "
+                            >
+                                { 
+                                    filter === "" ? 
+                                    "There was an error loading your bloks" : 
+                                    "There was an error searching your bloks"
+                                }
+                            </span>
+
+                            <Button
+                                className="
+                                    gap-2
+                                "
+                            >
+                                <FaArrowRotateLeft
+                                    className='
+                                        text-xl
+                                    '
+                                />
+
+                                <span>
+                                    retry
+                                </span>
+                            </Button>
+                        </div> 
+                    }
+                    
+                    { 
+                        ( 
+                            bloks !== "error" && 
+                            bloks !== "loading" && 
+                            bloks.length == 0 
+                        ) && 
                         <div 
                             className="
                                 dashboard--blok-list-ctn__error-state
@@ -263,9 +287,14 @@ export default function Dashboard() {
                                 "
                             >
                                 You have not created any bloks yet
+                                { 
+                                    filter === "" ? 
+                                    "You have not created any bloks yet" : 
+                                    `There were no bloks matching that search term ${ filter }`
+                                }
                             </span>
 
-                            <Button
+                            { filter === "" && <Button
                                 className="
                                     gap-2
                                 "
@@ -279,12 +308,17 @@ export default function Dashboard() {
                                 <span>
                                     create your first blok
                                 </span>
-                            </Button>
+                            </Button>}
 
                         </div> 
                     }
 
-                    { ( bloks !== "loading" && bloks !== "error" && bloks.length != 0 ) &&
+                    { 
+                        ( 
+                            bloks !== "loading" && 
+                            bloks !== "error" && 
+                            bloks.length != 0 
+                        ) &&
                         <div 
                             className="
                                 dashboard--blok-list-ctn__blok-list
