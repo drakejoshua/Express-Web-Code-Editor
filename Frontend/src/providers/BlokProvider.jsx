@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext } from 'react'
 import { useAuthProvider } from './AuthProvider'
 
 const BlokContext = createContext()
@@ -9,21 +9,12 @@ export function useBlokProvider() {
 
 
 function BlokProvider({ children }) {
-    const [ bloks, setBloks ] = useState("loading")
-    const [ totalBloksCount, setTotalBloksCount ] = useState(0)
-
-
     const { refreshUserToken } = useAuthProvider()
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
     const appId = import.meta.env.VITE_APP_ID || "ah3294hd434983ub4b4y3r34rhb4"
 
 
-    async function getBloks( limit = 10, filter = "" ) {
-        if ( bloks !== "loading" ) {
-            setBloks("loading")
-        }
-
-        // retrieve saved user token from local storage if any
+    async function getBloks( limit = 10, filter = "" ) {// retrieve saved user token from local storage if any
         const savedUserToken = localStorage.getItem( "codebloks-token" )
 
         if ( isNaN( parseInt( limit ) ) ) {
@@ -50,9 +41,6 @@ function BlokProvider({ children }) {
             if ( resp.ok ) {
                 const jsonData = await resp.json()
 
-                setBloks( jsonData.data.bloks )
-                setTotalBloksCount( jsonData.data.totalBloks )
-
                 return {
                     status: "success",
                     data: jsonData.data
@@ -64,7 +52,6 @@ function BlokProvider({ children }) {
                     if ( status === "success" ) {
                         return getBloks( limit )
                     } else {
-                        setBloks( "error" )
 
                         return {
                             status: "error",
@@ -74,8 +61,6 @@ function BlokProvider({ children }) {
                 } else {
                     const errorData = await resp.json()
 
-                    setBloks( "error" )
-
                     return {
                         status: "error",
                         error: errorData.error
@@ -83,8 +68,6 @@ function BlokProvider({ children }) {
                 }
             }
         } catch( error ) {
-            setBloks( "error" )
-
             return {
                 status: "error",
                 error: error
@@ -187,9 +170,6 @@ function BlokProvider({ children }) {
             if ( resp.ok ) {
                 const jsonData = await resp.json()
 
-                setBloks([ ...bloks, jsonData.data.blok ])
-                setTotalBloksCount( totalBloksCount + 1 )
-
                 return {
                     status: "success",
                     data: jsonData.data
@@ -253,9 +233,6 @@ function BlokProvider({ children }) {
             if ( resp.ok ) {
                 const jsonData = await resp.json()
 
-                setBloks( ( prevBloks ) => prevBloks.filter( ( blok ) => blok.id !== blokId ))
-                setTotalBloksCount( totalBloksCount - 1 )
-
                 return {
                     status: "success",
                     data: jsonData.data
@@ -291,9 +268,7 @@ function BlokProvider({ children }) {
 
 
     return (
-        <BlokContext.Provider value={{ 
-            bloks,
-            totalBloksCount,
+        <BlokContext.Provider value={{
             getBloks,
             createBlok,
             deleteBlok

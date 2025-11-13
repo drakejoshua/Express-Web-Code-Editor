@@ -39,18 +39,19 @@ export default function Dashboard() {
     const navigateTo = useNavigate()
 
     const { theme, toggleTheme } = useThemeProvider()
-    const { 
-        bloks,
-        totalBloksCount,
+    const {
         getBloks
     } = useBlokProvider()
+
+    const [ bloks, setBloks ] = useState("loading")
+    const [ totalBloksCount, setTotalBloksCount ] = useState( 0 )
 
     const defaultLimit = 10
     const [ filter, setFilter ] = useState("")
     const [ limit, setLimit ] = useState( defaultLimit )
     
     useEffect( function() {
-        getBloks( limit, filter )
+        fetchBloks()
     }, [ limit, filter ])
 
     function loadMoreBloks() {
@@ -60,6 +61,17 @@ export default function Dashboard() {
             } else {
                 setLimit( limit + 10 )
             }
+        }
+    }
+
+    async function fetchBloks() {
+        const { status, data } = await getBloks( limit, filter )
+
+        if ( status === "success" ) {
+            setBloks( data.bloks )
+            setTotalBloksCount( data.totalBloks )
+        } else {
+            setBloks("error")
         }
     }
 
