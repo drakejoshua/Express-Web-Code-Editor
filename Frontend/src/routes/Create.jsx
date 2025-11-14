@@ -34,6 +34,8 @@ import { useThemeProvider } from '../providers/ThemeProvider'
 import WideLayout from '../components/WideLayout'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
+import { useBlokProvider } from '../providers/BlokProvider'
+import { useToastProvider } from '../providers/ToastProvider'
 
 
 
@@ -124,15 +126,20 @@ function MultiStepForm() {
     // retrieve carousel handling functions from carousel context
     const { handleNext, handlePrev } = useCarousel()
 
+    const { createBlok } = useBlokProvider()
+    const navigateTo = useNavigate()
+
+    const { showToast } = useToastProvider()
+
     // intialize create form state
     const [ blokName, setBlokName ] = useState("")
     const [ selectedTemplate, setSelectedTemplate ] = useState("blank")
     const [ defaultEditorSettings, setDefaultEditorSettings ] = useState({
-        layout: "editor_top",
+        editor_layout: "editor_top",
         theme: "vs-dark",
         font_size: 16,
         tab_size: "4",
-        autocomplete: true
+        auto_complete: true
     })
 
     // ref for blok name input - used for validating the blok name
@@ -160,7 +167,7 @@ function MultiStepForm() {
     // values received from the form input and normalize them if needed
     function handleDefaultSettingsChange(setting, value) {
         switch( setting ) {
-            case "layout":
+            case "editor_layout":
                 value = value != "" ? value : "editor_top"
             break;
 
@@ -178,6 +185,45 @@ function MultiStepForm() {
         }))
     }
 
+
+    async function handleCreate( e ) {
+        e.preventDefault()
+
+        let blokTemplateToUse = {
+            html: "",
+            css: "",
+            js: ""
+        }
+
+        if ( selectedTemplate !== "blank" ) {
+            blokTemplateToUse = blokTemplates.find( ( template ) => selectedTemplate === template.value )
+        }
+
+        const { status, error, data } = await createBlok({
+            name: blokName,
+            html: blokTemplateToUse.html,
+            css: blokTemplateToUse.css,
+            js: blokTemplateToUse.js,
+            settings: defaultEditorSettings
+        })
+
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: `The blok with name ${ blokName } has been successfully created`
+            })
+
+            setTimeout( function() {
+                navigateTo(`/editor/${ data.blok.id }`)
+            }, 1000 )
+        } else {
+            showToast({
+                type: "error",
+                message: `Error creating toast: ${ error.message }`
+            })
+        }
+    }
+
     return (
         // form root
         <Form.Root
@@ -189,6 +235,7 @@ function MultiStepForm() {
                 items-center
                 mx-auto
             "
+            onSubmit={ handleCreate }
         >
             {/* form progress indicator/tabs */}
             <MultiStepTabs 
@@ -401,8 +448,8 @@ function MultiStepForm() {
                                         </div>
                                     },
                                 ]}
-                                value={ defaultEditorSettings.layout }
-                                onValueChange={ (value) => handleDefaultSettingsChange("layout", value) }
+                                value={ defaultEditorSettings.editor_layout }
+                                onValueChange={ (value) => handleDefaultSettingsChange("editor_layout", value) }
                             />
 
                             {/* Default Theme option */}
@@ -460,12 +507,12 @@ function MultiStepForm() {
                             {/* Default Autocomplete option */}
                             <SwitchOption
                                 label="Autocomplete"
-                                checked={ defaultEditorSettings.autocomplete }
+                                checked={ defaultEditorSettings.auto_complete }
                                 className="
                                     flex-row
                                     justify-between
                                 "
-                                onCheckedChange={ (value) => handleDefaultSettingsChange("autocomplete", value)}
+                                onCheckedChange={ (value) => handleDefaultSettingsChange("auto_complete", value)}
                             />
                         </div>
 
@@ -616,7 +663,7 @@ function MultiStepForm() {
                                         </span>
                                         
                                         <span className="create--form__review-group-value">
-                                            { defaultEditorSettings.autocomplete ? "On" : "Off" }
+                                            { defaultEditorSettings.auto_complete ? "On" : "Off" }
                                         </span>
                                     </div>
                                     
@@ -640,7 +687,7 @@ function MultiStepForm() {
                                                                     <TbLayoutSidebarRight className='text-2xl'/>
                                                                     <span className="ml-2">Editor on right</span>
                                                                 </div>,
-                                                }[ defaultEditorSettings.layout ] 
+                                                }[ defaultEditorSettings.editor_layout ] 
                                             }
                                         </div>
                                     </div>

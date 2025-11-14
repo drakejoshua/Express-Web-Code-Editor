@@ -218,7 +218,7 @@ router.post("/bloks",
         }
 
         // extract the blok data from the request body
-        const { name, html, css, javascript } = req.body
+        const { name, html, css, javascript, settings } = req.body
 
         // extract passport's authenticated user data from the request
         const user = req.user
@@ -232,7 +232,8 @@ router.post("/bloks",
                 name: name,
                 html: html || "",
                 css: css || "",
-                javascript: javascript || ""
+                javascript: javascript || "",
+                settings: settings || {}
             })
 
             // since no errors occurred, send success response with created
