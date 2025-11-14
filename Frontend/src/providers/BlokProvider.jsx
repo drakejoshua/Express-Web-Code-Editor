@@ -231,18 +231,20 @@ function BlokProvider({ children }) {
  
 
             if ( resp.ok ) {
-                const jsonData = await resp.json()
-
                 return {
                     status: "success",
-                    data: jsonData.data
+                    data: {
+                        message: "Blok deleted successfully"
+                    }
                 }
             } else {
+                console.log( "blok delete() error", resp )
+                
                 if ( resp.status === 401 ) {
                     const { status, error } = await refreshUserToken()
 
                     if ( status === "success" ) {
-                        return getBlok( blokId )
+                        return deleteBlok( blokId )
                     } else {
                         return {
                             status: "error",
@@ -259,6 +261,7 @@ function BlokProvider({ children }) {
                 }
             }
         } catch ( error ) {
+            console.log( "blok delete() error", error )
             return {
                 status: "error",
                 error
@@ -270,6 +273,7 @@ function BlokProvider({ children }) {
     return (
         <BlokContext.Provider value={{
             getBloks,
+            getBlok,
             createBlok,
             deleteBlok
         }}>

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 // define NavMenuBlok component
-export default function Blok({ id, name, iframeContent }) {
+export default function Blok({ id, name, iframeContent, confirmBlokDeletion }) {
     const navigateTo = useNavigate()
 
     return (
@@ -94,7 +94,7 @@ export default function Blok({ id, name, iframeContent }) {
                             label="More options"
                             options={[
                                 {
-                                    action: function(){},
+                                    action: confirmBlokDeletion,
                                     content: <>
                                         <FaTrash className='dashboard--blok-list__blok-option-icon' />
 

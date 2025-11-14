@@ -34,6 +34,8 @@ import { useBlokProvider } from '../providers/BlokProvider'
 import { generateIframeContent } from '../utils/editor_utils'
 import { useEffect, useState } from 'react'
 import useDebounce from '../hooks/useDebounce'
+import { useToastProvider } from '../providers/ToastProvider'
+import { useDialogProvider } from '../providers/DialogProvider'
 
 
 export default function Dashboard() {
@@ -41,8 +43,12 @@ export default function Dashboard() {
 
     const { theme, toggleTheme } = useThemeProvider()
     const {
-        getBloks
+        getBloks,
+        deleteBlok
     } = useBlokProvider()
+
+    const { showToast } = useToastProvider()
+    const { showDialog, hideDialog } = useDialogProvider()
 
     const [ bloks, setBloks ] = useState("loading")
     const [ totalBloksCount, setTotalBloksCount ] = useState( 0 )
@@ -74,6 +80,46 @@ export default function Dashboard() {
             setTotalBloksCount( data.totalBloks )
         } else {
             setBloks("error")
+        }
+    }
+
+    async function confirmBlokDeletion( id ) {
+        const dialogId = showDialog({
+            title: "Delete Blok?",
+            description: "Are you sure you want to delete this blok",
+            content: (
+                <Button
+                    className="
+                        mt-4
+                        capitalize
+                        w-full
+                    "
+                    onClick={ handleDelete }
+                >
+                    delete blok
+                </Button>
+            )
+        })
+
+        async function handleDelete() {
+            hideDialog( dialogId )
+
+            const { status, error } = await deleteBlok( id )
+
+            if ( status === "success" ) {
+                setBloks( ( prevBloks ) => prevBloks.filter( ( blok ) => blok.id !== id ) )
+                setTotalBloksCount( totalBloksCount - 1 )
+
+                showToast({
+                    type: "success",
+                    message: `The ${ name } Blok has successfully been deleted`
+                })
+            } else {
+                showToast({
+                    type: "error",
+                    message: `Error deleting ${ name } Blok: ${ error.message }`
+                })
+            }
         }
     }
 
@@ -286,7 +332,6 @@ export default function Dashboard() {
                                     capitalize
                                 "
                             >
-                                You have not created any bloks yet
                                 { 
                                     filter === "" ? 
                                     "You have not created any bloks yet" : 
@@ -332,13 +377,16 @@ export default function Dashboard() {
                                     function( blok ) {
                                         return (
                                             <Blok 
+                                                key={ blok.id }
                                                 name={ blok.name } 
+                                                id={ blok.id }
                                                 iframeContent={ generateIframeContent( 
                                                     blok.html,
                                                     blok.css,
                                                     blok.js,
                                                     theme
                                                 )}
+                                                confirmBlokDeletion={ () => confirmBlokDeletion( blok.id ) }
                                             /> 
                                         )
                                     }
