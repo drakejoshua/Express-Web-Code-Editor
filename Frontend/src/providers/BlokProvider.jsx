@@ -238,8 +238,6 @@ function BlokProvider({ children }) {
                     }
                 }
             } else {
-                console.log( "blok delete() error", resp )
-                
                 if ( resp.status === 401 ) {
                     const { status, error } = await refreshUserToken()
 
@@ -261,7 +259,6 @@ function BlokProvider({ children }) {
                 }
             }
         } catch ( error ) {
-            console.log( "blok delete() error", error )
             return {
                 status: "error",
                 error

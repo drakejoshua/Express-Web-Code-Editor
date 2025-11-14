@@ -73,6 +73,10 @@ export default function Dashboard() {
     }
 
     async function fetchBloks() {
+        if ( bloks !== "" ) {
+            setBloks("loading")
+        }
+
         const { status, data } = await getBloks( limit, debouncedFilter )
 
         if ( status === "success" ) {
@@ -335,7 +339,7 @@ export default function Dashboard() {
                                 { 
                                     filter === "" ? 
                                     "You have not created any bloks yet" : 
-                                    `There were no bloks matching that search term ${ filter }`
+                                    `There were no bloks matching that search term "${ filter }"`
                                 }
                             </span>
 
