@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 // define NavMenuBlok component
-export default function Blok({ id, name, iframeContent, confirmBlokDeletion }) {
+export default function Blok({ id, name, iframeContent, confirmBlokDeletion, promptBlokRename }) {
     const navigateTo = useNavigate()
 
     return (
@@ -104,7 +104,7 @@ export default function Blok({ id, name, iframeContent, confirmBlokDeletion }) {
                                     </>
                                 },
                                 {
-                                    action: function(){},
+                                    action: promptBlokRename,
                                     content: <>
                                         <FaPencil className='dashboard--blok-list__blok-option-icon' />
 
