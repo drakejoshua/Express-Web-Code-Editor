@@ -266,13 +266,80 @@ function BlokProvider({ children }) {
         }
     }
 
+    async function updateBlok( blokId, blokDetails ) {
+        // retrieve saved user token from local storage if any
+        const savedUserToken = localStorage.getItem( "codebloks-token" )
+
+        if ( !blokId ) {
+            return {
+                status: "error",
+                error: {
+                    message: "Invalid Blok Id for request. A valid Blok Id is required to fecth blok details"
+                }
+            }
+        }
+
+
+        if ( !savedUserToken || savedUserToken === "logout" ) {
+            return { status: "error", error: { message: "No saved user token" } }
+        }
+
+        try {
+            const resp = await fetch(`${ backendURL }/app/bloks/${ blokId }`, {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${ savedUserToken }`,
+                    'x-app-id': appId,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify( blokDetails )
+            })
+ 
+
+            if ( resp.ok ) {
+                const jsonData = await resp.json()
+
+                return {
+                    status: "success",
+                    data: jsonData.data
+                }
+            } else {
+                if ( resp.status === 401 ) {
+                    const { status, error } = await refreshUserToken()
+
+                    if ( status === "success" ) {
+                        return updateBlok( blokId, blokDetails )
+                    } else {
+                        return {
+                            status: "error",
+                            error
+                        }
+                    }
+                } else {
+                    const errorData = await resp.json()
+
+                    return {
+                        status: "error",
+                        error: errorData.error
+                    }
+                }
+            }
+        } catch ( error ) {
+            return {
+                status: "error",
+                error
+            }
+        }
+    }
+
 
     return (
         <BlokContext.Provider value={{
             getBloks,
             getBlok,
             createBlok,
-            deleteBlok
+            deleteBlok,
+            updateBlok
         }}>
             { children }
         </BlokContext.Provider>
