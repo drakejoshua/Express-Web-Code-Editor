@@ -10,16 +10,16 @@ import { FaBars, FaPlus, FaXmark, FaSpinner, FaClipboardList, FaTriangleExclamat
 import Logo from "./Logo";
 import NavMenuBlok from "./NavMenuBlok";
 import SearchInput from "./SearchInput";
-import { Dialog } from "radix-ui";
+import { Dialog, Form } from "radix-ui";
 import Button from "./Button";
 import { useNavigate } from "react-router-dom";
 import { useBlokProvider } from "../providers/BlokProvider";
 import { useToastProvider } from "../providers/ToastProvider";
-import { useDialogProvider } from "../providers/DialogProvider";
+import { useDialogProvider, DialogComponent } from "../providers/DialogProvider";
 import { useState } from "react";
 import useDebounce from "../hooks/useDebounce";
 import { useEffect } from "react";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import TextField from "./TextField";
 
 
 // define and export NavMenu component

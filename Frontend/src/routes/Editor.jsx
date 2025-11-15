@@ -1,4 +1,5 @@
 import { 
+    FaArrowRotateLeft,
     FaArrowUpRightFromSquare,
     FaBan,
     FaCheck, 
@@ -13,6 +14,8 @@ import {
     FaRegSun, 
     FaRotateLeft, 
     FaShareNodes, 
+    FaSpinner, 
+    FaTriangleExclamation, 
     FaXmark
 } from "react-icons/fa6";
 import NavMenu from "../components/NavMenu";
@@ -32,17 +35,26 @@ import { createContext, forwardRef, useContext, useEffect, useRef, useState } fr
 import { useThemeProvider } from "../providers/ThemeProvider";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-
-
+import { useNavigate, useParams } from "react-router-dom";
+import RouteContainer from "../components/RouteContainer";
+import { useBlokProvider } from "../providers/BlokProvider";
 
 const EditorContext = createContext()
-
-
 
 export default function Editor() {
     // editor state and data
     const { theme, toggleTheme } = useThemeProvider() 
     const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
+
+    const [ loadingState, setLoadingState ] = useState("loading")
+    const [ loadingError, setLoadingError ] = useState("")
+    const { id } = useParams()
+    const {
+        getBlok,
+        updateBlok
+    } = useBlokProvider()
+
+    const navigateTo = useNavigate()
 
     const [ editorContent, setEditorContent ] = useState( {
         html: "",
@@ -76,6 +88,35 @@ export default function Editor() {
     let previewChannelTimeout = useRef( null )
 
     // editor controllers
+    async function fetchBlokToBeEdited() {
+        setLoadingState("loading")
+        setLoadingError("")
+
+        if ( !id ) {
+            setLoadingState("error")
+            setLoadingError("Invalid blok id found in request. Please go to dashboard and try again")
+        }
+
+        const { status, error, data } = await getBlok( id )
+
+        if ( status === "success" ) {
+            setLoadingState("loaded")
+            setEditorContent({
+                html: data.blok.html,
+                css: data.blok.css,
+                js: data.blok.js
+            })
+
+            setEditorSettings({
+                ...editorSettings,
+                ...data.blok.settings
+            })
+        } else {
+            setLoadingState("error")
+            setLoadingError( error.message )
+        }
+    }
+
     function handleBreakpointResize() {
         setMobileBreakpoint( window.innerWidth <= 1024 )
     }
@@ -104,6 +145,8 @@ export default function Editor() {
         window.addEventListener( "resize", handleBreakpointResize )
 
         document.addEventListener( "fullscreenchange", handleFullscreenChange )
+
+        fetchBlokToBeEdited()
 
         return function() {
             window.removeEventListener( "resize", handleBreakpointResize )
@@ -339,374 +382,442 @@ export default function Editor() {
         saveAs( blob, "codeblok.zip" )
     }
 
-
-    return (
-        <EditorContext.Provider value={ {
-            editorSettings,
-            mobileBreakpoint,
-            changeEditorLayout,
-            changeActiveEditors,
-            toggleFocusMode,
-            changeTheme,
-            changeEditorFontSize,
-            changeTabSize,
-            toggleAutocomplete,
-            toggleLineNumbers,
-            initializeEditorThemes,
-            toggleTabPreviewVisibility,
-            exportAsZip
-        } }>
-            <WideLayout>
+    switch( loadingState ) {
+        case "loading":
+            return (
                 <div 
                     className="
-                        editor
-                        flex
-                        flex-col
-                        h-full
-                        pb-8
+                        h-screen
+                        text-black dark:text-white
+                        bg-white dark:bg-gray-800
                     "
                 >
-                    {/* editor desktop content */}
-                    <div 
+                    <RouteContainer
                         className="
-                            editor--header
-                            py-3
-                            flex
-                            items-center
+                            gap-4
+                            flex-row
                         "
                     >
-                        <NavMenu />
+                        <FaSpinner className="text-3xl animate-spin"/>
 
-                        <span 
+                        <p className="text-center">
+                            The editor is loading. Please wait...
+                        </p>
+                    </RouteContainer>
+                </div>
+            )
+        
+        case "error":
+            return (
+                <div 
+                    className="
+                        h-screen
+                        text-black dark:text-white
+                        bg-white dark:bg-gray-800
+                    "
+                >
+                    <RouteContainer
+                        className="
+                            gap-4
+                        "
+                    >
+                        <FaTriangleExclamation className="text-3xl"/>
+
+                        <p className="text-center">
+                            There was an error loading the editor. Error: { loadingError }
+                        </p>
+
+                        <Button
                             className="
-                                editor--header__name-ctn
-                                items-center
-                                gap-3
-                                ml-4
-                                hidden md:flex
+                                capitalize
                             "
+                            onClick={ 
+                                token ?
+                                fetchBlokToBeEdited :
+                                navigateTo("/dashboard")
+                            }
                         >
-                            <span 
-                                className="
-                                    editor--header__blok-name
-                                    text-xl
-                                    font-medium
-                                    font-mono
-                                "
-                            >
-                                New_Blok
+                            <FaArrowRotateLeft/>
+
+                            <span>
+                                retry
                             </span>
+                        </Button>
+                    </RouteContainer>
+                </div>
+            )
 
-                            <button 
-                                className="
-                                    editor--header__rename-btn
-                                    text-gray-500 dark:text-gray-300
-                                "
-                            >
-                                <FaPencil/>
-                            </button>
-                        </span>
-
+        case "loaded":
+            return (
+                <EditorContext.Provider value={ {
+                    editorSettings,
+                    mobileBreakpoint,
+                    changeEditorLayout,
+                    changeActiveEditors,
+                    toggleFocusMode,
+                    changeTheme,
+                    changeEditorFontSize,
+                    changeTabSize,
+                    toggleAutocomplete,
+                    toggleLineNumbers,
+                    initializeEditorThemes,
+                    toggleTabPreviewVisibility,
+                    exportAsZip
+                } }>
+                    <WideLayout>
                         <div 
                             className="
-                                editor--header__actions-ctn
-                                ml-auto
+                                editor
                                 flex
-                                gap-2 md:gap-4 
-                                items-center
-
-                                [&>button]:p-3
-                                [&>button]:bg-gray-300 [&>button]:dark:bg-gray-600
-                                [&>button]:text-xl
-                                [&>button]:dark:text-white
-                                [&>button]:rounded-md
+                                flex-col
+                                h-full
+                                pb-8
                             "
                         >
-                            <DropdownMenu.Root>
-                                <div
+                            {/* editor desktop content */}
+                            <div 
+                                className="
+                                    editor--header
+                                    py-3
+                                    flex
+                                    items-center
+                                "
+                            >
+                                <NavMenu />
+        
+                                <span 
                                     className="
-                                        flex
-                                        gap-0.5
+                                        editor--header__name-ctn
+                                        items-center
+                                        gap-3
+                                        ml-4
+                                        hidden md:flex
                                     "
                                 >
-                                    <Button
+                                    <span 
                                         className="
-                                            rounded-r-none
-                                            capitalize
+                                            editor--header__blok-name
+                                            text-xl
+                                            font-medium
+                                            font-mono
                                         "
-                                        onClick={ runEditorCode }
                                     >
-                                        run
-                                    </Button>
-                                    <DropdownMenu.Trigger asChild>
-                                        <Button
+                                        New_Blok
+                                    </span>
+        
+                                    <button 
+                                        className="
+                                            editor--header__rename-btn
+                                            text-gray-500 dark:text-gray-300
+                                        "
+                                    >
+                                        <FaPencil/>
+                                    </button>
+                                </span>
+        
+                                <div 
+                                    className="
+                                        editor--header__actions-ctn
+                                        ml-auto
+                                        flex
+                                        gap-2 md:gap-4 
+                                        items-center
+        
+                                        [&>button]:p-3
+                                        [&>button]:bg-gray-300 [&>button]:dark:bg-gray-600
+                                        [&>button]:text-xl
+                                        [&>button]:dark:text-white
+                                        [&>button]:rounded-md
+                                    "
+                                >
+                                    <DropdownMenu.Root>
+                                        <div
                                             className="
-                                                rounded-l-none
+                                                flex
+                                                gap-0.5
                                             "
                                         >
-                                            <FaChevronDown/>
-                                        </Button>
-                                    </DropdownMenu.Trigger>
+                                            <Button
+                                                className="
+                                                    rounded-r-none
+                                                    capitalize
+                                                "
+                                                onClick={ runEditorCode }
+                                            >
+                                                run
+                                            </Button>
+                                            <DropdownMenu.Trigger asChild>
+                                                <Button
+                                                    className="
+                                                        rounded-l-none
+                                                    "
+                                                >
+                                                    <FaChevronDown/>
+                                                </Button>
+                                            </DropdownMenu.Trigger>
+                                        </div>
+        
+                                        <DropdownContent 
+                                            label="run options"
+                                            className="
+                                                z-1
+                                            "
+                                            options={[
+                                                {
+                                                    action: toggleEditorAutoRunCode,
+                                                    content: <>
+                                                        { editorSettings.autoRun && <FaCheck/> }
+                                                        { editorSettings.autoRun == false && <FaRotateLeft/> }
+        
+                                                        <span>
+                                                            autorun
+                                                        </span>
+                                                    </>
+                                                },
+                                                {
+                                                    action: exportAsZip,
+                                                    content: <>
+                                                        <FaDownload/>
+        
+                                                        <span>
+                                                            export as .ZIP
+                                                        </span>
+                                                    </>
+                                                },
+                                                {
+                                                    action: toggleTabPreviewVisibility,
+                                                    content: <>
+                                                        { editorSettings.isTabPreviewVisible ? <FaBan/> : <FaDesktop/> }
+        
+                                                        <span>
+                                                            { editorSettings.isTabPreviewVisible ? <>previewing... </> : <>preview </> }
+                                                        </span>
+                                                    </>
+                                                },
+                                            ]}
+                                        />
+                                    </DropdownMenu.Root>
+        
+                                    <button 
+                                        className="
+                                            editor--header__fullscreen-btn
+                                            p-3
+                                            bg-gray-100
+                                            text-xl
+                                            rounded-md
+                                            hidden md:block
+                                        "
+                                        onClick={ toggleFocusMode }
+                                    >
+                                        { !editorSettings.focusMode && <FaExpand/> }
+                                        { editorSettings.focusMode && <FaCompress/>}
+                                    </button>
+        
+                                    <button 
+                                        className="editor--header__theme-toggle"
+                                        onClick={ toggleTheme }
+                                    >
+                                        { theme == "light" && <FaMoon/> }
+                                        { theme == "dark" && <FaRegSun/> }
+                                    </button>
+        
+                                    <EditorSettingsPopover 
+                                        className="
+                                            hidden lg:block
+                                        "
+                                    />
+        
+                                    <NavAvatar />
                                 </div>
-
-                                <DropdownContent 
-                                    label="run options"
+                            </div>
+        
+                            <div 
+                                className={`
+                                    editor--main
+                                    flex-1
+                                    min-h-0
+                                    hidden lg:flex
+                                    ${ editorSettings.layout == "editor_top" ? "flex-col" : "" }
+                                    gap-4
+                                `}
+                            >
+                                <div 
+                                    className={`
+                                        editor--main__editors-ctn
+                                        flex-1
+                                        min-h-0
+                                        flex
+                                        ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
+                                        gap-4
+                                        ${ editorSettings.layout != "editor_top" && editorSettings.layout == "editor_right" ? "order-2" : "" }
+                                    `}
+                                >
+                                    { 
+                                        editorSettings.editors.includes("html") && <MainEditor 
+                                            label="html" 
+                                            defaultLanguage="html"
+                                            onToggle={ toggleHTMLEditor }
+                                            className="flex-1 min-h-0"
+                                            value={ editorContent.html }
+                                            onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
+                                        />
+                                    }
+                                    { 
+                                        editorSettings.editors.includes("css") && <MainEditor 
+                                            label="css" 
+                                            defaultLanguage="css"
+                                            onToggle={ toggleCSSEditor }
+                                            className="flex-1 min-h-0"
+                                            value={ editorContent.css }
+                                            onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
+                                        />
+                                    }
+                                    {
+                                        editorSettings.editors.includes("js") && <MainEditor 
+                                            label="js" 
+                                            defaultLanguage="javascript"
+                                            onToggle={ toggleJSEditor }
+                                            className="flex-1 min-h-0"
+                                            value={ editorContent.js }
+                                            onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
+                                        />
+                                    }
+                                </div>
+                                
+                                <PreviewFrame 
+                                    srcDoc={ generateIframeContent( 
+                                        previewContent.html,
+                                        previewContent.css,
+                                        previewContent.js,
+                                        theme
+                                    )}
                                     className="
-                                        z-1
+                                        border-2
+                                        border-gray-300 dark:border-gray-600
+                                        flex-1
+                                        min-h-0
                                     "
-                                    options={[
-                                        {
-                                            action: toggleEditorAutoRunCode,
-                                            content: <>
-                                                { editorSettings.autoRun && <FaCheck/> }
-                                                { editorSettings.autoRun == false && <FaRotateLeft/> }
-
-                                                <span>
-                                                    autorun
-                                                </span>
-                                            </>
-                                        },
-                                        {
-                                            action: exportAsZip,
-                                            content: <>
-                                                <FaDownload/>
-
-                                                <span>
-                                                    export as .ZIP
-                                                </span>
-                                            </>
-                                        },
-                                        {
-                                            action: toggleTabPreviewVisibility,
-                                            content: <>
-                                                { editorSettings.isTabPreviewVisible ? <FaBan/> : <FaDesktop/> }
-
-                                                <span>
-                                                    { editorSettings.isTabPreviewVisible ? <>previewing... </> : <>preview </> }
-                                                </span>
-                                            </>
-                                        },
-                                    ]}
                                 />
-                            </DropdownMenu.Root>
-
-                            <button 
+                            </div>
+        
+                            {/* editor non-desktop coontent */}
+                            <Tabs.Root 
                                 className="
-                                    editor--header__fullscreen-btn
-                                    p-3
-                                    bg-gray-100
-                                    text-xl
+                                    editor--mobile-main
+                                    flex-1
+                                    min-h-0
+                                    flex lg:hidden
+                                    flex-col
+                                    border-2
+                                    border-gray-300 dark:border-gray-600
                                     rounded-md
-                                    hidden md:block
-                                "
-                                onClick={ toggleFocusMode }
+                                    overflow-hidden
+                                " 
+                                defaultValue="html"
                             >
-                                { !editorSettings.focusMode && <FaExpand/> }
-                                { editorSettings.focusMode && <FaCompress/>}
-                            </button>
-
-                            <button 
-                                className="editor--header__theme-toggle"
-                                onClick={ toggleTheme }
-                            >
-                                { theme == "light" && <FaMoon/> }
-                                { theme == "dark" && <FaRegSun/> }
-                            </button>
-
-                            <EditorSettingsPopover 
-                                className="
-                                    hidden lg:block
-                                "
-                            />
-
-                            <NavAvatar />
+                                <Tabs.List 
+                                    className="
+                                        editor--mobile-main__tabs
+                                        flex
+                                        items-center
+                                        bg-gray-100 dark:bg-gray-600
+                                        w-full
+                                        overflow-x-auto
+        
+                                        *:py-2 *:px-5
+                                        *:rounded-t-md
+                                        *:data-[state=active]:bg-gray-300 dark:*:data-[state=active]:bg-gray-800
+                                    "
+                                >
+                                    <Tabs.Trigger value="html">
+                                        html
+                                    </Tabs.Trigger>
+                                    <Tabs.Trigger value="css">
+                                        css
+                                    </Tabs.Trigger>
+                                    <Tabs.Trigger value="js">
+                                        js
+                                    </Tabs.Trigger>
+                                    <Tabs.Trigger value="preview">
+                                        preview
+                                    </Tabs.Trigger>
+        
+                                    <EditorSettingsPopover />
+                                </Tabs.List>
+        
+                                <Tabs.Content 
+                                    value="html"
+                                    className="
+                                        flex-1
+                                        min-h-0
+                                    "
+        
+                                >
+                                    <MobileEditor 
+                                        defaultLanguage="html"
+                                        value={ editorContent.html }
+                                        onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
+                                    />
+                                </Tabs.Content>
+        
+                                <Tabs.Content 
+                                    value="css"
+                                    className="
+                                        flex-1
+                                        min-h-0
+                                    "
+        
+                                >
+                                    <MobileEditor 
+                                        defaultLanguage="css"
+                                        value={ editorContent.css }
+                                        onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
+                                    />
+                                </Tabs.Content>
+        
+                                <Tabs.Content 
+                                    value="js"
+                                    className="
+                                        flex-1
+                                        min-h-0
+                                    "
+        
+                                >
+                                    <MobileEditor 
+                                        defaultLanguage="js"
+                                        value={ editorContent.js }
+                                        onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
+                                    />
+                                </Tabs.Content>
+        
+                                <Tabs.Content 
+                                    value="preview"
+                                    className="
+                                        flex-1
+                                        min-h-0
+                                    "
+        
+                                >
+                                    <PreviewFrame 
+                                        srcDoc={ generateIframeContent( 
+                                            editorContent.html,
+                                            editorContent.css,
+                                            editorContent.js,
+                                            theme
+                                        )}
+                                        className="
+                                            h-full
+                                        "
+                                    />
+                                </Tabs.Content>
+                            </Tabs.Root>
                         </div>
-                    </div>
+                    </WideLayout>
+                </EditorContext.Provider>
+            )
+    }
 
-                    <div 
-                        className={`
-                            editor--main
-                            flex-1
-                            min-h-0
-                            hidden lg:flex
-                            ${ editorSettings.layout == "editor_top" ? "flex-col" : "" }
-                            gap-4
-                        `}
-                    >
-                        <div 
-                            className={`
-                                editor--main__editors-ctn
-                                flex-1
-                                min-h-0
-                                flex
-                                ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
-                                gap-4
-                                ${ editorSettings.layout != "editor_top" && editorSettings.layout == "editor_right" ? "order-2" : "" }
-                            `}
-                        >
-                            { 
-                                editorSettings.editors.includes("html") && <MainEditor 
-                                    label="html" 
-                                    defaultLanguage="html"
-                                    onToggle={ toggleHTMLEditor }
-                                    className="flex-1 min-h-0"
-                                    value={ editorContent.html }
-                                    onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
-                                />
-                            }
-                            { 
-                                editorSettings.editors.includes("css") && <MainEditor 
-                                    label="css" 
-                                    defaultLanguage="css"
-                                    onToggle={ toggleCSSEditor }
-                                    className="flex-1 min-h-0"
-                                    value={ editorContent.css }
-                                    onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
-                                />
-                            }
-                            {
-                                editorSettings.editors.includes("js") && <MainEditor 
-                                    label="js" 
-                                    defaultLanguage="javascript"
-                                    onToggle={ toggleJSEditor }
-                                    className="flex-1 min-h-0"
-                                    value={ editorContent.js }
-                                    onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
-                                />
-                            }
-                        </div>
-                        
-                        <PreviewFrame 
-                            srcDoc={ generateIframeContent( 
-                                previewContent.html,
-                                previewContent.css,
-                                previewContent.js,
-                                theme
-                            )}
-                            className="
-                                border-2
-                                border-gray-300 dark:border-gray-600
-                                flex-1
-                                min-h-0
-                            "
-                        />
-                    </div>
 
-                    {/* editor non-desktop coontent */}
-                    <Tabs.Root 
-                        className="
-                            editor--mobile-main
-                            flex-1
-                            min-h-0
-                            flex lg:hidden
-                            flex-col
-                            border-2
-                            border-gray-300 dark:border-gray-600
-                            rounded-md
-                            overflow-hidden
-                        " 
-                        defaultValue="html"
-                    >
-                        <Tabs.List 
-                            className="
-                                editor--mobile-main__tabs
-                                flex
-                                items-center
-                                bg-gray-100 dark:bg-gray-600
-                                w-full
-                                overflow-x-auto
-
-                                *:py-2 *:px-5
-                                *:rounded-t-md
-                                *:data-[state=active]:bg-gray-300 dark:*:data-[state=active]:bg-gray-800
-                            "
-                        >
-                            <Tabs.Trigger value="html">
-                                html
-                            </Tabs.Trigger>
-                            <Tabs.Trigger value="css">
-                                css
-                            </Tabs.Trigger>
-                            <Tabs.Trigger value="js">
-                                js
-                            </Tabs.Trigger>
-                            <Tabs.Trigger value="preview">
-                                preview
-                            </Tabs.Trigger>
-
-                            <EditorSettingsPopover />
-                        </Tabs.List>
-
-                        <Tabs.Content 
-                            value="html"
-                            className="
-                                flex-1
-                                min-h-0
-                            "
-
-                        >
-                            <MobileEditor 
-                                defaultLanguage="html"
-                                value={ editorContent.html }
-                                onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
-                            />
-                        </Tabs.Content>
-
-                        <Tabs.Content 
-                            value="css"
-                            className="
-                                flex-1
-                                min-h-0
-                            "
-
-                        >
-                            <MobileEditor 
-                                defaultLanguage="css"
-                                value={ editorContent.css }
-                                onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
-                            />
-                        </Tabs.Content>
-
-                        <Tabs.Content 
-                            value="js"
-                            className="
-                                flex-1
-                                min-h-0
-                            "
-
-                        >
-                            <MobileEditor 
-                                defaultLanguage="js"
-                                value={ editorContent.js }
-                                onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
-                            />
-                        </Tabs.Content>
-
-                        <Tabs.Content 
-                            value="preview"
-                            className="
-                                flex-1
-                                min-h-0
-                            "
-
-                        >
-                            <PreviewFrame 
-                                srcDoc={ generateIframeContent( 
-                                    editorContent.html,
-                                    editorContent.css,
-                                    editorContent.js,
-                                    theme
-                                )}
-                                className="
-                                    h-full
-                                "
-                            />
-                        </Tabs.Content>
-                    </Tabs.Root>
-                </div>
-            </WideLayout>
-        </EditorContext.Provider>
-    )
 }
 
 
