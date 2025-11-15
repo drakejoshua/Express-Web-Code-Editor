@@ -153,8 +153,6 @@ export default function Editor() {
 
         document.addEventListener( "fullscreenchange", handleFullscreenChange )
 
-        fetchBlokToBeEdited()
-
         return function() {
             window.removeEventListener( "resize", handleBreakpointResize )
 
@@ -165,6 +163,10 @@ export default function Editor() {
             }
         }
     }, [])
+
+    useEffect( function() {
+        fetchBlokToBeEdited()
+    }, [id])
     
     function toggleFocusMode() {
         if ( !editorSettings.focusMode ) {
@@ -474,7 +476,7 @@ export default function Editor() {
                                 capitalize
                             "
                             onClick={ 
-                                token ?
+                                id ?
                                 fetchBlokToBeEdited :
                                 navigateTo("/dashboard")
                             }

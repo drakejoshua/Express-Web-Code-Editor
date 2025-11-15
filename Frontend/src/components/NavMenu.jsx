@@ -361,6 +361,7 @@ export default function NavMenu() {
                                                 return (
                                                     <NavMenuBlok 
                                                         key={ blok.id }
+                                                        id={ blok.id }
                                                         name={ blok.name } 
                                                         confirmBlokDeletion={ () => confirmBlokDeletion( blok.id ) }
                                                         promptBlokRename={ () => promptBlokRename( blok.id, blok.name )}
