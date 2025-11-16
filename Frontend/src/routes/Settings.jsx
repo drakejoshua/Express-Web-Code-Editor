@@ -11,12 +11,55 @@ import { useRef } from "react";
 import { useThemeProvider } from '../providers/ThemeProvider'
 import { useNavigate } from "react-router-dom";
 import { useAuthProvider } from "../providers/AuthProvider";
+import { useToastProvider } from "../providers/ToastProvider";
+import { useDialogProvider } from "../providers/DialogProvider";
+import Button from "../components/Button";
 
 export default function Settings() {
     const parentRef = useRef(null)
     const { theme, toggleTheme } = useThemeProvider()
 
-    const { user } = useAuthProvider()
+    const { user, updateUser } = useAuthProvider()
+
+    const { showToast } = useToastProvider()
+    const { showDialog, hideDialog } = useDialogProvider()
+
+    function confirmProfilePhotoDeletion() {
+        const dialogId = showDialog({
+            title: "Delete Profile Photo?",
+            description: "Are you sure you want to delete your profile photo?",
+            content: (
+                <Button
+                    className="
+                        w-full
+                        mt-4
+                    "
+                    onClick={ handleProfilePhotoDeletion }
+                >
+                    Delete Photo
+                </Button>
+            )
+        })
+
+        
+        async function handleProfilePhotoDeletion() {
+            const { status, error } = await updateUser( {}, true )
+
+            if ( status === "success" ) {
+                showToast({
+                    type: "success",
+                    message: "User profile photo deleted"
+                })
+            } else {
+                showToast({
+                    type: "error",
+                    message: `Error deleting user profile photo: ${ error.message }`
+                })
+            }
+
+            hideDialog( dialogId )
+        }
+    }
 
     const navigateTo = useNavigate() 
     
@@ -188,7 +231,9 @@ export default function Settings() {
                                             sideOffset={12}
                                             align="center"
                                         >
-                                            <DropdownMenu.Item>
+                                            <DropdownMenu.Item
+                                                onClick={ confirmProfilePhotoDeletion }
+                                            >
                                                 <FaTrash/>
 
                                                 <span>Delete Photo</span>

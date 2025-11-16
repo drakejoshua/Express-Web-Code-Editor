@@ -585,10 +585,94 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    async function updateUser( userDetails, deletePhoto = false ) {
+        // retrieve saved user token from local storage if any
+        const savedUserToken = localStorage.getItem( "codebloks-token" )
+
+        console.log("saved codebloks token", savedUserToken )
+
+        // if no saved user token, set user state to logout and return
+        if ( !savedUserToken || savedUserToken === "logout" ) {
+            setUser( "logout" )
+            return { status: "error", error: { message: "No saved user token" } }
+        }
+
+        const updateFormData = new FormData()
+
+        if ( updateFormData.username ) {
+            updateFormData.append( "username", userDetails.username )
+        }
+        
+        if ( updateFormData.email ) {
+            updateFormData.append( "email", userDetails.email )
+        }
+        
+        if ( updateFormData.password ) {
+            updateFormData.append( "password", userDetails.password )
+        }
+        
+        if ( updateFormData.photo ) {
+            updateFormData.append( "photo", userDetails.photo )
+        }
+
+
+        try {
+            const resp = await fetch(
+                `${ backendURL }/auth/update?deletePhoto=${ deletePhoto }`, 
+                {
+                    method: "POST",
+                    headers: {
+                        'x-app-id': appId,
+                        'Authorization': `Bearer ${ savedUserToken }`
+                    },
+                    body: updateFormData
+                }
+            )
+
+            if ( resp.ok ) {
+                const jsonData = await resp.json()
+                console.log( 'update json data: ', jsonData )
+
+                setUser( jsonData.data.user )
+
+                return {
+                    status: "success",
+                    data: jsonData.data
+                }
+            } else {
+                if ( resp.status === 401 ) {
+                    const { status, error } = await refreshUserToken()
+
+                    if ( status === "success" ) {
+                        return updateUser( userDetails, deletePhoto )
+                    } else {
+                        return {
+                            status: "error",
+                            error
+                        }
+                    }
+                } else {
+                    const errorData = await resp.json()
+
+                    return {
+                        status: "error",
+                        error: errorData.error
+                    }
+                }
+            }
+        } catch( error ) {
+            return {
+                status: "error",
+                error
+            }
+        }
+    }
+
 
     return (
         <AuthContext.Provider value={ { 
             user,
+            updateUser,
             fetchCurrentUser,
             refreshUserToken,
             signUpUser,

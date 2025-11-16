@@ -947,6 +947,7 @@ router.post("/update",
         query("deletePhoto")
             .optional()
             .default( false )
+            .toBoolean()
             .isBoolean()
             .bail()
     ],
