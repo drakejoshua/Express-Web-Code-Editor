@@ -10,10 +10,13 @@ import ScrollSpy from "react-ui-scrollspy";
 import { useRef } from "react";
 import { useThemeProvider } from '../providers/ThemeProvider'
 import { useNavigate } from "react-router-dom";
+import { useAuthProvider } from "../providers/AuthProvider";
 
 export default function Settings() {
     const parentRef = useRef(null)
     const { theme, toggleTheme } = useThemeProvider()
+
+    const { user } = useAuthProvider()
 
     const navigateTo = useNavigate() 
     
@@ -207,10 +210,12 @@ export default function Settings() {
                                 >
                                     <TextField
                                         label="Username:"
+                                        value={ user.username }
                                     />
 
                                     <EmailField
                                         label="Email:"
+                                        value={ user.email }
                                     />
 
                                     <PasswordField
@@ -250,7 +255,7 @@ export default function Settings() {
                                 >
                                     <PasswordField
                                         label="API Key"
-                                        value="jsn3j4njk3jn34jnj"
+                                        value={ user.api_key }
                                     />
 
                                     <a href="#" className="settings--options-ctn__help-link underline">
