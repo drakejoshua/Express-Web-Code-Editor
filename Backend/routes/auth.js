@@ -1,7 +1,7 @@
 // import router dependencies
 import express from 'express'
 import upload from '../configs/multer.js'
-import { body, param, validationResult, cookie } from 'express-validator'
+import { body, param, query, validationResult, cookie } from 'express-validator'
 import { 
     ERROR_CODES, 
     reportEmailConfirmationExpiredError, 
@@ -943,6 +943,11 @@ router.post("/update",
             .notEmpty()
             .isLength({ min: 6 })
             .withMessage( ERROR_CODES.INVALID_PASSWORD_FORMAT )
+            .bail(),
+        query("deletePhoto")
+            .optional()
+            .default( false )
+            .isBoolean()
             .bail()
     ],
 
@@ -975,6 +980,9 @@ router.post("/update",
             // extract profile photo file info from request (if any)
             const photoFile = req.file || null
 
+            // extract if profile photo deletion is requested or not
+            const isProfilePhotoToBeDeleted = req.query.deletePhoto || false
+
             // if email and password change are requested for an oauth user,
             // report invalid update data error
             if ( user.provider !== "email" && ( email || password ) ) {
@@ -1003,25 +1011,34 @@ router.post("/update",
             let photoUrl = ""
             let photoPublicId = ""
 
-            if ( photoFile ) {
-                // delete former photo from cloud storage if it exists
+            // if profile photo is to be deleted, delete without updating
+            // photo, else, update user photo
+            if ( !isProfilePhotoToBeDeleted ) {
+                if ( photoFile ) {
+                    // delete former photo from cloud storage if it exists
+                    if ( user.profile_photo_id ) {
+                        // delete photo from cloud storage using public ID
+                        await cloudinaryDelete( user.profile_photo_id )
+                    }
+    
+                    // upload new photo to cloud storage and get URL and public ID
+                    const uploadResult = await cloudinaryUpload( photoFile.buffer )
+    
+                    // set photoUrl and photoPublicId from upload result
+                    photoUrl = uploadResult.secure_url
+                    photoPublicId = uploadResult.public_id
+                }
+            } else {
                 if ( user.profile_photo_id ) {
                     // delete photo from cloud storage using public ID
                     await cloudinaryDelete( user.profile_photo_id )
                 }
-
-                // upload new photo to cloud storage and get URL and public ID
-                const uploadResult = await cloudinaryUpload( photoFile.buffer )
-
-                // set photoUrl and photoPublicId from upload result
-                photoUrl = uploadResult.secure_url
-                photoPublicId = uploadResult.public_id
             }
 
             // get user document to be updated from database
             const userToUpdate = await Users.findById( user._id )
 
-            // update user document fields if new values were provided
+            // update user document fields if new values were provided/removed
             if ( username ) {
                 userToUpdate.username = username
             }
@@ -1034,9 +1051,14 @@ router.post("/update",
                 userToUpdate.password = await bcrypt.hash( password, bcryptRounds )
             }
 
-            if ( photoFile ) {
-                userToUpdate.profile_photo_url = photoUrl
-                userToUpdate.profile_photo_id = photoPublicId
+            if ( !isProfilePhotoToBeDeleted ) {
+                if ( photoFile ) {
+                    userToUpdate.profile_photo_url = photoUrl
+                    userToUpdate.profile_photo_id = photoPublicId
+                }
+            } else {
+                userToUpdate.profile_photo_url = ""
+                userToUpdate.profile_photo_id = ""
             }
 
             // save updated user document
