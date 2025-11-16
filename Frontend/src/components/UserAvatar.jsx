@@ -8,9 +8,12 @@
 import { Avatar } from 'radix-ui'
 import { forwardRef } from 'react'
 import { FaUser } from 'react-icons/fa6'
+import { useAuthProvider } from '../providers/AuthProvider'
 
 // define UserAvatar component
 const UserAvatar = forwardRef( function ( { className, ...props }, ref ) {
+    const { user } = useAuthProvider()
+
     return (
         // avatar root container
         <Avatar.Root 
@@ -30,8 +33,7 @@ const UserAvatar = forwardRef( function ( { className, ...props }, ref ) {
         >
             {/* User avatar image */}
             <Avatar.Image 
-                src={'https://images.unsplash.com/photo-1598096969068-7f52cac10c83?ixlib=rb-4.1.0'
-                +'&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Ym95JTIwcG9ydHJhaXR8ZW58MHx8MHx8fDA%3D'}
+                src={ user !== "loading" || user !== "error" ? user.profile_photo_url : "" }
                 className='
                     avatar-photo
                     h-full

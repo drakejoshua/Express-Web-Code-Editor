@@ -49,6 +49,8 @@ export default function Dashboard() {
         updateBlok
     } = useBlokProvider()
 
+    const { user } = useAuthProvider()
+
     const { showToast } = useToastProvider()
     const { showDialog, hideDialog } = useDialogProvider()
 
@@ -227,7 +229,7 @@ export default function Dashboard() {
                                     hidden lg:block
                                 "
                             >
-                                Welcome, Joshua
+                                Welcome, { user.username }
                             </h1>
                         </div>
 

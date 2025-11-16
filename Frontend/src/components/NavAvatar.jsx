@@ -8,7 +8,7 @@
 
 // import component dependencies
 import { DropdownMenu } from 'radix-ui'
-import { FaArrowsRotate, FaArrowRightFromBracket } from 'react-icons/fa6'
+import { FaArrowsRotate, FaArrowRightFromBracket, FaKey } from 'react-icons/fa6'
 import UserAvatar from './UserAvatar'
 import { useNavigate } from 'react-router-dom'
 import { useAuthProvider } from '../providers/AuthProvider'
@@ -20,7 +20,7 @@ export default function NavAvatar({ className }) {
 
     const navigateTo = useNavigate()
 
-    const { signOutUser } = useAuthProvider()
+    const { user, signOutUser } = useAuthProvider()
 
     const { showToast } = useToastProvider()
 
@@ -70,13 +70,18 @@ export default function NavAvatar({ className }) {
                             gap-3
                         "
                     >
-                        <UserAvatar />
+                        <UserAvatar 
+                            className="
+                                flex-shrink-0
+                            "
+                        />
 
                         <div 
                             className='
                                 dashboard--header__profile-info
                                 flex
                                 flex-col
+                                max-w-[180px]
                             '
                         >
                             <span 
@@ -90,8 +95,9 @@ export default function NavAvatar({ className }) {
                                     whitespace-nowrap
                                     dark:text-white
                                 "
+                                title={ user !== "loading" || user !== "error" ? user.username : "" }
                             >
-                                Joshua Mabawonku
+                                { user !== "loading" || user !== "error" ? user.username : "" }
                             </span>
                             
                             <span 
@@ -103,8 +109,9 @@ export default function NavAvatar({ className }) {
                                     overflow-hidden
                                     whitespace-nowrap
                                 "
+                                title={ user !== "loading" || user !== "error" ? user.email : "" }
                             >
-                                joshua@email.com
+                                { user !== "loading" || user !== "error" ? user.email : "" }
                             </span>
                         </div>
                     </div>
@@ -134,6 +141,19 @@ export default function NavAvatar({ className }) {
 
                             <span className="dashboard--header__option-text">
                                 Update Profile
+                            </span>
+                        </DropdownMenu.Item>
+                        
+                        <DropdownMenu.Item 
+                            className='
+                                dashboard--header__profile-option
+                            '
+                            onClick={ () => navigateTo("/settings#api") }
+                        >
+                            <FaKey className="dashboard--header__option-icon" /> 
+
+                            <span className="dashboard--header__option-text">
+                                Get API Key
                             </span>
                         </DropdownMenu.Item>
                         
