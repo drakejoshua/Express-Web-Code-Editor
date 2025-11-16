@@ -287,19 +287,16 @@ router.put("/bloks/:id",
         body("html")
             .optional()
             .isString()
-            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
             .bail(),
         body("css")
             .optional()
             .isString()
-            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
             .bail(),
         body("javascript")
             .optional()
             .isString()
-            .notEmpty()
             .withMessage( ERROR_CODES.INVALID_BLOK_DATA )
             .bail()
     ],

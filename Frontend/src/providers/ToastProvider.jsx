@@ -109,12 +109,12 @@ export default function ToastProvider({ children }) {
                 <Toast.Viewport 
                     className='
                         fixed
-                        right-4
-                        top-4
+                        right-2 lg:right-4
+                        top-2 lg:top-4
                         flex
                         flex-col
                         gap-4
-                        w-[290px]
+                        w-[350px]
                         max-w-full
                     '
                 />

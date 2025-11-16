@@ -58,6 +58,9 @@ export default function Editor() {
     } = useBlokProvider()
     const { showToast } = useToastProvider()
 
+    const [ isRenameDialogOpen, setIsRenameDialogOpen ] = useState( false )
+    const [ newBlokName, setNewBlokName ] = useState( "" )
+
     const [ blokName, setBlokName ] = useState("loading")
 
     const navigateTo = useNavigate()
@@ -92,6 +95,10 @@ export default function Editor() {
     let tabPreviewChannelRef = useRef( null )
 
     let previewChannelTimeout = useRef( null )
+    
+    let editorSaveTimeoutRef = useRef( null )
+
+    const renderCount = useRef( 0 )
 
     // editor controllers
     async function fetchBlokToBeEdited() {
@@ -355,11 +362,38 @@ export default function Editor() {
             }, 300 )
         }
 
+        if ( renderCount.current > 2 ) {
+            if ( editorSaveTimeoutRef.current ) {
+                clearTimeout( editorSaveTimeoutRef.current )
+            }
+    
+            editorSaveTimeoutRef.current = setTimeout( saveEditorToBackend, 1000 )
+        } else {
+            renderCount.current += 1
+        }
+
         return function() {
             clearTimeout(autoRunTimeout.current);
             clearTimeout(previewChannelTimeout.current);
+            clearTimeout(editorSaveTimeoutRef.current);
         }
     }, [ editorContent ])
+
+    useEffect( function() {
+        if ( renderCount.current > 2 ) {
+            if ( editorSaveTimeoutRef.current ) {
+                clearTimeout( editorSaveTimeoutRef.current )
+            }
+    
+            editorSaveTimeoutRef.current = setTimeout( saveEditorToBackend, 1000 )
+        } else {
+            renderCount.current += 1
+        }
+
+        return function() {
+            clearTimeout(editorSaveTimeoutRef.current);
+        }
+    }, [ editorSettings ])
 
     async function exportAsZip() {
         const zip = JSZip()
@@ -391,9 +425,6 @@ export default function Editor() {
         saveAs( blob, "codeblok.zip" )
     }
 
-    const [ isRenameDialogOpen, setIsRenameDialogOpen ] = useState( false )
-    const [ newBlokName, setNewBlokName ] = useState( "" )
-
     async function handleBlokRename( e ) {
         e.preventDefault()
 
@@ -423,6 +454,31 @@ export default function Editor() {
         setNewBlokName( blokName )
 
         setIsRenameDialogOpen( true )
+    }
+
+    async function saveEditorToBackend() {
+        const { status, error } = await updateBlok( id, {
+            name: blokName,
+            html: editorContent.html,
+            css: editorContent.css,
+            javascript: editorContent.js,
+            settings: {
+                theme: editorSettings.theme,
+                font_size: editorSettings.fontSize,
+                tab_size: editorSettings.tabSize,
+                auto_complete: editorSettings.autocomplete,
+                editor_layout: editorSettings.layout
+            }
+        })
+
+        if ( status === "error" ) {
+            showToast({
+                type: "error",
+                message: `Error saving blok: ${ error.message }`,
+                action: saveEditorToBackend,
+                actionLabel: "Retry"
+            })
+        }
     }
 
 
