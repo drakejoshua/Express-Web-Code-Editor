@@ -24,7 +24,8 @@ const PasswordField = React.forwardRef(({
     // default validation messages
     emptyValidationMessage = "Please enter your password",
     shortValidationMessage = "The password can't be lower than 6 characters",
-    children
+    children,
+    ...props
  }, ref) => {
     return (
         <Form.Field
@@ -55,6 +56,7 @@ const PasswordField = React.forwardRef(({
                     onChange={ onChange }
                     required
                     minLength={6}
+                    {...props}
                 />
             </Form.Control>
             

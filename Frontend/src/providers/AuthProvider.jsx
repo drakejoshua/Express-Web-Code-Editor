@@ -600,15 +600,42 @@ export default function AuthProvider({ children }) {
         const updateFormData = new FormData()
 
         if ( userDetails.username ) {
-            updateFormData.append( "username", userDetails.username )
+            if ( userDetails.username.length > 2 ) {
+                updateFormData.append( "username", userDetails.username )
+            } else {
+                return { 
+                    status: "error", 
+                    error: {
+                        message: "A Username( at least 3 characters ) is required to update profile."
+                    }
+                }
+            }
         }
         
         if ( userDetails.email ) {
-            updateFormData.append( "email", userDetails.email )
+            if ( userDetails.email.includes( "@" ) && userDetails.email.includes( "." ) ) {
+                updateFormData.append( "email", userDetails.email )
+            } else {
+                return { 
+                    status: "error",
+                    error: {
+                        message: "A valid Email is required to update profile."
+                    }
+                }
+            }
         }
         
         if ( userDetails.password ) {
-            updateFormData.append( "password", userDetails.password )
+            if ( userDetails.password.length > 5) {
+                updateFormData.append( "password", userDetails.password )
+            } else {
+                return { 
+                    status: "error",
+                    error: {
+                        message: "A Password( at least 6 characters ) is required to update profile."
+                    }
+                }
+            }
         }
         
         if ( userDetails.photo ) {

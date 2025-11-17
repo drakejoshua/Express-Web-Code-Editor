@@ -21,7 +21,8 @@ const TextField = React.forwardRef(({
     value,
     onChange,
     emptyValidationMessage,
-    children
+    children,
+    ...props
 }, ref) => {
   return (
     // form field wrapper
@@ -64,6 +65,7 @@ const TextField = React.forwardRef(({
                 required
                 value={ value }
                 onChange={ onChange }
+                {...props}
             />
         </Form.Control>
 

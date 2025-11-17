@@ -31,6 +31,13 @@ export default function Settings() {
     const [ isUpdatePhotoDialogOpen, setIsUpdatePhotoDialogOpen ] = useState( false )
     const [ isProfilePhotoUpdating, setIsProfilePhotoUpdating ] = useState( false )
 
+    const [ newUserDetails, setNewUserDetails ] = useState({
+        username: "",
+        email: "",
+        password: ""
+    })
+    const [ isUserDetailsUpdating, setIsUserDetailsUpdating ] = useState( false )
+
     function confirmProfilePhotoDeletion() {
         const dialogId = showDialog({
             title: "Delete Profile Photo?",
@@ -99,6 +106,32 @@ export default function Settings() {
         }
         
         closeUpdatePhotoDialog()
+    }
+    
+    async function handleUpdateUserDetails( e ) {
+        e.preventDefault()
+        setIsUserDetailsUpdating( true )
+
+        const { status, error } = await updateUser( newUserDetails, false )
+
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: "User profile details updated successfully"
+            })
+        } else {
+            showToast({
+                type: "error",
+                message: `Error updating user details: ${ error.message }`
+            })
+        }
+        
+        setIsUserDetailsUpdating( false )
+        setNewUserDetails({
+            username: "",
+            email: "",
+            password: ""
+        })
     }
 
     function closeUpdatePhotoDialog() {
@@ -301,27 +334,48 @@ export default function Settings() {
                                         className="
                                             settings--options-ctn__settings-form
                                         "
+                                        onSubmit={ handleUpdateUserDetails }
                                     >
                                         <TextField
                                             label="Username:"
-                                            value={ user.username }
+                                            value={ newUserDetails.username || user.username }
+                                            onChange={ (e) => setNewUserDetails({
+                                                ...newUserDetails,
+                                                username: e.target.value
+                                            }) }
+                                            emptyValidationMessage={""}
+                                            required={ false }
                                         />
 
                                         <EmailField
                                             label="Email:"
-                                            value={ user.email }
+                                            value={ newUserDetails.email || user.email }
+                                            emptyValidationMessage={""}
+                                            onChange={ (e) => setNewUserDetails({
+                                                ...newUserDetails,
+                                                email: e.target.value
+                                            }) }
+                                            required={ false }
                                         />
 
                                         <PasswordField
                                             label="Password:"
+                                            value={ newUserDetails.password }
+                                            emptyValidationMessage={""}
+                                            onChange={ (e) => setNewUserDetails({
+                                                ...newUserDetails,
+                                                password: e.target.value
+                                            }) }
+                                            required={ false }
                                         />
 
                                         <FinishButton
                                             className="
                                                 settings--options-ctn__settings-submit-btn
                                             "
+                                            disabled={ isUserDetailsUpdating }
                                         >
-                                            Update Profile
+                                            { isUserDetailsUpdating ? "Updating..." : "Update Profile" }
                                         </FinishButton>
                                     </Form.Root>
                                 </div>
