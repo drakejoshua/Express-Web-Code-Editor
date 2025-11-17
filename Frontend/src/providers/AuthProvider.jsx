@@ -599,19 +599,19 @@ export default function AuthProvider({ children }) {
 
         const updateFormData = new FormData()
 
-        if ( updateFormData.username ) {
+        if ( userDetails.username ) {
             updateFormData.append( "username", userDetails.username )
         }
         
-        if ( updateFormData.email ) {
+        if ( userDetails.email ) {
             updateFormData.append( "email", userDetails.email )
         }
         
-        if ( updateFormData.password ) {
+        if ( userDetails.password ) {
             updateFormData.append( "password", userDetails.password )
         }
         
-        if ( updateFormData.photo ) {
+        if ( userDetails.photo ) {
             updateFormData.append( "photo", userDetails.photo )
         }
 

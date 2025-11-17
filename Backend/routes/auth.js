@@ -982,7 +982,7 @@ router.post("/update",
             const photoFile = req.file || null
 
             // extract if profile photo deletion is requested or not
-            const isProfilePhotoToBeDeleted = req.query.deletePhoto || false
+            const isProfilePhotoToBeDeleted = req.query.deletePhoto
 
             // if email and password change are requested for an oauth user,
             // report invalid update data error
@@ -1014,7 +1014,7 @@ router.post("/update",
 
             // if profile photo is to be deleted, delete without updating
             // photo, else, update user photo
-            if ( !isProfilePhotoToBeDeleted ) {
+            if ( isProfilePhotoToBeDeleted === "false" ) {
                 if ( photoFile ) {
                     // delete former photo from cloud storage if it exists
                     if ( user.profile_photo_id ) {
@@ -1052,7 +1052,7 @@ router.post("/update",
                 userToUpdate.password = await bcrypt.hash( password, bcryptRounds )
             }
 
-            if ( !isProfilePhotoToBeDeleted ) {
+            if ( isProfilePhotoToBeDeleted === "false" ) {
                 if ( photoFile ) {
                     userToUpdate.profile_photo_url = photoUrl
                     userToUpdate.profile_photo_id = photoPublicId
