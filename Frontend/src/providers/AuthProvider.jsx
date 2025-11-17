@@ -695,6 +695,63 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    async function generateAPIKey() {
+        // retrieve saved user token from local storage if any
+        const savedUserToken = localStorage.getItem( "codebloks-token" )
+
+        console.log("saved codebloks token", savedUserToken )
+
+        // if no saved user token, set user state to logout and return
+        if ( !savedUserToken || savedUserToken === "logout" ) {
+            setUser( "logout" )
+            return { status: "error", error: { message: "No saved user token" } }
+        }
+
+
+        try {
+            const resp = await fetch( `${ backendURL }/auth/api-key`, {
+                method: "POST",
+                headers: {
+                    'x-app-id': appId,
+                    'Authorization': `Bearer ${ savedUserToken }`
+                }
+            })
+
+            if ( resp.ok ) {
+                const jsonData = await resp.json()
+
+                setUser( jsonData.data.user )
+
+                return {
+                    status: "success",
+                    data: jsonData.data
+                }
+            } else {
+                if ( resp.status === 401 ) {
+                    const { status, error } = await refreshUserToken()
+
+                    if ( status === "success" ) {
+                        return generateAPIKey()
+                    } else {
+                        return {
+                            status: "error",
+                            error
+                        }
+                    }
+                } else {
+                    const errorData = await resp.json()
+
+                    return {
+                        status: "error",
+                        error: errorData.error
+                    }
+                }
+            }
+        } catch ( error ) {
+            return { status: "error", error }
+        }
+    }
+
 
     return (
         <AuthContext.Provider value={ { 
@@ -712,7 +769,8 @@ export default function AuthProvider({ children }) {
             signInWithGoogle,
             verifyGoogleToken,
             resetPassword,
-            changePasswordUsingResetToken
+            changePasswordUsingResetToken,
+            generateAPIKey
         }}>
             { children }
         </AuthContext.Provider>

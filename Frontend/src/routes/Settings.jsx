@@ -15,12 +15,13 @@ import { useToastProvider } from "../providers/ToastProvider";
 import { DialogComponent, useDialogProvider } from "../providers/DialogProvider";
 import Button from "../components/Button";
 import { useState } from "react";
+import { use } from "react";
 
 export default function Settings() {
     const parentRef = useRef(null)
     const { theme, toggleTheme } = useThemeProvider()
 
-    const { user, updateUser } = useAuthProvider()
+    const { user, updateUser, generateAPIKey } = useAuthProvider()
 
     const { showToast } = useToastProvider()
     const { showDialog, hideDialog } = useDialogProvider()
@@ -37,6 +38,8 @@ export default function Settings() {
         password: ""
     })
     const [ isUserDetailsUpdating, setIsUserDetailsUpdating ] = useState( false )
+
+    const [ isGeneratingAPIKey, setIsGeneratingAPIKey ] = useState( false )
 
     function confirmProfilePhotoDeletion() {
         const dialogId = showDialog({
@@ -138,6 +141,27 @@ export default function Settings() {
         setIsUpdatePhotoDialogOpen( false )
         setSelectedFile( null )
         setIsProfilePhotoUpdating( false )
+    }
+
+    async function handleGenerateAPIKey( e ) {
+        e.preventDefault()
+        setIsGeneratingAPIKey( true )
+
+        const { status, error } = await generateAPIKey()
+
+        if ( status === "success" ) {
+            showToast({
+                type: "success",
+                message: "New API key generated successfully"
+            })
+        } else {
+            showToast({
+                type: "error",
+                message: `Error generating API key: ${ error.message }`
+            })
+        }
+
+        setIsGeneratingAPIKey( false )
     }
 
     const navigateTo = useNavigate() 
@@ -400,10 +424,13 @@ export default function Settings() {
                                         className="
                                             settings--options-ctn__settings-form
                                         "
+                                        onSubmit={ handleGenerateAPIKey }
                                     >
                                         <PasswordField
                                             label="API Key"
                                             value={ user.api_key }
+                                            disabled={ true }
+                                            emptyValidationMessage={""}
                                         />
 
                                         <a href="#" className="settings--options-ctn__help-link underline">
@@ -415,7 +442,13 @@ export default function Settings() {
                                                 settings--options-ctn__settings-submit-btn
                                             "
                                         >
-                                            Generate API Key
+                                            {
+                                                ( user.api_key ?
+                                                    isGeneratingAPIKey ? "Generating New API Key..." : "Generate New API Key" 
+                                                    :
+                                                    isGeneratingAPIKey ? "Generating API Key..." : "Generate API Key"
+                                                )
+                                            }
                                         </FinishButton>
                                     </Form.Root>
                                 </div>
