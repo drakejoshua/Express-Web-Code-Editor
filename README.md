@@ -10,7 +10,7 @@ A fullstack application for creating, editing, and sharing code within a modern 
 - [Backend Setup](#backend-setup)
 - [Contributing](#contributing)
 
-**[View Live Demo](#)** | **[GitHub Repository](#)**
+**[View Live Demo](#)**
 
 ## About
 
