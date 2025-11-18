@@ -118,7 +118,7 @@ export default function Home() {
                             sign up
                         </Button>
 
-                        <Link
+                        <a
                             className='
                                 outline-2
                                 outline-blue-600 dark:outline-blue-800
@@ -131,10 +131,12 @@ export default function Home() {
                                 text-blue-600 dark:text-white
                                 font-medium
                             '
-                            to="/api"
+                            href="https://github.com/drakejoshua/Express-Web-Code-Editor"
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
                             See API Docs
-                        </Link>
+                        </a>
                     </div>
                 }
             </div>

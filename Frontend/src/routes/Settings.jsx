@@ -15,7 +15,7 @@ import { useToastProvider } from "../providers/ToastProvider";
 import { DialogComponent, useDialogProvider } from "../providers/DialogProvider";
 import Button from "../components/Button";
 import { useState } from "react";
-import { use } from "react";
+
 
 export default function Settings() {
     const parentRef = useRef(null)
@@ -433,7 +433,12 @@ export default function Settings() {
                                             emptyValidationMessage={""}
                                         />
 
-                                        <a href="#" className="settings--options-ctn__help-link underline">
+                                        <a 
+                                            href="https://github.com/drakejoshua/Express-Web-Code-Editor"
+                                            className="settings--options-ctn__help-link underline"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                             Want to use this API key? Learn how to integrate it
                                         </a>
 
