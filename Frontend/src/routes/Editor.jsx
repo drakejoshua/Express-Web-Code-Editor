@@ -41,6 +41,7 @@ import { useBlokProvider } from "../providers/BlokProvider";
 import { DialogComponent } from "../providers/DialogProvider";
 import { useToastProvider } from "../providers/ToastProvider";
 import TextField from "../components/TextField";
+import { useHotkeys } from 'react-hotkeys-hook'
 
 const EditorContext = createContext()
 
@@ -99,6 +100,51 @@ export default function Editor() {
     let editorSaveTimeoutRef = useRef( null )
 
     const renderCount = useRef( 0 )
+
+
+
+    // editor keybindings/shortcuts
+
+    // toggle editors
+    useHotkeys('alt+shift+h', function() {
+           toggleHTMLEditor()
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('alt+shift+c', function() {
+            toggleCSSEditor()
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('alt+shift+j', function() {
+            toggleJSEditor()
+        },
+        { enableOnFormTags: true }
+    )
+
+    // run and export actions
+    useHotkeys('alt+shift+e', function() {
+            exportAsZip()
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('alt+shift+r', function() {
+            runEditorCode()
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('alt+shift+p', function() {
+            toggleTabPreviewVisibility()
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('ctrl+alt+r', function() {
+            toggleEditorAutoRunCode()
+        },
+        { enableOnFormTags: true }
+    )
+
+
 
     // editor controllers
     async function fetchBlokToBeEdited() {
@@ -184,7 +230,7 @@ export default function Editor() {
     }
 
     function toggleHTMLEditor() {
-        if ( editorSettings.editors.length > 1 ) {
+        if ( editorSettings.editors.length > 0 ) {
             if ( editorSettings.editors.includes("html") ) {
                 setEditorSettings( ( prevEditorSettings ) => ({ 
                     ...prevEditorSettings,
@@ -202,7 +248,7 @@ export default function Editor() {
     }
     
     function toggleCSSEditor() {
-        if ( editorSettings.editors.length > 1 ) {
+        if ( editorSettings.editors.length > 0 ) {
             if ( editorSettings.editors.includes("css") ) {
                 setEditorSettings( ( prevEditorSettings ) => ({ 
                     ...prevEditorSettings,
@@ -220,7 +266,7 @@ export default function Editor() {
     }
     
     function toggleJSEditor() {
-        if ( editorSettings.editors.length > 1 ) {
+        if ( editorSettings.editors.length > 0 ) {
             if ( editorSettings.editors.includes("js") ) {
                 setEditorSettings( ( prevEditorSettings ) => ({ 
                     ...prevEditorSettings,
