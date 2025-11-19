@@ -144,7 +144,6 @@ export default function Editor() {
         { enableOnFormTags: true }
     )
 
-
     // editor layout actions
     useHotkeys('alt+shift+1', function() {
             changeEditorLayout("editor_left")
@@ -163,6 +162,23 @@ export default function Editor() {
     )
     useHotkeys('ctrl+alt+f', function() {
             toggleFocusMode()
+        },
+        { enableOnFormTags: true }
+    )
+
+    // editor internals action
+    useHotkeys('ctrl+alt+i', function() {
+            changeEditorFontSize( editorSettings.fontSize + 1 )
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('ctrl+alt+d', function() {
+            changeEditorFontSize( editorSettings.fontSize - 1 )
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('ctrl+alt+l', function() {
+            toggleLineNumbers()
         },
         { enableOnFormTags: true }
     )
