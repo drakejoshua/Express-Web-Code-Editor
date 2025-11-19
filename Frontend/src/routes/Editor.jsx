@@ -145,6 +145,29 @@ export default function Editor() {
     )
 
 
+    // editor layout actions
+    useHotkeys('alt+shift+1', function() {
+            changeEditorLayout("editor_left")
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('alt+shift+2', function() {
+            changeEditorLayout("editor_top")
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('alt+shift+3', function() {
+            changeEditorLayout("editor_right")
+        },
+        { enableOnFormTags: true }
+    )
+    useHotkeys('ctrl+alt+f', function() {
+            toggleFocusMode()
+        },
+        { enableOnFormTags: true }
+    )
+
+
 
     // editor controllers
     async function fetchBlokToBeEdited() {
