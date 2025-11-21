@@ -62,6 +62,8 @@ export default function Editor() {
     const [ isRenameDialogOpen, setIsRenameDialogOpen ] = useState( false )
     const [ newBlokName, setNewBlokName ] = useState( "" )
 
+    const [ isShortcutsDialogOpen, setIsShortcutsDialogOpen ] = useState( false )
+
     const [ blokName, setBlokName ] = useState("loading")
 
     const navigateTo = useNavigate()
@@ -100,6 +102,65 @@ export default function Editor() {
     let editorSaveTimeoutRef = useRef( null )
 
     const renderCount = useRef( 0 )
+
+    const editorShortcuts = [
+        {
+            keys: "Alt+Shift+H",
+            label: "Toggle HTML Editor"
+        },
+        {
+            keys: "Alt+Shift+C",
+            label: "Toggle CSS Editor"
+        },
+        {
+            keys: "Alt+Shift+J",
+            label: "Toggle JS Editor"
+        },
+        {
+            keys: "Alt+Shift+R",
+            label: "Run Editor Code"
+        },
+        {
+            keys: "Ctrl+Alt+R",
+            label: "Toggle AutoRun"
+        },
+        {
+            keys: "Alt+Shift+E",
+            label: "Export as .ZIP"
+        },
+        {
+            keys: "Alt+Shift+P",
+            label: "Toggle Tab Preview"
+        },
+        {
+            keys: "Alt+Shift+1",
+            label: "Editor Left Layout"
+        },
+        {
+            keys: "Alt+Shift+2",
+            label: "Editor Top Layout"
+        },
+        {
+            keys: "Alt+Shift+3",
+            label: "Editor Right Layout"
+        },
+        {
+            keys: "Ctrl+Alt+F",
+            label: "Toggle Focus Mode"
+        },
+        {
+            keys: "Ctrl+Alt+I",
+            label: "Increase Font Size"
+        },
+        {
+            keys: "Ctrl+Alt+D",
+            label: "Decrease Font Size"
+        },
+        {
+            keys: "Ctrl+Alt+L",
+            label: "Toggle Line Numbers"
+        }
+    ]
 
 
 
@@ -647,7 +708,8 @@ export default function Editor() {
                     toggleLineNumbers,
                     initializeEditorThemes,
                     toggleTabPreviewVisibility,
-                    exportAsZip
+                    exportAsZip,
+                    setIsShortcutsDialogOpen
                 } }>
                     <>
                         <WideLayout>
@@ -1034,6 +1096,72 @@ export default function Editor() {
                                 </Form.Root>
                             )}
                         />
+                        
+                        <DialogComponent
+                            open={ isShortcutsDialogOpen }
+                            onOpenChange={ setIsShortcutsDialogOpen }
+                            title="Editor Shortcuts"
+                            description="Below are the keyboard shortcuts to help you navigate and use the editor more efficiently."
+                            content={(
+                                <div
+                                    className="
+                                        shortcuts-dialog__content
+                                        mt-4
+                                        p-4
+                                        pt-2
+                                        rounded-md
+                                        bg-gray-200 dark:bg-gray-700
+                                        overflow-y-auto
+                                        max-h-[30vh]
+                                    "
+                                >
+                                    {
+                                        editorShortcuts.map( ( shortcut, index ) => (
+                                            <div 
+                                                className="
+                                                    shortcuts-dialog__shortcut
+                                                    border-b-2
+                                                    border-gray-600 dark:border-gray-400
+                                                    py-4 px-2
+                                                    flex
+                                                    gap-4
+                                                    items-center
+                                                    last:border-b-0
+                                                "
+                                                key={ index }
+                                            >
+                                                <span 
+                                                    className="
+                                                        shortcuts-dialog__keys
+                                                        p-1.5 px-4
+                                                        rounded-md
+                                                        bg-gray-600 dark:bg-gray-400
+                                                        inline-block
+                                                        text-white
+                                                        font-mono
+                                                        font-medium
+                                                        text-sm
+                                                    "
+                                                >
+                                                    { shortcut.keys }
+                                                </span>
+
+                                                <span 
+                                                    className="
+                                                        shortcuts-dialog__description
+                                                        inline-block
+                                                        capitalize
+                                                        dark:text-white
+                                                    "
+                                                >
+                                                    { shortcut.label }
+                                                </span>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            )}
+                        />
                     </>
                 </EditorContext.Provider>
             )
@@ -1058,6 +1186,7 @@ function EditorSettingsPopover({
         changeTabSize,
         toggleAutocomplete,
         toggleLineNumbers,
+        setIsShortcutsDialogOpen
     } = useContext( EditorContext )
 
     return <Popover.Root>
@@ -1247,7 +1376,9 @@ function EditorSettingsPopover({
                         flex
                         items-center
                         justify-between
+                        cursor-pointer
                     "
+                    onClick={ () => setIsShortcutsDialogOpen( true ) }
                 >
                     <span 
                         className="
