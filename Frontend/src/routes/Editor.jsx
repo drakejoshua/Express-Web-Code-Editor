@@ -1,14 +1,22 @@
 import { 
+    FaArrowLeftLong,
+    FaArrowRightLong,
     FaArrowRotateLeft,
     FaArrowUpRightFromSquare,
     FaBan,
     FaCheck, 
     FaChevronDown, 
+    FaCode, 
     FaCompress, 
+    FaCopy, 
     FaDesktop, 
     FaDownload, 
+    FaEnvelope, 
     FaExpand,
+    FaFacebook,
     FaGear, 
+    FaLink, 
+    FaLinkedin, 
     FaMoon, 
     FaPencil, 
     FaRegSun, 
@@ -16,6 +24,8 @@ import {
     FaShareNodes, 
     FaSpinner, 
     FaTriangleExclamation, 
+    FaWhatsapp, 
+    FaX, 
     FaXmark
 } from "react-icons/fa6";
 import NavMenu from "../components/NavMenu";
@@ -64,7 +74,40 @@ export default function Editor() {
 
     const [ isShortcutsDialogOpen, setIsShortcutsDialogOpen ] = useState( false )
 
+    const [ isShareDialogOpen, setIsShareDialogOpen ] = useState( true )
+
     const [ blokName, setBlokName ] = useState("loading")
+
+    const shareOptions = [
+        {
+            text: "link",
+            icon: FaLink
+        },
+        {
+            text: "embed",
+            icon: FaCode
+        },
+        {
+            text: "facebook",
+            icon: FaFacebook
+        },
+        {
+            text: "x",
+            icon: FaX
+        },
+        {
+            text: "linkedin",
+            icon: FaLinkedin
+        },
+        {
+            text: "whatsapp",
+            icon: FaWhatsapp
+        },
+        {
+            text: "email",
+            icon: FaEnvelope
+        },
+    ]
 
     const navigateTo = useNavigate()
 
@@ -1162,6 +1205,91 @@ export default function Editor() {
                                 </div>
                             )}
                         />
+                        
+                        <DialogComponent
+                            open={ isShareDialogOpen }
+                            onOpenChange={ setIsShareDialogOpen }
+                            title="Share Blok"
+                            description="Share your blok with others using the link/code below."
+                            content={(
+                                <Tabs.Root
+                                    className="
+                                        share-dialog--tabs
+                                        mt-4
+                                        flex
+                                        flex-col
+                                        gap-3
+                                        bg-gray-200 dark:bg-gray-700
+                                        rounded-md
+                                        p-3
+                                    "
+                                    defaultValue="link"
+                                >
+                                    <Tabs.List
+                                        className="
+                                            share-dialog--tabs__list
+                                            flex
+                                            items-center
+                                            w-full
+                                            overflow-x-auto
+                                            [scrollbar-width:none]
+
+                                            [&_.share-dialog--tabs\_\_trigger]:flex
+                                            [&_.share-dialog--tabs\_\_trigger]:items-center
+                                            [&_.share-dialog--tabs\_\_trigger]:gap-2
+                                            [&_.share-dialog--tabs\_\_trigger]:p-2 
+                                            [&_.share-dialog--tabs\_\_trigger]:px-3
+                                            [&_.share-dialog--tabs\_\_trigger]:rounded-md
+                                            [&_.share-dialog--tabs\_\_trigger]:text-gray-900
+                                            dark:[&_.share-dialog--tabs\_\_trigger]:text-white
+                                            [&_.share-dialog--tabs\_\_trigger]:data-[state='active']:bg-gray-600
+                                            dark:[&_.share-dialog--tabs\_\_trigger]:data-[state='active']:bg-gray-300
+                                            [&_.share-dialog--tabs\_\_trigger]:data-[state='active']:text-white
+                                            dark:[&_.share-dialog--tabs\_\_trigger]:data-[state='active']:text-gray-900
+                                            
+                                            [&_.share-dialog--tabs\_\_trigger-icon]:text-xl
+
+                                            [&_.share-dialog--tabs\_\_trigger-text]:capitalize
+                                            [&_.share-dialog--tabs\_\_trigger-text]:font-medium
+                                        "
+                                    >
+                                        {
+                                            shareOptions.map( function ( Option, index ) {
+                                                const Icon = Option.icon
+
+                                                return (
+                                                    <Tabs.Trigger 
+                                                        key={index}
+                                                        value={ Option.text }
+                                                        className="
+                                                            share-dialog--tabs__trigger
+                                                        "
+                                                    >
+                                                        <Icon className="share-dialog--tabs__trigger-icon"/>
+
+                                                        <span className="share-dialog--tabs__trigger-text">
+                                                            { Option.text }
+                                                        </span>
+                                                    </Tabs.Trigger>
+                                                )
+                                            })
+                                        }
+                                    </Tabs.List>
+
+                                    {
+                                        shareOptions.map( function( option, index ) {
+                                            return (
+                                                <ShareTabContent
+                                                    key={ index }
+                                                    value={ option.text }
+                                                    blokId={ id }
+                                                />
+                                            )
+                                        })
+                                    }
+                                </Tabs.Root>
+                            )}
+                        />
                     </>
                 </EditorContext.Provider>
             )
@@ -1567,5 +1695,166 @@ function PreviewFrame( { srcDoc, className } ) {
                 </button>
             </div>
         </div>
+    )
+}
+
+function ShareTabContent({ value, blokId }) {
+    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
+    const shareLink = `${ backendURL }/blok/${ blokId }`
+    const embedCode = `<iframe 
+                                width="600" 
+                                height="400"
+                                src="${ shareLink }"
+                                title="Express Web Code Editor Blok"
+                                allowFullScreen
+                            ></iframe>`
+
+    const [ isCopied, setIsCopied ] = useState( false )
+
+    async function copyText() {
+        if ( navigator.clipboard && navigator.clipboard.writeText ) {
+            if ( value === "link" ) {
+                await navigator.clipboard.writeText( shareLink )
+                
+                setIsCopied( true )
+            } else {
+                await navigator.clipboard.writeText( embedCode )
+                
+                setIsCopied( true )
+            }
+
+            setTimeout( function() {
+                setIsCopied( false )
+            }, 1000 )
+        }
+    }
+
+    function promptSocialShare() {
+        switch( value ) {
+            case "facebook":
+                window.open( `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent( shareLink )}`)
+            break;
+            
+            case "x":
+                window.open( `https://twitter.com/intent/tweet?url=${encodeURIComponent( shareLink )}&text=${encodeURIComponent("Hey! Check out my code on codebloks")}`)
+            break;
+            
+            case "linkedin":
+                window.open( `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent( shareLink )}&title=${encodeURIComponent("Hey! Check out my code on codebloks")}`)
+            break;
+            
+            case "whatsapp":
+                window.open( `https://wa.me/?text=${encodeURIComponent("Hey! Check out my code on codebloks " + shareLink)}` )
+            break;
+        }
+    }
+
+    return (
+        <Tabs.Content 
+            value={ value }
+            className="
+                p-3
+                px-4
+                rounded-md
+                bg-gray-600 dark:bg-gray-300
+                text-white dark:text-gray-900
+            "
+        >
+            <div 
+                className="
+                    share-dialog--tabs__link-ctn
+
+                    [&_.share-dialog--tabs\_\_link-copy-btn]:mt-3
+                    [&_.share-dialog--tabs\_\_link-copy-btn]:w-full
+                    [&_.share-dialog--tabs\_\_link-copy-btn]:capitalize
+                "
+            >
+                <span 
+                    className="
+                        share-dialog--tabs__link-text
+                        break-all
+                    "
+                >
+                    {
+                        value === "embed" ?
+                            `${ embedCode }`
+                        :
+                            `${ shareLink }`
+                    }
+                </span>
+
+                { value === "link" && <Button
+                    className="
+                        share-dialog--tabs__link-copy-btn
+                    "
+                    onClick={ copyText }
+                >
+                    {
+                        isCopied ?
+                            <>copied!</>
+                        :
+                            <>    
+                                <FaCopy />
+
+                                <span>
+                                    copy link
+                                </span>
+                            </>
+                    }
+                </Button> }
+                
+                { value === "embed" && <Button
+                    className="
+                        share-dialog--tabs__link-copy-btn
+                    "
+                    onClick={ copyText }
+                >
+                    {
+                        isCopied ?
+                            <>copied!</>
+                        :
+                            <>    
+                                <FaCopy />
+
+                                <span>
+                                    copy code
+                                </span>
+                            </>
+                    }
+                </Button> }
+                
+                { value === "email" && <Button
+                    className="
+                        share-dialog--tabs__link-copy-btn
+                    "
+                    onClick={ 
+                        () => window.open(
+                            `mailto:?subject=${encodeURIComponent("Hey! Check Out This Code Blok")}&body=${encodeURIComponent("use the link below:" + "\n\n" + shareLink)}`
+                        ) 
+                    }
+                >
+                    <span>
+                        send mail
+                    </span>
+
+                    <FaArrowRightLong />
+                </Button> }
+                
+                { ["facebook", "x", "linkedin", "whatsapp" ].includes(value) && 
+                    <Button
+                        className="
+                            share-dialog--tabs__link-copy-btn
+                        "
+                        onClick={ promptSocialShare }
+                    >
+                        <FaShareNodes />
+
+                        <span>
+                            Share Code
+                        </span>
+                    </Button> 
+                }
+            </div>
+        </Tabs.Content>
     )
 }
