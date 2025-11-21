@@ -74,7 +74,7 @@ export default function Editor() {
 
     const [ isShortcutsDialogOpen, setIsShortcutsDialogOpen ] = useState( false )
 
-    const [ isShareDialogOpen, setIsShareDialogOpen ] = useState( true )
+    const [ isShareDialogOpen, setIsShareDialogOpen ] = useState( false )
 
     const [ blokName, setBlokName ] = useState("loading")
 
@@ -670,6 +670,20 @@ export default function Editor() {
         }
     }
 
+    function handleSharing() {
+        const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
+        const shareLink = `${ backendURL }/blok/${ id }`
+
+        if ( navigator.share && mobileBreakpoint ) {
+            navigator.share({
+                text: "Hey! Check out this code on CodeBloks",
+                url: shareLink
+            })
+        } else {
+            setIsShareDialogOpen( true )
+        }
+    }
+
 
     switch( loadingState ) {
         case "loading":
@@ -752,7 +766,8 @@ export default function Editor() {
                     initializeEditorThemes,
                     toggleTabPreviewVisibility,
                     exportAsZip,
-                    setIsShortcutsDialogOpen
+                    setIsShortcutsDialogOpen,
+                    handleSharing
                 } }>
                     <>
                         <WideLayout>
@@ -1294,8 +1309,6 @@ export default function Editor() {
                 </EditorContext.Provider>
             )
     }
-
-
 }
 
 
@@ -1635,7 +1648,11 @@ const MobileEditor = forwardRef( function( props, ref ) {
 })
 
 function PreviewFrame( { srcDoc, className } ) {
-    const { editorSettings, toggleTabPreviewVisibility } = useContext( EditorContext )
+    const { 
+        editorSettings, 
+        toggleTabPreviewVisibility,
+        handleSharing
+    } = useContext( EditorContext )
 
     return (
         <div 
@@ -1680,6 +1697,7 @@ function PreviewFrame( { srcDoc, className } ) {
                         items-center
                         py-2 px-3
                     "
+                    onClick={ handleSharing }
                 >
                     share <FaShareNodes />
                 </button>
