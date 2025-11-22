@@ -17,6 +17,9 @@ import notFoundHandler from './middleware/not-found.js'
 import errorHandler from './middleware/error.js'
 import logger from './middleware/logger.js'
 
+import path from 'path'
+import url from 'url'
+
 
 // create server
 const server = express()
@@ -25,13 +28,34 @@ const server = express()
 connectDB()
 
 // initialize helmet middleware on server for security
-server.use( helmet() )
+server.use( 
+    helmet({
+        contentSecurityPolicy: {
+            useDefaults: true,
+            directives: {
+                "script-src": ["'self'", "https://cdn.jsdelivr.net"],
+                "worker-src": ["'self'", "blob:"],
+                // Allow images
+                "img-src": ["'self'", "data:", "blob:", "*"],
+                // Allow iframe preview to load external content
+                "frame-src": ["'self'", "*"],
+                "child-src": ["'self'", "blob:", "*"],
+            },
+        }
+    }) 
+)
 
 // initialize cors middleware on server for cross-origin requests
 server.use( cors({
     credentials: true,
     origin: process.env.FRONTEND_URL || 'http://localhost:5173'
 }) )
+
+const __filename = url.fileURLToPath( import.meta.url )
+const __dirname = path.dirname( __filename )
+
+// static folder
+server.use( express.static( path.join( __dirname, 'public' ) ) )
 
 // initialize passport middleware on server
 server.use( passport.initialize() )

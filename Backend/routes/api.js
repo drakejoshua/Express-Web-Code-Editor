@@ -199,65 +199,6 @@ router.get("/bloks/:id",
     }
 )
 
-// GET /api/share/:id - get a specific code blok by its ID for backend share 
-// feature
-router.get("/share/:id",
-    appIdAuth,
-
-    // validate the blok ID in the request parameters
-    // ensuring it is a valid MongoDB ObjectId using express-validator
-    [
-        param("id")
-            .exists()
-            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
-            .bail()
-            .isMongoId()
-            .withMessage( ERROR_CODES.INVALID_BLOK_ID )
-            .bail()
-    ],
-
-    async function( req, res, next ) {
-        // get validation errors if any
-        const errors = validationResult( req )
-
-        // check for any validation errors and report
-        // them if any
-        if ( !errors.isEmpty() ) {
-            switch( errors.array()[0].msg ) {
-                case ERROR_CODES.INVALID_BLOK_ID:
-                    return reportInvalidBlokIdError( next )
-            }
-        }
-
-        // extract the blok ID from the request parameters
-        const blokId = req.params.id
-
-        // since no validation errors, proceed to get the specific blok
-        // for the authenticated user
-        try {
-            // find the blok by ID and ensure it belongs to the authenticated user
-            const blok = await Bloks.findOne({
-                _id: blokId
-            })
-
-            // if blok not found, report error
-            if ( !blok ) {
-                return reportBlokNotFoundError( next )
-            }
-
-            // since no errors occurred, send success response with blok data
-            res.json({
-                status: "success",
-                data: {
-                    blok: prepareBlokResponse( blok )
-                }
-            })
-        } catch( err ) {
-            return next( err )
-        }
-    }
-)
-
 // GET /api/view/:id - get a specific code blok by its ID for backend share 
 // feature
 router.get("/view/:id",
