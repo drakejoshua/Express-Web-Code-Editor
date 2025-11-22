@@ -185,6 +185,11 @@ export default function Dashboard() {
 
     return (
         <>
+            <Helmet>
+                <title>Dashboard - CodeBloks</title>
+                <meta name="description" content="Your CodeBloks Dashboard" />
+            </Helmet>
+
             <WideLayout>
                 <div
                     className='

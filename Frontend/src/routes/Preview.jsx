@@ -57,66 +57,87 @@ export default function Preview() {
     switch ( loadingState ) {
         case "loaded":
             return (
-                <iframe
-                    srcDoc={ generateIframeContent(
-                        channelData.html,
-                        channelData.css,
-                        channelData.js
-                    ) }
-                    className="
-                        h-screen
-                        w-full
-                    "
-                >
-                </iframe>
+                <>
+                    <Helmet>
+                        <title>Preview - CodeBloks</title>
+                        <meta name="description" content="Preview your code blok output" />
+                    </Helmet>
+
+                    <iframe
+                        srcDoc={ generateIframeContent(
+                            channelData.html,
+                            channelData.css,
+                            channelData.js
+                        ) }
+                        className="
+                            h-screen
+                            w-full
+                        "
+                    >
+                    </iframe>
+                </>
             )
 
         case "load-error":
             return (
-                <div 
-                    className="
-                        h-screen
-                        text-black dark:text-white
-                        bg-white dark:bg-gray-800
-                    "
-                >
-                    <RouteContainer
+                <>
+                    <Helmet>
+                        <title>Preview - CodeBloks</title>
+                        <meta name="description" content="Preview your code blok output" />
+                    </Helmet>
+                    
+                    <div 
                         className="
-                            gap-4
+                            h-screen
+                            text-black dark:text-white
+                            bg-white dark:bg-gray-800
                         "
                     >
-                        <FaTriangleExclamation className="text-3xl"/>
+                        <RouteContainer
+                            className="
+                                gap-4
+                            "
+                        >
+                            <FaTriangleExclamation className="text-3xl"/>
 
-                        <p className="text-center">
-                            The preview failed to load. This is due to opening preview without
-                            initializing preview mode in the codebloks editor. Make sure to enable
-                            preview mode in the codebloks editor then reload this page to try again
-                        </p>
-                    </RouteContainer>
-                </div>
+                            <p className="text-center">
+                                The preview failed to load. This is due to opening preview without
+                                initializing preview mode in the codebloks editor. Make sure to enable
+                                preview mode in the codebloks editor then reload this page to try again
+                            </p>
+                        </RouteContainer>
+                    </div>
+                </>
             )
         
         case "loading":
             return (
-                <div 
-                    className="
-                        h-screen
-                        text-black dark:text-white
-                        bg-white dark:bg-gray-800
-                    "
-                >
-                    <RouteContainer
+                <>
+                    <Helmet>
+                        <title>Preview - CodeBloks</title>
+                        <meta name="description" content="Preview your code blok output" />
+                    </Helmet>
+                    
+                    <div 
                         className="
-                            gap-4
+                            h-screen
+                            text-black dark:text-white
+                            bg-white dark:bg-gray-800
                         "
                     >
-                        <FaSpinner className="text-3xl animate-spin"/>
+                        <RouteContainer
+                            className="
+                                gap-4
+                            "
+                        >
+                            <FaSpinner className="text-3xl animate-spin"/>
 
-                        <p className="text-center">
-                            The preview is loading. Please wait...
-                        </p>
-                    </RouteContainer>
-                </div>
+                            <p className="text-center">
+                                The preview is loading. Please wait...
+                            </p>
+                        </RouteContainer>
+                    </div>
+                </>
             )
     }
 }

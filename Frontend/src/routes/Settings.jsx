@@ -168,6 +168,11 @@ export default function Settings() {
     
     return (
         <>
+            <Helmet>
+                <title>Settings - CodeBloks</title>
+                <meta name="description" content="Manage your user settings and preferences" />
+            </Helmet>
+
             <WideLayout>
                 <div
                     className="

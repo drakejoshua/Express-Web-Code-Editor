@@ -52,6 +52,7 @@ import { DialogComponent } from "../providers/DialogProvider";
 import { useToastProvider } from "../providers/ToastProvider";
 import TextField from "../components/TextField";
 import { useHotkeys } from 'react-hotkeys-hook'
+import { Helmet } from "react-helmet-async";
 
 const EditorContext = createContext()
 
@@ -688,625 +689,646 @@ export default function Editor() {
     switch( loadingState ) {
         case "loading":
             return (
-                <div 
-                    className="
-                        h-screen
-                        text-black dark:text-white
-                        bg-white dark:bg-gray-800
-                    "
-                >
-                    <RouteContainer
+                <>
+                    <Helmet>
+                        <title>Loading Editor - CodeBloks</title>
+                        <meta name="description" content="Edit your code blok using the online code editor" />
+                    </Helmet>
+
+                    <div 
                         className="
-                            gap-4
-                            flex-row
+                            h-screen
+                            text-black dark:text-white
+                            bg-white dark:bg-gray-800
                         "
                     >
-                        <FaSpinner className="text-3xl animate-spin"/>
+                        <RouteContainer
+                            className="
+                                gap-4
+                                flex-row
+                            "
+                        >
+                            <FaSpinner className="text-3xl animate-spin"/>
 
-                        <p className="text-center">
-                            The editor is loading. Please wait...
-                        </p>
-                    </RouteContainer>
-                </div>
+                            <p className="text-center">
+                                The editor is loading. Please wait...
+                            </p>
+                        </RouteContainer>
+                    </div>
+                </>
             )
         
         case "error":
             return (
-                <div 
-                    className="
-                        h-screen
-                        text-black dark:text-white
-                        bg-white dark:bg-gray-800
-                    "
-                >
-                    <RouteContainer
+                <>
+                    <Helmet>
+                        <title>Editor Load Error - CodeBloks</title>
+                        <meta name="description" content="Edit your code blok using the online code editor" />
+                    </Helmet>
+
+                    <div 
                         className="
-                            gap-4
+                            h-screen
+                            text-black dark:text-white
+                            bg-white dark:bg-gray-800
                         "
                     >
-                        <FaTriangleExclamation className="text-3xl"/>
-
-                        <p className="text-center">
-                            There was an error loading the editor. Error: { loadingError }
-                        </p>
-
-                        <Button
+                        <RouteContainer
                             className="
-                                capitalize
+                                gap-4
                             "
-                            onClick={ 
-                                id ?
-                                fetchBlokToBeEdited :
-                                navigateTo("/dashboard")
-                            }
                         >
-                            <FaArrowRotateLeft/>
+                            <FaTriangleExclamation className="text-3xl"/>
 
-                            <span>
-                                retry
-                            </span>
-                        </Button>
-                    </RouteContainer>
-                </div>
+                            <p className="text-center">
+                                There was an error loading the editor. Error: { loadingError }
+                            </p>
+
+                            <Button
+                                className="
+                                    capitalize
+                                "
+                                onClick={ 
+                                    id ?
+                                    fetchBlokToBeEdited :
+                                    navigateTo("/dashboard")
+                                }
+                            >
+                                <FaArrowRotateLeft/>
+
+                                <span>
+                                    retry
+                                </span>
+                            </Button>
+                        </RouteContainer>
+                    </div>
+                </>
             )
 
         case "loaded":
             return (
-                <EditorContext.Provider value={ {
-                    editorSettings,
-                    mobileBreakpoint,
-                    changeEditorLayout,
-                    changeActiveEditors,
-                    toggleFocusMode,
-                    changeTheme,
-                    changeEditorFontSize,
-                    changeTabSize,
-                    toggleAutocomplete,
-                    toggleLineNumbers,
-                    initializeEditorThemes,
-                    toggleTabPreviewVisibility,
-                    exportAsZip,
-                    setIsShortcutsDialogOpen,
-                    handleSharing
-                } }>
-                    <>
-                        <WideLayout>
-                            <div 
-                                className="
-                                    editor
-                                    flex
-                                    flex-col
-                                    h-full
-                                    pb-8
-                                "
-                            >
-                                {/* editor desktop content */}
+                <>
+                    <Helmet>
+                        <title>Edit Blok { blokName } - CodeBloks</title>
+                        <meta name="description" content="Edit your code blok using the online code editor" />
+                    </Helmet>
+
+                    <EditorContext.Provider value={ {
+                        editorSettings,
+                        mobileBreakpoint,
+                        changeEditorLayout,
+                        changeActiveEditors,
+                        toggleFocusMode,
+                        changeTheme,
+                        changeEditorFontSize,
+                        changeTabSize,
+                        toggleAutocomplete,
+                        toggleLineNumbers,
+                        initializeEditorThemes,
+                        toggleTabPreviewVisibility,
+                        exportAsZip,
+                        setIsShortcutsDialogOpen,
+                        handleSharing
+                    } }>
+                        <>
+                            <WideLayout>
                                 <div 
                                     className="
-                                        editor--header
-                                        py-3
+                                        editor
                                         flex
-                                        items-center
+                                        flex-col
+                                        h-full
+                                        pb-8
                                     "
                                 >
-                                    <NavMenu />
-            
-                                    <span 
+                                    {/* editor desktop content */}
+                                    <div 
                                         className="
-                                            editor--header__name-ctn
+                                            editor--header
+                                            py-3
+                                            flex
                                             items-center
-                                            gap-3
-                                            ml-4
-                                            hidden md:flex
                                         "
                                     >
+                                        <NavMenu />
+                
                                         <span 
                                             className="
-                                                editor--header__blok-name
-                                                text-xl
-                                                font-medium
-                                                font-mono
+                                                editor--header__name-ctn
+                                                items-center
+                                                gap-3
+                                                ml-4
+                                                hidden md:flex
                                             "
                                         >
-                                            { blokName }
-                                        </span>
-            
-                                        <button 
-                                            className="
-                                                editor--header__rename-btn
-                                                text-gray-500 dark:text-gray-300
-                                            "
-                                            onClick={ promptBlokRename }
-                                        >
-                                            <FaPencil/>
-                                        </button>
-                                    </span>
-            
-                                    <div 
-                                        className="
-                                            editor--header__actions-ctn
-                                            ml-auto
-                                            flex
-                                            gap-2 md:gap-4 
-                                            items-center
-            
-                                            [&>button]:p-3
-                                            [&>button]:bg-gray-300 [&>button]:dark:bg-gray-600
-                                            [&>button]:text-xl
-                                            [&>button]:dark:text-white
-                                            [&>button]:rounded-md
-                                        "
-                                    >
-                                        <DropdownMenu.Root>
-                                            <div
+                                            <span 
                                                 className="
-                                                    flex
-                                                    gap-0.5
+                                                    editor--header__blok-name
+                                                    text-xl
+                                                    font-medium
+                                                    font-mono
                                                 "
                                             >
-                                                <Button
+                                                { blokName }
+                                            </span>
+                
+                                            <button 
+                                                className="
+                                                    editor--header__rename-btn
+                                                    text-gray-500 dark:text-gray-300
+                                                "
+                                                onClick={ promptBlokRename }
+                                            >
+                                                <FaPencil/>
+                                            </button>
+                                        </span>
+                
+                                        <div 
+                                            className="
+                                                editor--header__actions-ctn
+                                                ml-auto
+                                                flex
+                                                gap-2 md:gap-4 
+                                                items-center
+                
+                                                [&>button]:p-3
+                                                [&>button]:bg-gray-300 [&>button]:dark:bg-gray-600
+                                                [&>button]:text-xl
+                                                [&>button]:dark:text-white
+                                                [&>button]:rounded-md
+                                            "
+                                        >
+                                            <DropdownMenu.Root>
+                                                <div
                                                     className="
-                                                        rounded-r-none
-                                                        capitalize
+                                                        flex
+                                                        gap-0.5
                                                     "
-                                                    onClick={ runEditorCode }
                                                 >
-                                                    run
-                                                </Button>
-                                                <DropdownMenu.Trigger asChild>
                                                     <Button
                                                         className="
-                                                            rounded-l-none
+                                                            rounded-r-none
+                                                            capitalize
                                                         "
+                                                        onClick={ runEditorCode }
                                                     >
-                                                        <FaChevronDown/>
+                                                        run
                                                     </Button>
-                                                </DropdownMenu.Trigger>
-                                            </div>
-            
-                                            <DropdownContent 
-                                                label="run options"
+                                                    <DropdownMenu.Trigger asChild>
+                                                        <Button
+                                                            className="
+                                                                rounded-l-none
+                                                            "
+                                                        >
+                                                            <FaChevronDown/>
+                                                        </Button>
+                                                    </DropdownMenu.Trigger>
+                                                </div>
+                
+                                                <DropdownContent 
+                                                    label="run options"
+                                                    className="
+                                                        z-1
+                                                    "
+                                                    options={[
+                                                        {
+                                                            action: toggleEditorAutoRunCode,
+                                                            content: <>
+                                                                { editorSettings.autoRun && <FaCheck/> }
+                                                                { editorSettings.autoRun == false && <FaRotateLeft/> }
+                
+                                                                <span>
+                                                                    autorun
+                                                                </span>
+                                                            </>
+                                                        },
+                                                        {
+                                                            action: exportAsZip,
+                                                            content: <>
+                                                                <FaDownload/>
+                
+                                                                <span>
+                                                                    export as .ZIP
+                                                                </span>
+                                                            </>
+                                                        },
+                                                        {
+                                                            action: toggleTabPreviewVisibility,
+                                                            content: <>
+                                                                { editorSettings.isTabPreviewVisible ? <FaBan/> : <FaDesktop/> }
+                
+                                                                <span>
+                                                                    { editorSettings.isTabPreviewVisible ? <>previewing... </> : <>preview </> }
+                                                                </span>
+                                                            </>
+                                                        },
+                                                    ]}
+                                                />
+                                            </DropdownMenu.Root>
+                
+                                            <button 
                                                 className="
-                                                    z-1
+                                                    editor--header__fullscreen-btn
+                                                    p-3
+                                                    bg-gray-100
+                                                    text-xl
+                                                    rounded-md
+                                                    hidden md:block
                                                 "
-                                                options={[
-                                                    {
-                                                        action: toggleEditorAutoRunCode,
-                                                        content: <>
-                                                            { editorSettings.autoRun && <FaCheck/> }
-                                                            { editorSettings.autoRun == false && <FaRotateLeft/> }
-            
-                                                            <span>
-                                                                autorun
-                                                            </span>
-                                                        </>
-                                                    },
-                                                    {
-                                                        action: exportAsZip,
-                                                        content: <>
-                                                            <FaDownload/>
-            
-                                                            <span>
-                                                                export as .ZIP
-                                                            </span>
-                                                        </>
-                                                    },
-                                                    {
-                                                        action: toggleTabPreviewVisibility,
-                                                        content: <>
-                                                            { editorSettings.isTabPreviewVisible ? <FaBan/> : <FaDesktop/> }
-            
-                                                            <span>
-                                                                { editorSettings.isTabPreviewVisible ? <>previewing... </> : <>preview </> }
-                                                            </span>
-                                                        </>
-                                                    },
-                                                ]}
+                                                onClick={ toggleFocusMode }
+                                            >
+                                                { !editorSettings.focusMode && <FaExpand/> }
+                                                { editorSettings.focusMode && <FaCompress/>}
+                                            </button>
+                
+                                            <button 
+                                                className="editor--header__theme-toggle"
+                                                onClick={ toggleTheme }
+                                            >
+                                                { theme == "light" && <FaMoon/> }
+                                                { theme == "dark" && <FaRegSun/> }
+                                            </button>
+                
+                                            <EditorSettingsPopover 
+                                                className="
+                                                    hidden lg:block
+                                                "
                                             />
-                                        </DropdownMenu.Root>
-            
-                                        <button 
-                                            className="
-                                                editor--header__fullscreen-btn
-                                                p-3
-                                                bg-gray-100
-                                                text-xl
-                                                rounded-md
-                                                hidden md:block
-                                            "
-                                            onClick={ toggleFocusMode }
-                                        >
-                                            { !editorSettings.focusMode && <FaExpand/> }
-                                            { editorSettings.focusMode && <FaCompress/>}
-                                        </button>
-            
-                                        <button 
-                                            className="editor--header__theme-toggle"
-                                            onClick={ toggleTheme }
-                                        >
-                                            { theme == "light" && <FaMoon/> }
-                                            { theme == "dark" && <FaRegSun/> }
-                                        </button>
-            
-                                        <EditorSettingsPopover 
-                                            className="
-                                                hidden lg:block
-                                            "
-                                        />
-            
-                                        <NavAvatar />
+                
+                                            <NavAvatar />
+                                        </div>
                                     </div>
-                                </div>
-            
-                                <div 
-                                    className={`
-                                        editor--main
-                                        flex-1
-                                        min-h-0
-                                        hidden lg:flex
-                                        ${ editorSettings.layout == "editor_top" ? "flex-col" : "" }
-                                        gap-4
-                                    `}
-                                >
+                
                                     <div 
                                         className={`
-                                            editor--main__editors-ctn
+                                            editor--main
                                             flex-1
                                             min-h-0
-                                            flex
-                                            ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
+                                            hidden lg:flex
+                                            ${ editorSettings.layout == "editor_top" ? "flex-col" : "" }
                                             gap-4
-                                            ${ editorSettings.layout != "editor_top" && editorSettings.layout == "editor_right" ? "order-2" : "" }
                                         `}
                                     >
-                                        { 
-                                            editorSettings.editors.includes("html") && <MainEditor 
-                                                label="html" 
-                                                defaultLanguage="html"
-                                                onToggle={ toggleHTMLEditor }
-                                                className="flex-1 min-h-0"
-                                                value={ editorContent.html }
-                                                onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
-                                            />
-                                        }
-                                        { 
-                                            editorSettings.editors.includes("css") && <MainEditor 
-                                                label="css" 
-                                                defaultLanguage="css"
-                                                onToggle={ toggleCSSEditor }
-                                                className="flex-1 min-h-0"
-                                                value={ editorContent.css }
-                                                onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
-                                            />
-                                        }
-                                        {
-                                            editorSettings.editors.includes("js") && <MainEditor 
-                                                label="js" 
-                                                defaultLanguage="javascript"
-                                                onToggle={ toggleJSEditor }
-                                                className="flex-1 min-h-0"
-                                                value={ editorContent.js }
-                                                onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
-                                            />
-                                        }
-                                    </div>
-                                    
-                                    <PreviewFrame 
-                                        srcDoc={ generateIframeContent( 
-                                            previewContent.html,
-                                            previewContent.css,
-                                            previewContent.js,
-                                            theme
-                                        )}
-                                        className="
-                                            border-2
-                                            border-gray-300 dark:border-gray-600
-                                            flex-1
-                                            min-h-0
-                                        "
-                                    />
-                                </div>
-            
-                                {/* editor non-desktop coontent */}
-                                <Tabs.Root 
-                                    className="
-                                        editor--mobile-main
-                                        flex-1
-                                        min-h-0
-                                        flex lg:hidden
-                                        flex-col
-                                        border-2
-                                        border-gray-300 dark:border-gray-600
-                                        rounded-md
-                                        overflow-hidden
-                                    " 
-                                    defaultValue="html"
-                                >
-                                    <Tabs.List 
-                                        className="
-                                            editor--mobile-main__tabs
-                                            flex
-                                            items-center
-                                            bg-gray-100 dark:bg-gray-600
-                                            w-full
-                                            overflow-x-auto
-            
-                                            *:py-2 *:px-5
-                                            *:rounded-t-md
-                                            *:data-[state=active]:bg-gray-300 dark:*:data-[state=active]:bg-gray-800
-                                        "
-                                    >
-                                        <Tabs.Trigger value="html">
-                                            html
-                                        </Tabs.Trigger>
-                                        <Tabs.Trigger value="css">
-                                            css
-                                        </Tabs.Trigger>
-                                        <Tabs.Trigger value="js">
-                                            js
-                                        </Tabs.Trigger>
-                                        <Tabs.Trigger value="preview">
-                                            preview
-                                        </Tabs.Trigger>
-            
-                                        <EditorSettingsPopover />
-                                    </Tabs.List>
-            
-                                    <Tabs.Content 
-                                        value="html"
-                                        className="
-                                            flex-1
-                                            min-h-0
-                                        "
-            
-                                    >
-                                        <MobileEditor 
-                                            defaultLanguage="html"
-                                            value={ editorContent.html }
-                                            onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
-                                        />
-                                    </Tabs.Content>
-            
-                                    <Tabs.Content 
-                                        value="css"
-                                        className="
-                                            flex-1
-                                            min-h-0
-                                        "
-            
-                                    >
-                                        <MobileEditor 
-                                            defaultLanguage="css"
-                                            value={ editorContent.css }
-                                            onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
-                                        />
-                                    </Tabs.Content>
-            
-                                    <Tabs.Content 
-                                        value="js"
-                                        className="
-                                            flex-1
-                                            min-h-0
-                                        "
-            
-                                    >
-                                        <MobileEditor 
-                                            defaultLanguage="js"
-                                            value={ editorContent.js }
-                                            onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
-                                        />
-                                    </Tabs.Content>
-            
-                                    <Tabs.Content 
-                                        value="preview"
-                                        className="
-                                            flex-1
-                                            min-h-0
-                                        "
-            
-                                    >
+                                        <div 
+                                            className={`
+                                                editor--main__editors-ctn
+                                                flex-1
+                                                min-h-0
+                                                flex
+                                                ${ editorSettings.layout == "editor_top" ? "" : "flex-col" }
+                                                gap-4
+                                                ${ editorSettings.layout != "editor_top" && editorSettings.layout == "editor_right" ? "order-2" : "" }
+                                            `}
+                                        >
+                                            { 
+                                                editorSettings.editors.includes("html") && <MainEditor 
+                                                    label="html" 
+                                                    defaultLanguage="html"
+                                                    onToggle={ toggleHTMLEditor }
+                                                    className="flex-1 min-h-0"
+                                                    value={ editorContent.html }
+                                                    onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
+                                                />
+                                            }
+                                            { 
+                                                editorSettings.editors.includes("css") && <MainEditor 
+                                                    label="css" 
+                                                    defaultLanguage="css"
+                                                    onToggle={ toggleCSSEditor }
+                                                    className="flex-1 min-h-0"
+                                                    value={ editorContent.css }
+                                                    onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
+                                                />
+                                            }
+                                            {
+                                                editorSettings.editors.includes("js") && <MainEditor 
+                                                    label="js" 
+                                                    defaultLanguage="javascript"
+                                                    onToggle={ toggleJSEditor }
+                                                    className="flex-1 min-h-0"
+                                                    value={ editorContent.js }
+                                                    onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
+                                                />
+                                            }
+                                        </div>
+                                        
                                         <PreviewFrame 
                                             srcDoc={ generateIframeContent( 
-                                                editorContent.html,
-                                                editorContent.css,
-                                                editorContent.js,
+                                                previewContent.html,
+                                                previewContent.css,
+                                                previewContent.js,
                                                 theme
                                             )}
                                             className="
-                                                h-full
+                                                border-2
+                                                border-gray-300 dark:border-gray-600
+                                                flex-1
+                                                min-h-0
                                             "
                                         />
-                                    </Tabs.Content>
-                                </Tabs.Root>
-                            </div>
-                        </WideLayout>
-
-                        <DialogComponent
-                            open={ isRenameDialogOpen }
-                            onOpenChange={ setIsRenameDialogOpen }
-                            title="Rename Blok"
-                            description="Enter the new blok name in the form below"
-                            content={(
-                                <Form.Root
-                                    onSubmit={ handleBlokRename }
-                                    className="
-                                        mt-4
-                                        flex
-                                        flex-col
-                                        gap-2
-                                        text-gray-900 dark:text-white
-                                    "
-                                >
-                                    <TextField
-                                        label="Name"
-                                        value={ newBlokName }
-                                        onChange={ ( e ) => setNewBlokName( e.target.value ) }
-                                    />
-
-                                    <Button
+                                    </div>
+                
+                                    {/* editor non-desktop coontent */}
+                                    <Tabs.Root 
                                         className="
-                                            w-full
-                                            capitalize
+                                            editor--mobile-main
+                                            flex-1
+                                            min-h-0
+                                            flex lg:hidden
+                                            flex-col
+                                            border-2
+                                            border-gray-300 dark:border-gray-600
+                                            rounded-md
+                                            overflow-hidden
+                                        " 
+                                        defaultValue="html"
+                                    >
+                                        <Tabs.List 
+                                            className="
+                                                editor--mobile-main__tabs
+                                                flex
+                                                items-center
+                                                bg-gray-100 dark:bg-gray-600
+                                                w-full
+                                                overflow-x-auto
+                
+                                                *:py-2 *:px-5
+                                                *:rounded-t-md
+                                                *:data-[state=active]:bg-gray-300 dark:*:data-[state=active]:bg-gray-800
+                                            "
+                                        >
+                                            <Tabs.Trigger value="html">
+                                                html
+                                            </Tabs.Trigger>
+                                            <Tabs.Trigger value="css">
+                                                css
+                                            </Tabs.Trigger>
+                                            <Tabs.Trigger value="js">
+                                                js
+                                            </Tabs.Trigger>
+                                            <Tabs.Trigger value="preview">
+                                                preview
+                                            </Tabs.Trigger>
+                
+                                            <EditorSettingsPopover />
+                                        </Tabs.List>
+                
+                                        <Tabs.Content 
+                                            value="html"
+                                            className="
+                                                flex-1
+                                                min-h-0
+                                            "
+                
+                                        >
+                                            <MobileEditor 
+                                                defaultLanguage="html"
+                                                value={ editorContent.html }
+                                                onChange={ ( value ) => setEditorContent({ ...editorContent, html: value }) }
+                                            />
+                                        </Tabs.Content>
+                
+                                        <Tabs.Content 
+                                            value="css"
+                                            className="
+                                                flex-1
+                                                min-h-0
+                                            "
+                
+                                        >
+                                            <MobileEditor 
+                                                defaultLanguage="css"
+                                                value={ editorContent.css }
+                                                onChange={ ( value ) => setEditorContent({ ...editorContent, css: value }) }
+                                            />
+                                        </Tabs.Content>
+                
+                                        <Tabs.Content 
+                                            value="js"
+                                            className="
+                                                flex-1
+                                                min-h-0
+                                            "
+                
+                                        >
+                                            <MobileEditor 
+                                                defaultLanguage="js"
+                                                value={ editorContent.js }
+                                                onChange={ ( value ) => setEditorContent({ ...editorContent, js: value }) }
+                                            />
+                                        </Tabs.Content>
+                
+                                        <Tabs.Content 
+                                            value="preview"
+                                            className="
+                                                flex-1
+                                                min-h-0
+                                            "
+                
+                                        >
+                                            <PreviewFrame 
+                                                srcDoc={ generateIframeContent( 
+                                                    editorContent.html,
+                                                    editorContent.css,
+                                                    editorContent.js,
+                                                    theme
+                                                )}
+                                                className="
+                                                    h-full
+                                                "
+                                            />
+                                        </Tabs.Content>
+                                    </Tabs.Root>
+                                </div>
+                            </WideLayout>
+
+                            <DialogComponent
+                                open={ isRenameDialogOpen }
+                                onOpenChange={ setIsRenameDialogOpen }
+                                title="Rename Blok"
+                                description="Enter the new blok name in the form below"
+                                content={(
+                                    <Form.Root
+                                        onSubmit={ handleBlokRename }
+                                        className="
+                                            mt-4
+                                            flex
+                                            flex-col
+                                            gap-2
+                                            text-gray-900 dark:text-white
                                         "
                                     >
-                                        rename blok
-                                    </Button>
-                                </Form.Root>
-                            )}
-                        />
-                        
-                        <DialogComponent
-                            open={ isShortcutsDialogOpen }
-                            onOpenChange={ setIsShortcutsDialogOpen }
-                            title="Editor Shortcuts"
-                            description="Below are the keyboard shortcuts to help you navigate and use the editor more efficiently."
-                            content={(
-                                <div
-                                    className="
-                                        shortcuts-dialog__content
-                                        mt-4
-                                        p-4
-                                        pt-2
-                                        rounded-md
-                                        bg-gray-200 dark:bg-gray-700
-                                        overflow-y-auto
-                                        max-h-[30vh]
-                                    "
-                                >
-                                    {
-                                        editorShortcuts.map( ( shortcut, index ) => (
-                                            <div 
-                                                className="
-                                                    shortcuts-dialog__shortcut
-                                                    border-b-2
-                                                    border-gray-600 dark:border-gray-400
-                                                    py-4 px-2
-                                                    flex
-                                                    gap-4
-                                                    items-center
-                                                    last:border-b-0
-                                                "
-                                                key={ index }
-                                            >
-                                                <span 
-                                                    className="
-                                                        shortcuts-dialog__keys
-                                                        p-1.5 px-4
-                                                        rounded-md
-                                                        bg-gray-600 dark:bg-gray-400
-                                                        inline-block
-                                                        text-white
-                                                        font-mono
-                                                        font-medium
-                                                        text-sm
-                                                    "
-                                                >
-                                                    { shortcut.keys }
-                                                </span>
+                                        <TextField
+                                            label="Name"
+                                            value={ newBlokName }
+                                            onChange={ ( e ) => setNewBlokName( e.target.value ) }
+                                        />
 
-                                                <span 
-                                                    className="
-                                                        shortcuts-dialog__description
-                                                        inline-block
-                                                        capitalize
-                                                        dark:text-white
-                                                    "
-                                                >
-                                                    { shortcut.label }
-                                                </span>
-                                            </div>
-                                        ))
-                                    }
-                                </div>
-                            )}
-                        />
-                        
-                        <DialogComponent
-                            open={ isShareDialogOpen }
-                            onOpenChange={ setIsShareDialogOpen }
-                            title="Share Blok"
-                            description="Share your blok with others using the link/code below."
-                            content={(
-                                <Tabs.Root
-                                    className="
-                                        share-dialog--tabs
-                                        mt-4
-                                        flex
-                                        flex-col
-                                        gap-3
-                                        bg-gray-200 dark:bg-gray-700
-                                        rounded-md
-                                        p-3
-                                    "
-                                    defaultValue="link"
-                                >
-                                    <Tabs.List
+                                        <Button
+                                            className="
+                                                w-full
+                                                capitalize
+                                            "
+                                        >
+                                            rename blok
+                                        </Button>
+                                    </Form.Root>
+                                )}
+                            />
+                            
+                            <DialogComponent
+                                open={ isShortcutsDialogOpen }
+                                onOpenChange={ setIsShortcutsDialogOpen }
+                                title="Editor Shortcuts"
+                                description="Below are the keyboard shortcuts to help you navigate and use the editor more efficiently."
+                                content={(
+                                    <div
                                         className="
-                                            share-dialog--tabs__list
-                                            flex
-                                            items-center
-                                            w-full
-                                            overflow-x-auto
-                                            [scrollbar-width:none]
-
-                                            [&_.share-dialog--tabs\_\_trigger]:flex
-                                            [&_.share-dialog--tabs\_\_trigger]:items-center
-                                            [&_.share-dialog--tabs\_\_trigger]:gap-2
-                                            [&_.share-dialog--tabs\_\_trigger]:p-2 
-                                            [&_.share-dialog--tabs\_\_trigger]:px-3
-                                            [&_.share-dialog--tabs\_\_trigger]:rounded-md
-                                            [&_.share-dialog--tabs\_\_trigger]:text-gray-900
-                                            dark:[&_.share-dialog--tabs\_\_trigger]:text-white
-                                            [&_.share-dialog--tabs\_\_trigger]:data-[state='active']:bg-gray-600
-                                            dark:[&_.share-dialog--tabs\_\_trigger]:data-[state='active']:bg-gray-300
-                                            [&_.share-dialog--tabs\_\_trigger]:data-[state='active']:text-white
-                                            dark:[&_.share-dialog--tabs\_\_trigger]:data-[state='active']:text-gray-900
-                                            
-                                            [&_.share-dialog--tabs\_\_trigger-icon]:text-xl
-
-                                            [&_.share-dialog--tabs\_\_trigger-text]:capitalize
-                                            [&_.share-dialog--tabs\_\_trigger-text]:font-medium
+                                            shortcuts-dialog__content
+                                            mt-4
+                                            p-4
+                                            pt-2
+                                            rounded-md
+                                            bg-gray-200 dark:bg-gray-700
+                                            overflow-y-auto
+                                            max-h-[30vh]
                                         "
                                     >
                                         {
-                                            shareOptions.map( function ( Option, index ) {
-                                                const Icon = Option.icon
-
-                                                return (
-                                                    <Tabs.Trigger 
-                                                        key={index}
-                                                        value={ Option.text }
+                                            editorShortcuts.map( ( shortcut, index ) => (
+                                                <div 
+                                                    className="
+                                                        shortcuts-dialog__shortcut
+                                                        border-b-2
+                                                        border-gray-600 dark:border-gray-400
+                                                        py-4 px-2
+                                                        flex
+                                                        gap-4
+                                                        items-center
+                                                        last:border-b-0
+                                                    "
+                                                    key={ index }
+                                                >
+                                                    <span 
                                                         className="
-                                                            share-dialog--tabs__trigger
+                                                            shortcuts-dialog__keys
+                                                            p-1.5 px-4
+                                                            rounded-md
+                                                            bg-gray-600 dark:bg-gray-400
+                                                            inline-block
+                                                            text-white
+                                                            font-mono
+                                                            font-medium
+                                                            text-sm
                                                         "
                                                     >
-                                                        <Icon className="share-dialog--tabs__trigger-icon"/>
+                                                        { shortcut.keys }
+                                                    </span>
 
-                                                        <span className="share-dialog--tabs__trigger-text">
-                                                            { Option.text }
-                                                        </span>
-                                                    </Tabs.Trigger>
+                                                    <span 
+                                                        className="
+                                                            shortcuts-dialog__description
+                                                            inline-block
+                                                            capitalize
+                                                            dark:text-white
+                                                        "
+                                                    >
+                                                        { shortcut.label }
+                                                    </span>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                )}
+                            />
+                            
+                            <DialogComponent
+                                open={ isShareDialogOpen }
+                                onOpenChange={ setIsShareDialogOpen }
+                                title="Share Blok"
+                                description="Share your blok with others using the link/code below."
+                                content={(
+                                    <Tabs.Root
+                                        className="
+                                            share-dialog--tabs
+                                            mt-4
+                                            flex
+                                            flex-col
+                                            gap-3
+                                            bg-gray-200 dark:bg-gray-700
+                                            rounded-md
+                                            p-3
+                                        "
+                                        defaultValue="link"
+                                    >
+                                        <Tabs.List
+                                            className="
+                                                share-dialog--tabs__list
+                                                flex
+                                                items-center
+                                                w-full
+                                                overflow-x-auto
+                                                [scrollbar-width:none]
+
+                                                [&_.share-dialog--tabs\_\_trigger]:flex
+                                                [&_.share-dialog--tabs\_\_trigger]:items-center
+                                                [&_.share-dialog--tabs\_\_trigger]:gap-2
+                                                [&_.share-dialog--tabs\_\_trigger]:p-2 
+                                                [&_.share-dialog--tabs\_\_trigger]:px-3
+                                                [&_.share-dialog--tabs\_\_trigger]:rounded-md
+                                                [&_.share-dialog--tabs\_\_trigger]:text-gray-900
+                                                dark:[&_.share-dialog--tabs\_\_trigger]:text-white
+                                                [&_.share-dialog--tabs\_\_trigger]:data-[state='active']:bg-gray-600
+                                                dark:[&_.share-dialog--tabs\_\_trigger]:data-[state='active']:bg-gray-300
+                                                [&_.share-dialog--tabs\_\_trigger]:data-[state='active']:text-white
+                                                dark:[&_.share-dialog--tabs\_\_trigger]:data-[state='active']:text-gray-900
+                                                
+                                                [&_.share-dialog--tabs\_\_trigger-icon]:text-xl
+
+                                                [&_.share-dialog--tabs\_\_trigger-text]:capitalize
+                                                [&_.share-dialog--tabs\_\_trigger-text]:font-medium
+                                            "
+                                        >
+                                            {
+                                                shareOptions.map( function ( Option, index ) {
+                                                    const Icon = Option.icon
+
+                                                    return (
+                                                        <Tabs.Trigger 
+                                                            key={index}
+                                                            value={ Option.text }
+                                                            className="
+                                                                share-dialog--tabs__trigger
+                                                            "
+                                                        >
+                                                            <Icon className="share-dialog--tabs__trigger-icon"/>
+
+                                                            <span className="share-dialog--tabs__trigger-text">
+                                                                { Option.text }
+                                                            </span>
+                                                        </Tabs.Trigger>
+                                                    )
+                                                })
+                                            }
+                                        </Tabs.List>
+
+                                        {
+                                            shareOptions.map( function( option, index ) {
+                                                return (
+                                                    <ShareTabContent
+                                                        key={ index }
+                                                        value={ option.text }
+                                                        blokId={ id }
+                                                    />
                                                 )
                                             })
                                         }
-                                    </Tabs.List>
-
-                                    {
-                                        shareOptions.map( function( option, index ) {
-                                            return (
-                                                <ShareTabContent
-                                                    key={ index }
-                                                    value={ option.text }
-                                                    blokId={ id }
-                                                />
-                                            )
-                                        })
-                                    }
-                                </Tabs.Root>
-                            )}
-                        />
-                    </>
-                </EditorContext.Provider>
+                                    </Tabs.Root>
+                                )}
+                            />
+                        </>
+                    </EditorContext.Provider>
+                </>
             )
     }
 }
