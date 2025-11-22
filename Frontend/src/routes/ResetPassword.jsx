@@ -15,12 +15,7 @@ import RouteContainer from '../components/RouteContainer'
 import { 
     Form
 } from 'radix-ui'
-import { 
-    FaEyeSlash, 
-    FaMoon, 
-    FaRegEye, 
-    FaRegEyeSlash, 
-    FaRegSun, 
+import {
     FaTriangleExclamation 
 } from 'react-icons/fa6'
 import Logo from '../components/Logo'

@@ -1,5 +1,4 @@
-import { 
-    FaArrowLeftLong,
+import {
     FaArrowRightLong,
     FaArrowRotateLeft,
     FaArrowUpRightFromSquare,

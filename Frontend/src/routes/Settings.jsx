@@ -1,4 +1,4 @@
-import { FaArrowLeftLong, FaMoon, FaPen, FaPencil, FaRegSun, FaTrash, FaTriangleExclamation, FaXmark } from "react-icons/fa6";
+import { FaMoon, FaPen, FaRegSun, FaTrash, FaTriangleExclamation, FaXmark } from "react-icons/fa6";
 import WideLayout from "../components/WideLayout";
 import { DropdownMenu, Form } from "radix-ui";
 import TextField from "../components/TextField";

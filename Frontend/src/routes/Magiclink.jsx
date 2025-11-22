@@ -13,8 +13,7 @@ import { Helmet } from 'react-helmet-async'
 import { FaArrowLeft, FaMoon, FaRegSun } from 'react-icons/fa6';
 import RouteThemeToggle from '../components/RouteThemeToggle.jsx';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useToastProvider } from '../providers/ToastProvider.jsx';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthProvider } from '../providers/AuthProvider.jsx';
 
 

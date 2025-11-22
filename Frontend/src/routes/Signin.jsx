@@ -24,7 +24,7 @@ import MagiclinkBtn from '../components/MagiclinkBtn'
 import { useState } from 'react'
 import { useAuthProvider } from '../providers/AuthProvider'
 import { useToastProvider } from '../providers/ToastProvider'
-import { useDialogProvider, DialogComponent } from '../providers/DialogProvider'
+import { DialogComponent } from '../providers/DialogProvider'
 import { BACKEND_ERROR_CODES } from '../utils/error_util'
 
 

@@ -1,24 +1,16 @@
 // import route dependencies
 import { 
-    FaArrowRightFromBracket, 
     FaArrowRotateLeft, 
     FaArrowsRotate, 
-    FaBars, 
     FaClipboardList, 
-    FaEllipsisVertical, 
-    FaMagnifyingGlass, 
     FaMoon, 
-    FaPencil, 
     FaPlus, 
     FaRegSun, 
-    FaSpinner, 
-    FaTrash, 
-    FaTriangleExclamation, 
-    FaUser, 
-    FaXmark 
+    FaSpinner,
+    FaTriangleExclamation,
 } from 'react-icons/fa6'
 import Logo from '../components/Logo'
-import { Dialog, DropdownMenu, Form } from 'radix-ui'
+import { Dialog, Form } from 'radix-ui'
 import Button from '../components/Button'
 import { useThemeProvider } from '../providers/ThemeProvider'
 import NavMenuBlok from '../components/NavMenuBlok'
