@@ -24,55 +24,55 @@ export const router = createBrowserRouter([
         element: <App/>,
         children: [
             {
-                path: "/dashboard",
+                path: "dashboard",
                 element: <ProtectedRoute> <Dashboard /> </ProtectedRoute>
             },
             {
-                path: "/editor/:id",
+                path: "editor/:id",
                 element: <ProtectedRoute> <Editor /> </ProtectedRoute>
             },
             {
-                path: "/preview",
+                path: "preview",
                 element: <ProtectedRoute> <Preview /> </ProtectedRoute>
             },
             {
-                path: "/share",
+                path: "share",
                 element: <ProtectedRoute> <Share /> </ProtectedRoute>
             },
             {
-                path: "/auth/verify/:token",
+                path: "auth/verify/:token",
                 element: <Verify />
             },
             {
-                path: "/auth/reset-password/:token",
+                path: "auth/reset-password/:token",
                 element: <ResetPassword />
             },
             {
-                path: "/auth/signin",
+                path: "auth/signin",
                 element: <Signin />
             },
             {
-                path: "/auth/signup",
+                path: "auth/signup",
                 element: <Signup />
             },
             {
-                path: "/auth/google/:token",
+                path: "auth/google/:token",
                 element: <Google />
             },
             {
-                path: "/auth/magiclink/:token",
+                path: "auth/magiclink/:token",
                 element: <Magiclink />
             },
             {
-                path: "/create",
+                path: "create",
                 element: <ProtectedRoute> <Create /> </ProtectedRoute>
             },
             {
-                path: "/",
+                index: true,
                 element: <Home />
             },
             {
-                path: "/settings",
+                path: "settings",
                 element: <ProtectedRoute> <Settings /> </ProtectedRoute>
             },
             {

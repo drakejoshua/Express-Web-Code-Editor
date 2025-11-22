@@ -672,7 +672,7 @@ export default function Editor() {
 
     function handleSharing() {
         const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
-        const shareLink = `${ backendURL }/blok/${ id }`
+        const shareLink = `${ backendURL }/share/#/${ id }`
 
         if ( navigator.share && mobileBreakpoint ) {
             navigator.share({
@@ -1718,7 +1718,7 @@ function PreviewFrame( { srcDoc, className } ) {
 
 function ShareTabContent({ value, blokId }) {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
-    const shareLink = `${ backendURL }/blok/${ blokId }`
+    const shareLink = `${ backendURL }/share/#/${ blokId }`
     const embedCode = `<iframe 
                                 width="600" 
                                 height="400"
