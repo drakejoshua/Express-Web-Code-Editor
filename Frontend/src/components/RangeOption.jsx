@@ -1,3 +1,9 @@
+// RangeOption.jsx
+// This component renders a labeled range slider using Radix UI's Slider.
+// It allows users to select a value within a specified range and displays
+// the current value alongside an optional unit of measurement.
+
+
 // import component dependencies
 import { Slider } from 'radix-ui'
 import React, { useState } from 'react'

@@ -1,13 +1,25 @@
+// ErrorElement.jsx
+// This component displays a user-friendly error page when an error occurs during routing.
+// It provides a message to the user and a button to navigate back to the home page.
+// The actual error message is displayed for debugging purposes.
+
+
+
+// import component dependencies
 import RouteContainer from './RouteContainer'
 import Logo from './Logo'
 import Button from './Button'
 import { useRouteError } from 'react-router-dom'
 import RouteThemeToggle from './RouteThemeToggle'
 
+
+// define ErrorElement component
 function ErrorElement() {
+    // get the error object from react-router
     const error = useRouteError()
 
     return (
+        // main container
         <div 
             className='
                 h-screen 
@@ -17,10 +29,13 @@ function ErrorElement() {
                 overflow-auto
             '
         >
+            {/* centered content container */}
             <RouteContainer>
+                {/* logo */}
                 <Logo />
 
                 <div>
+                    {/* display message */}
                     <h1
                         className='
                             text-9xl
@@ -33,6 +48,7 @@ function ErrorElement() {
                         Ouch!
                     </h1>
 
+                    {/* error description */}
                     <p
                         className='
                             mt-12
@@ -47,6 +63,7 @@ function ErrorElement() {
                         Please try navigating back to the home page and attempt your action again.
                     </p>
 
+                    {/* go to home button */}
                     <Button
                         className="
                             mx-auto
@@ -56,6 +73,7 @@ function ErrorElement() {
                         Go To Home
                     </Button>
 
+                    {/* actual error message */}
                     <div
                         className='
                             mt-12
