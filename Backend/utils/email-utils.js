@@ -1,37 +1,38 @@
 // import util dependencies
-import { Resend } from "resend"
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 import { ERROR_CODES } from "./error-utils.js"
 
 
-// initialize the resend client with api-key from .env
-const resend = new Resend( process.env.RESEND_API_KEY )
+// initialize the mailersend client with api-key from .env
+const mailersend = new MailerSend({
+    apiKey: process.env.MAILERSEND_API_KEY,
+});
 
 
 // function to send an email using resend SDK
 export async function sendEmail( to, subject, html ) {
     try {
-        // send the email using resend SDK
+        // send the email using mailersend SDK
         // with from, to, subject and html content as derived
         // from parameters
-        const { data, error } = await resend.emails.send({
-            from: "CodeBloks <info@resend.dev>",
-            to: to,
-            subject: subject,
-            html: html
-        })
+        const recipients = [
+            new Recipient(to)
+        ];
 
-        // if any error is returned from resend SDK,
-        // throw the error to be caught in catch block
-        if ( error ) {
-            throw error
-        }
+        const emailParams = new EmailParams()
+            .setFrom(new Sender("info@test-vz9dlem50yn4kj50.mlsender.net", "CodeBloks"))
+            .setTo(recipients)
+            .setSubject( subject )
+            .setHtml( html );
+
+        await mailersend.email.send(emailParams);
 
         // if email is sent successfully, return true
         return true
     } catch( err ) {
         // if any error occurs during sending email,
         // create a custom error with the error message and throw it
-        const emailSendError = new Error(`Failed to send email, Please try again later. Error: ${err.message}`)
+        const emailSendError = new Error(`Failed to send email, Please try again later. Error: ${err.body.message || err.message}`)
         emailSendError.statusCode = 500
         emailSendError.errorCode = ERROR_CODES.EMAIL_SEND_FAILURE
         throw emailSendError

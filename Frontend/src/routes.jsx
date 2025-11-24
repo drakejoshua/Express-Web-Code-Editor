@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom"
 import Dashboard from "./routes/Dashboard";
 import Editor from "./routes/Editor";
 import Preview from "./routes/Preview";
-import Share from "./routes/Share";
 import Verify from "./routes/Verify";
 import Settings from "./routes/Settings";
 import ResetPassword from "./routes/ResetPassword";
@@ -34,10 +33,6 @@ export const router = createBrowserRouter([
             {
                 path: "preview",
                 element: <ProtectedRoute> <Preview /> </ProtectedRoute>
-            },
-            {
-                path: "share",
-                element: <ProtectedRoute> <Share /> </ProtectedRoute>
             },
             {
                 path: "auth/verify/:token",
