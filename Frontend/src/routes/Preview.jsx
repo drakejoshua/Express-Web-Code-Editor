@@ -1,19 +1,34 @@
+// Preview.jsx
+// This component defines the Preview route for the web code editor application.
+// It displays a live preview of the user's code blok output using an iframe.
+
+
+// import route dependencies
 import { useEffect, useRef, useState } from "react"
 import { generateIframeContent } from "../utils/editor_utils"
 import { FaSpinner, FaTriangleExclamation } from "react-icons/fa6"
 import RouteContainer from "../components/RouteContainer"
+import { Helmet } from "react-helmet-async"
 
+
+// define Preview component to display live code blok preview
 export default function Preview() {
+    // state to manage loading state and timeout
     const [ loadingState, setLoadingState ] = useState("loading")
     const loadingTimeout = useRef( null )
 
+    // state to store code blok content received from BroadcastChannel
     const [ channelData, setChannelData ] = useState({
         html: "",
         css: "",
         js: ""
     })
 
+
+    // useEffect to set up BroadcastChannel for receiving code blok content
+    // on component mount
     useEffect(() => {
+        // create BroadcastChannel for tab preview communication
         const tabPreviewChannel = new BroadcastChannel("tab_preview_channel")
 
         // Listen for messages once
@@ -54,7 +69,9 @@ export default function Preview() {
         }
     }, [])
 
+    // render Preview component based on loading state
     switch ( loadingState ) {
+        // loaded state - display iframe with code blok content
         case "loaded":
             return (
                 <>
@@ -78,6 +95,7 @@ export default function Preview() {
                 </>
             )
 
+        // load-error state - display error message
         case "load-error":
             return (
                 <>
@@ -110,6 +128,7 @@ export default function Preview() {
                 </>
             )
         
+        // loading state - display loading message
         case "loading":
             return (
                 <>

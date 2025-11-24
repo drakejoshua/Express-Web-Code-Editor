@@ -1,3 +1,11 @@
+// Settings.jsx
+// This component defines the Settings route for the web code editor application.
+// It allows users to manage their account settings, including updating profile
+// information and generating API keys.
+
+
+
+// import route dependencies
 import { FaMoon, FaPen, FaRegSun, FaTrash, FaTriangleExclamation, FaXmark } from "react-icons/fa6";
 import WideLayout from "../components/WideLayout";
 import { DropdownMenu, Form } from "radix-ui";
@@ -17,12 +25,18 @@ import Button from "../components/Button";
 import { useState } from "react";
 
 
+// define Settings component to manage user settings
 export default function Settings() {
+    // 
     const parentRef = useRef(null)
+
+    // get theme and toggleTheme from ThemeProvider
     const { theme, toggleTheme } = useThemeProvider()
 
+    // get user and updateUser from AuthProvider
     const { user, updateUser, generateAPIKey } = useAuthProvider()
 
+    // get showToast from ToastProvider and showDialog, hideDialog from DialogProvider
     const { showToast } = useToastProvider()
     const { showDialog, hideDialog } = useDialogProvider()
 
@@ -32,16 +46,21 @@ export default function Settings() {
     const [ isUpdatePhotoDialogOpen, setIsUpdatePhotoDialogOpen ] = useState( false )
     const [ isProfilePhotoUpdating, setIsProfilePhotoUpdating ] = useState( false )
 
+    // state for new user details when updating profile information
     const [ newUserDetails, setNewUserDetails ] = useState({
         username: "",
         email: "",
         password: ""
     })
+    // state to track if user details are being updated
     const [ isUserDetailsUpdating, setIsUserDetailsUpdating ] = useState( false )
 
+    // state to track if API key is being generated
     const [ isGeneratingAPIKey, setIsGeneratingAPIKey ] = useState( false )
 
+    // confirmProfilePhotoDeletion() - show confirmation dialog before deleting profile photo
     function confirmProfilePhotoDeletion() {
+        // show confirmation dialog to delete profile photo
         const dialogId = showDialog({
             title: "Delete Profile Photo?",
             description: "Are you sure you want to delete your profile photo?",
@@ -58,43 +77,56 @@ export default function Settings() {
             )
         })
 
-        
+        // handleProfilePhotoDeletion() - delete user profile photo after confirmation
         async function handleProfilePhotoDeletion() {
+            // call updateUser with empty photo to delete profile photo
             const { status, error } = await updateUser( {}, true )
 
             if ( status === "success" ) {
+                // show success toast for profile photo deletion
                 showToast({
                     type: "success",
                     message: "User profile photo deleted"
                 })
             } else {
+                // show error toast if profile photo deletion fails
                 showToast({
                     type: "error",
                     message: `Error deleting user profile photo: ${ error.message }`
                 })
             }
 
+            // hide the confirmation dialog after deletion attempt
             hideDialog( dialogId )
         }
     }
 
+    // handleUpdateProfilePhoto() - handle profile photo update form submission
     async function handleUpdateProfilePhoto( e ) {
+        // handle profile photo update form submission
         e.preventDefault()
+
+        // set profile photo updating state to true
         setIsProfilePhotoUpdating( true )
 
+        // update user profile photo if a file is selected
         if ( selectedFile ) {
+            // create userDetails object with selected photo file
             const userDetails = {
                 photo: selectedFile
             }
 
+            // call updateUser to update profile photo
             const { status, error } =  await updateUser( userDetails, false )
 
             if ( status === "success" ) {
+                // show success toast for profile photo update if successful
                 showToast({
                     type: "success",
                     message: "Profile photo updated successfully"
                 })
             } else {
+                // show error toast if profile photo update fails
                 showToast({
                     type: "error",
                     message: `Error updating profile photo: ${ error.message }`
@@ -102,33 +134,43 @@ export default function Settings() {
             }
     
         } else {
+            // show error toast if no file is selected to update profile photo
             showToast({
                 type: "error",
                 message: "Error: No photo selected to update profile photo"
             })
         }
         
+        // reset profile photo updating state and close dialog
         closeUpdatePhotoDialog()
     }
     
+    // handleUpdateUserDetails() - handle user details update form submission
     async function handleUpdateUserDetails( e ) {
+        // prevent default form submission behavior
         e.preventDefault()
+
+        // set user details updating state to true
         setIsUserDetailsUpdating( true )
 
+        // call updateUser with new user details
         const { status, error } = await updateUser( newUserDetails, false )
 
         if ( status === "success" ) {
+            // show success toast for user details update if successful
             showToast({
                 type: "success",
                 message: "User profile details updated successfully"
             })
         } else {
+            // show error toast if user details update fails
             showToast({
                 type: "error",
                 message: `Error updating user details: ${ error.message }`
             })
         }
         
+        // reset user details updating state and clear new user details form
         setIsUserDetailsUpdating( false )
         setNewUserDetails({
             username: "",
@@ -137,37 +179,50 @@ export default function Settings() {
         })
     }
 
+    // closeUpdatePhotoDialog() - close update profile photo dialog and reset states
     function closeUpdatePhotoDialog() {
+        // close update profile photo dialog and reset related states
         setIsUpdatePhotoDialogOpen( false )
         setSelectedFile( null )
         setIsProfilePhotoUpdating( false )
     }
 
+    // handleGenerateAPIKey() - handle API key generation form submission
     async function handleGenerateAPIKey( e ) {
+        // prevent default form submission behavior
         e.preventDefault()
+
+        // set generating API key state to true
         setIsGeneratingAPIKey( true )
 
+        // call generateAPIKey to generate a new API key
         const { status, error } = await generateAPIKey()
 
         if ( status === "success" ) {
+            // show success toast for API key generation if successful
             showToast({
                 type: "success",
                 message: "New API key generated successfully"
             })
         } else {
+            // show error toast if API key generation fails
             showToast({
                 type: "error",
                 message: `Error generating API key: ${ error.message }`
             })
         }
 
+        // reset generating API key state
         setIsGeneratingAPIKey( false )
     }
 
+    // get navigate function from react-router-dom
+    // to navigate programmatically
     const navigateTo = useNavigate() 
     
     return (
         <>
+            {/* Helmet for setting the page title and meta description */}
             <Helmet>
                 <title>Settings - CodeBloks</title>
                 <meta name="description" content="Manage your user settings and preferences" />
@@ -185,6 +240,7 @@ export default function Settings() {
                         pb-12
                     "
                 >
+                    {/* Settings header section */}
                     <div 
                         className="
                             settings--header
@@ -195,15 +251,18 @@ export default function Settings() {
                             capitalize
                         "
                     >
+                        {/* Close settings button */}
                         <FaXmark 
                             className="settings--header__icon" 
                             onClick={ () => navigateTo(-1) }
                         />
 
+                        {/* Settings title */}
                         <h1 className="settings--header__text">
                             settings
                         </h1>
 
+                        {/* Theme toggle button */}
                         <button 
                             className="
                                 settings--header__theme-toggle
@@ -217,6 +276,7 @@ export default function Settings() {
                         </button>
                     </div>
 
+                    {/* Settings options container */}
                     <div 
                         className="
                             h-full
@@ -228,6 +288,7 @@ export default function Settings() {
                             flex-grow
                         "
                     >
+                        {/* Settings options navigation bar */}
                         <div 
                             className="
                                 settings--options-ctn__navbar
@@ -249,6 +310,7 @@ export default function Settings() {
                                 [&>.active-scroll-spy]:text-white
                             "
                         >
+                            {/* Settings options navigation buttons */}
                             <button 
                                 className="settings--options-ctn__nav-item"
                                 data-to-scrollspy-id="account"
@@ -264,6 +326,7 @@ export default function Settings() {
                             </button>
                         </div>
 
+                        {/* Settings options content area */}
                         <div 
                             className="
                                 settings--options-ctn__content
@@ -291,9 +354,11 @@ export default function Settings() {
                             "
                             ref={parentRef}
                         >
+                            {/* Settings options scroll spy */}
                             <ScrollSpy
                                 parentScrollContainerRef={parentRef}
                             >
+                                {/* Settings options account section */}
                                 <div 
                                     className="
                                         settings--options-ctn__settings
@@ -309,6 +374,7 @@ export default function Settings() {
                                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, provident?
                                     </p>
 
+                                    {/* User avatar dropdown menu for profile photo */}
                                     <DropdownMenu.Root>
                                         <DropdownMenu.Trigger asChild>
                                             <UserAvatar
@@ -359,12 +425,14 @@ export default function Settings() {
                                         </DropdownMenu.Portal>
                                     </DropdownMenu.Root>
 
+                                    {/* User details update form */}
                                     <Form.Root
                                         className="
                                             settings--options-ctn__settings-form
                                         "
                                         onSubmit={ handleUpdateUserDetails }
                                     >
+                                        {/* User details update form fields */}
                                         <TextField
                                             label="Username:"
                                             value={ newUserDetails.username || user.username }
@@ -409,6 +477,7 @@ export default function Settings() {
                                     </Form.Root>
                                 </div>
 
+                                {/* Settings options API key section */}
                                 <div 
                                     className="
                                         settings--options-ctn__settings
@@ -425,12 +494,14 @@ export default function Settings() {
                                         Retrieve or generate your api key 
                                     </p>
 
+                                    {/* API key generation form */}
                                     <Form.Root
                                         className="
                                             settings--options-ctn__settings-form
                                         "
                                         onSubmit={ handleGenerateAPIKey }
                                     >
+                                        {/* API key input field */}
                                         <PasswordField
                                             label="API Key"
                                             value={ user.api_key }
@@ -467,7 +538,8 @@ export default function Settings() {
                     </div>
                 </div>
             </WideLayout>
-
+            
+            {/* Update profile photo dialog */}
             <DialogComponent
                 open={ isUpdatePhotoDialogOpen }
                 onOpenChange={ closeUpdatePhotoDialog }

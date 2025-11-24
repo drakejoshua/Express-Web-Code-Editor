@@ -1,3 +1,8 @@
+// Home.jsx
+// This component defines the Home route for the web code editor application.
+// It includes sections such as the navbar, hero, features, call-to-action, and footer.
+
+
 // import route dependencies
 import Logo from '../components/Logo'
 import Button from '../components/Button'
