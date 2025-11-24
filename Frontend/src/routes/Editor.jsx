@@ -1,3 +1,4 @@
+// import route dependencies
 import {
     FaArrowRightLong,
     FaArrowRotateLeft,
@@ -53,31 +54,48 @@ import TextField from "../components/TextField";
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Helmet } from "react-helmet-async";
 
+
+// create editor context to share editor settings and controls across 
+// editor sub-components
 const EditorContext = createContext()
 
 export default function Editor() {
-    // editor state and data
+    // get the theme and toggleTheme function from ThemeProvider
     const { theme, toggleTheme } = useThemeProvider() 
+
+    // state to manage mobile breakpoint
     const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
 
+    // state to manage loading state and errors
     const [ loadingState, setLoadingState ] = useState("loading")
     const [ loadingError, setLoadingError ] = useState("")
+
+    // get blok id from route params
     const { id } = useParams()
+
+    // get blok functions from BlokProvider
     const {
         getBlok,
         updateBlok
     } = useBlokProvider()
+
+    // get showToast function from ToastProvider
     const { showToast } = useToastProvider()
 
+    // state to manage rename dialog visibility and new blok name
     const [ isRenameDialogOpen, setIsRenameDialogOpen ] = useState( false )
     const [ newBlokName, setNewBlokName ] = useState( "" )
 
+    // state to manage shortcuts dialog visibility
     const [ isShortcutsDialogOpen, setIsShortcutsDialogOpen ] = useState( false )
 
+    // state to manage share dialog visibility
     const [ isShareDialogOpen, setIsShareDialogOpen ] = useState( false )
 
+    // state to manage blok name for display in editor header
     const [ blokName, setBlokName ] = useState("loading")
 
+    // share options for share dialog
     const shareOptions = [
         {
             text: "link",
@@ -109,22 +127,27 @@ export default function Editor() {
         },
     ]
 
+    // get navigate function from react-router to navigate programmatically
     const navigateTo = useNavigate()
 
+    // state to manage editor content from the three editors
     const [ editorContent, setEditorContent ] = useState( {
         html: "",
         css: "",
         js: ""
     } )
 
+    // state to manage preview content for displaying in iframe
     const [ previewContent, setPreviewContent ] = useState({
         html: "",
         css: "",
         js: ""
     })
 
+    // ref to manage autoRun timeout
     let autoRunTimeout = useRef( null )
 
+    // state to manage editor settings
     const [ editorSettings, setEditorSettings ] = useState( { 
         focusMode: false,
         layout: "editor_top",
@@ -138,14 +161,19 @@ export default function Editor() {
         isTabPreviewVisible: false,
     } )
 
+    // ref to manage tab preview broadcast channel
     let tabPreviewChannelRef = useRef( null )
 
+    // ref to manage preview channel timeout
     let previewChannelTimeout = useRef( null )
     
+    // ref to manage editor save timeout when saving to backend
     let editorSaveTimeoutRef = useRef( null )
 
+    // ref to manage render count for skipping initial effects
     const renderCount = useRef( 0 )
 
+    // predefined editor shortcuts for display in shortcuts dialog
     const editorShortcuts = [
         {
             keys: "Alt+Shift+H",
@@ -290,20 +318,30 @@ export default function Editor() {
 
 
     // editor controllers
+
+    // fetchBlokToBeEdited() - fetches blok data from backend to be edited
+    // on editor load and when blok id changes
     async function fetchBlokToBeEdited() {
+        // set loading state to loading and clear previous errors
         setLoadingState("loading")
         setLoadingError("")
 
+        // validate blok id, if not found set error state
         if ( !id ) {
             setLoadingState("error")
             setLoadingError("Invalid blok id found in request. Please go to dashboard and try again")
         }
 
+        // fetch blok data from backend
         const { status, error, data } = await getBlok( id )
 
         if ( status === "success" ) {
+            // since blok fetch is successful, set editor content and settings 
+            // from fetched blok data
             setLoadingState("loaded")
+
             setBlokName( data.blok.name )
+
             setEditorContent({
                 html: data.blok.html,
                 css: data.blok.css,
@@ -315,18 +353,24 @@ export default function Editor() {
                 ...data.blok.settings
             })
         } else {
+            // if blok fetch fails, set error state with error message
             setLoadingState("error")
             setLoadingError( error.message )
         }
     }
 
+    // handleBreakpointResize() - updates mobile breakpoint state based on window width
     function handleBreakpointResize() {
         setMobileBreakpoint( window.innerWidth <= 1024 )
     }
 
+    // initializeEditorThemes() - initializes custom editor themes in monaco editor
     function initializeEditorThemes( monaco ) {
+        // omit default themes from initialization
         const themeValueToOmit = [ "vs", "vs-dark", "hc-black", "hc-light" ]
 
+        // define each custom theme in monaco editor by iterating over editorThemes
+        // and omitting default themes
         editorThemes.forEach( function( theme ) {
             if ( themeValueToOmit.includes( theme.value ) ) {
                 return
@@ -336,14 +380,19 @@ export default function Editor() {
         })
     }
 
+    // handleFullscreenChange() - updates focusMode setting based on fullscreen state
     function handleFullscreenChange() {
+        // check if document is in fullscreen mode
         if ( document.fullscreenElement ) {
+            // if in fullscreen, set focusMode to true
             setEditorSettings( ( prev ) => ({ ...prev, focusMode: true }) )
         } else {
+            // if not in fullscreen, set focusMode to false
             setEditorSettings( ( prev ) => ({ ...prev, focusMode: false }) )
         }
     }
 
+    // useEffect to add event listeners on component mount and clean up on unmount
     useEffect( function() {
         window.addEventListener( "resize", handleBreakpointResize )
 
@@ -360,21 +409,30 @@ export default function Editor() {
         }
     }, [])
 
+    // useEffect to fetch blok to be edited on component mount and when blok id changes
     useEffect( function() {
         fetchBlokToBeEdited()
     }, [id])
     
+    // toggleFocusMode() - toggles focus mode by entering/exiting fullscreen
     function toggleFocusMode() {
+        // check current focusMode setting and enter/exit fullscreen accordingly
         if ( !editorSettings.focusMode ) {
+            // enter fullscreen
             document.body.requestFullscreen()
         } else {
+            // exit fullscreen
             document.exitFullscreen()
         }
     }
 
+    // toggleHTMLEditor() - toggles visibility of HTML editor
     function toggleHTMLEditor() {
+        // check if there's at least one editor visible
         if ( editorSettings.editors.length > 0 ) {
+            // toggle HTML editor visibility by adding/removing it from editors array
             if ( editorSettings.editors.includes("html") ) {
+                // if HTML editor is visible, remove it from editors array
                 setEditorSettings( ( prevEditorSettings ) => ({ 
                     ...prevEditorSettings,
                     editors: prevEditorSettings.editors.filter( function( editor ) {
@@ -382,6 +440,7 @@ export default function Editor() {
                     })
                 }))
             } else {
+                // if HTML editor is not visible, add it to editors array
                 setEditorSettings( ( prevEditorSettings ) => ({
                     ...prevEditorSettings,
                     editors: [ ...prevEditorSettings.editors, "html" ]
@@ -390,9 +449,13 @@ export default function Editor() {
         }
     }
     
+    // toggleCSSEditor() - toggles visibility of CSS editor
     function toggleCSSEditor() {
+        // check if there's at least one editor visible
         if ( editorSettings.editors.length > 0 ) {
+            // toggle CSS editor visibility by adding/removing it from editors array
             if ( editorSettings.editors.includes("css") ) {
+                // if CSS editor is visible, remove it from editors array
                 setEditorSettings( ( prevEditorSettings ) => ({ 
                     ...prevEditorSettings,
                     editors: prevEditorSettings.editors.filter( function( editor ) {
@@ -400,6 +463,7 @@ export default function Editor() {
                     })
                 }))
             } else {
+                // if CSS editor is not visible, add it to editors array
                 setEditorSettings( ( prevEditorSettings ) => ({
                     ...prevEditorSettings,
                     editors: [ ...prevEditorSettings.editors, "css" ]
@@ -408,9 +472,13 @@ export default function Editor() {
         }
     }
     
+    // toggleJSEditor() - toggles visibility of JS editor
     function toggleJSEditor() {
+        // check if there's at least one editor visible
         if ( editorSettings.editors.length > 0 ) {
+            // toggle JS editor visibility by adding/removing it from editors array
             if ( editorSettings.editors.includes("js") ) {
+                // if JS editor is visible, remove it from editors array
                 setEditorSettings( ( prevEditorSettings ) => ({ 
                     ...prevEditorSettings,
                     editors: prevEditorSettings.editors.filter( function( editor ) {
@@ -418,6 +486,7 @@ export default function Editor() {
                     })
                 }))
             } else {
+                // if JS editor is not visible, add it to editors array
                 setEditorSettings( ( prevEditorSettings ) => ({
                     ...prevEditorSettings,
                     editors: [ ...prevEditorSettings.editors, "js" ]
@@ -426,7 +495,9 @@ export default function Editor() {
         }
     }
 
+    // changeActiveEditors() - changes the active editors based on provided array
     function changeActiveEditors( editors ) {
+        // update editors in editor settings if not in mobile breakpoint( i.e. only on desktop )
         if ( editors.length > 0 && !mobileBreakpoint ) {
             setEditorSettings( ( prevEditorSettings ) => ({
                 ...prevEditorSettings,
@@ -435,9 +506,12 @@ export default function Editor() {
         }
     }
 
+    // changeEditorLayout() - changes the editor layout based on provided layout value
     function changeEditorLayout( layout ) {
+        // define allowable editor layout values
         const allowableEditorLayouts = [ "editor_top", "editor_left", "editor_right" ]
 
+        // update layout in editor settings if layout is valid and not in mobile breakpoint (i.e. only on desktop )
         if ( allowableEditorLayouts.includes( layout ) && !mobileBreakpoint ) {
             setEditorSettings( function( prev ) {
                 return { ...prev, layout }
@@ -445,6 +519,7 @@ export default function Editor() {
         }
     }
 
+    // changeEditorFontSize() - changes the editor font size based on provided font size value
     function changeEditorFontSize( fontSize ) {
         setEditorSettings( ( prevEditorSettings ) => ({
             ...prevEditorSettings,
@@ -452,9 +527,12 @@ export default function Editor() {
         }))
     }
 
+    // changeTabSize() - changes the editor tab size based on provided tab size value
     function changeTabSize( tabSize ) {
+        // define allowable tab size values
         const allowableTabSizes = [ "2", "4", "6" ]
 
+        // update tab size in editor settings if tab size is valid
         if ( allowableTabSizes.includes( tabSize ) ) {
             setEditorSettings( ( prevEditorSettings ) => ({
                 ...prevEditorSettings,
@@ -463,6 +541,7 @@ export default function Editor() {
         }
     }
 
+    // toggleLineNumbers() - toggles line numbers visibility in editors
     function toggleLineNumbers() {
         setEditorSettings( ( prevEditorSettings ) => ({
             ...prevEditorSettings,
@@ -470,6 +549,7 @@ export default function Editor() {
         }))
     }
 
+    // toggleAutocomplete() - toggles autocomplete functionality in editors
     function toggleAutocomplete() {
         setEditorSettings( ( prevEditorSettings ) => ({
             ...prevEditorSettings,
@@ -477,6 +557,7 @@ export default function Editor() {
         }))
     }
 
+    // changeTheme() - changes the editor theme based on provided theme value
     function changeTheme( value ) {
         setEditorSettings( ( prevEditorSettings ) => ({
             ...prevEditorSettings,
@@ -484,10 +565,12 @@ export default function Editor() {
         }))
     }
 
+    // runEditorCode() - sets the preview content to current editor content
     function runEditorCode() {
         setPreviewContent({ ...editorContent })
     }
 
+    // toggleEditorAutoRunCode() - toggles autorun setting in editor settings
     function toggleEditorAutoRunCode() { 
         setEditorSettings( ( prevEditorSettings ) => ({
             ...prevEditorSettings,
@@ -495,12 +578,18 @@ export default function Editor() {
         }))
     }
 
+    // toggleTabPreviewVisibility() - toggles tab preview visibility, opens/closes preview tab window
+    // and manages broadcast channel for multi-tab communication
     function toggleTabPreviewVisibility() {
+        // get frontend url from environment variables or use default localhost url
         const frontendURL = import.meta.env.VITE_FRONTEND_URL || "http://localhost:5173"
 
+        // check if tab preview is currently not visible
         if ( editorSettings.isTabPreviewVisible == false ) {
+            // open new tab for preview and setup broadcast channel for communication
             tabPreviewChannelRef.current = new BroadcastChannel("tab_preview_channel")
 
+            // setup onmessage handler to respond to content requests from preview tab
             tabPreviewChannelRef.current.onmessage = function( event ) {
                 if ( event.data.type == "Request_Editor_Content" ) {
                     tabPreviewChannelRef.current.postMessage({
@@ -510,13 +599,16 @@ export default function Editor() {
                 }
             }
 
+            // open preview tab window
             window.open(`${ frontendURL }/preview`, "_blank")
         } else {
+            // close the broadcast channel if tab preview is being hidden
             if ( tabPreviewChannelRef.current ) {
                 tabPreviewChannelRef.current.close()
             }
         }
 
+        // toggle isTabPreviewVisible setting in editor settings
         setEditorSettings( function( prevEditorSettings ) {
             return {
                 ...prevEditorSettings,
@@ -525,22 +617,29 @@ export default function Editor() {
         })
     }
 
+    // useEffect to handle autoRun, tab preview updates, and saving editor to backend
     useEffect( function() {
+        // handle autorun functionality
         if ( editorSettings.autoRun ) {
+            // clear previous autorun timeout if exists
             if ( autoRunTimeout.current ) {
                 clearTimeout( autoRunTimeout.current )
             }
 
+            // set new autorun timeout to run editor code after 300ms of inactivity/typing
             autoRunTimeout.current = setTimeout( function() {
                 runEditorCode()
             }, 300 )
         }
 
+        // handle tab preview content updates
         if ( editorSettings.isTabPreviewVisible ) {
+            // clear previous preview channel timeout if exists
             if ( previewChannelTimeout.current ) {
                 clearTimeout( previewChannelTimeout.current )
             }
 
+            // set new timeout to send updated editor content to preview tab after 300ms of inactivity/typing
             previewChannelTimeout.current = setTimeout( function() {
                 if ( tabPreviewChannelRef.current ) {
                     tabPreviewChannelRef.current.postMessage({
@@ -551,16 +650,21 @@ export default function Editor() {
             }, 300 )
         }
 
+        // handle saving editor content to backend, skip initial renders
         if ( renderCount.current > 2 ) {
+            // clear previous editor save timeout if exists
             if ( editorSaveTimeoutRef.current ) {
                 clearTimeout( editorSaveTimeoutRef.current )
             }
     
+            // set new timeout to save editor content to backend after 1 second of inactivity/typing
             editorSaveTimeoutRef.current = setTimeout( saveEditorToBackend, 1000 )
         } else {
+            // increment render count to skip initial renders
             renderCount.current += 1
         }
 
+        // cleanup function to clear all timeouts on unmount or before next effect run
         return function() {
             clearTimeout(autoRunTimeout.current);
             clearTimeout(previewChannelTimeout.current);
@@ -568,24 +672,34 @@ export default function Editor() {
         }
     }, [ editorContent ])
 
+    // useEffect to handle saving editor settings to backend
     useEffect( function() {
+        // handle saving editor settings to backend, skip initial renders
         if ( renderCount.current > 2 ) {
+            // clear previous editor save timeout if exists
             if ( editorSaveTimeoutRef.current ) {
                 clearTimeout( editorSaveTimeoutRef.current )
             }
     
+            // set new timeout to save editor settings to backend after 1 second of inactivity/typing
             editorSaveTimeoutRef.current = setTimeout( saveEditorToBackend, 1000 )
         } else {
+            // increment render count to skip initial renders
             renderCount.current += 1
         }
 
+        // cleanup function to clear editor settings save timeout on unmount or before next effect run
         return function() {
             clearTimeout(editorSaveTimeoutRef.current);
         }
     }, [ editorSettings ])
 
+    // exportAsZip() - exports current editor content as a ZIP file using JSZip
     async function exportAsZip() {
+        // create new JSZip instance
         const zip = JSZip()
+
+        // define HTML template for export with embedded editor content
         const htmlTemplateToExport = `
             <!DOCTYPE html>
             <html lang="en">
@@ -606,46 +720,59 @@ export default function Editor() {
             </html>
         `
 
+        // add content to files and files to zip
         zip.file( "index.html", htmlTemplateToExport )
         zip.file( "styles.css", editorContent.css )
         zip.file( "script.js", editorContent.js )
 
+        // generate zip blob and trigger download using file-saver
         const blob = await zip.generateAsync({ type: "blob" })
         saveAs( blob, "codeblok.zip" )
     }
 
+    // handleBlokRename() - handles renaming the current blok
     async function handleBlokRename( e ) {
+        // prevent default form submission behavior
         e.preventDefault()
 
+        // update blok name in backend
         const { status, error } = await updateBlok( id, {
             name: newBlokName
         } )
 
+
         if ( status === "success" ) {
+            // show success toast notification
             showToast({
                 type: "success",
                 message: "Blok renamed successfully"
             })
 
+            // update blok name in state for display
             setBlokName( newBlokName )
         } else {
+            // show error toast notification
             showToast({
                 type: "error",
                 message: `Error renaming Blok: ${ error.message }`
             })
         }
 
+        // reset rename dialog state and new blok name
         setNewBlokName("")
         setIsRenameDialogOpen( false )
     }
 
+    // promptBlokRename() - handles showing rename dialog with current blok name
     function promptBlokRename() {
         setNewBlokName( blokName )
 
         setIsRenameDialogOpen( true )
     }
 
+    // saveEditorToBackend() - saves current editor content and settings to backend
     async function saveEditorToBackend() {
+        // update blok in backend with current editor content and settings
         const { status, error } = await updateBlok( id, {
             name: blokName,
             html: editorContent.html,
@@ -661,6 +788,7 @@ export default function Editor() {
         })
 
         if ( status === "error" ) {
+            // show error toast notification with retry action
             showToast({
                 type: "error",
                 message: `Error saving blok: ${ error.message }`,
@@ -670,25 +798,32 @@ export default function Editor() {
         }
     }
 
+    // handleSharing() - handles sharing the blok via Web Share API or share dialog
     function handleSharing() {
+        // construct share link using backend url and blok id
         const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
         const shareLink = `${ backendURL }/share/#/${ id }`
 
+        // use Web Share API if available and on mobile breakpoint, else open share dialog
         if ( navigator.share && mobileBreakpoint ) {
+            // use Web Share API to share blok link on mobile devices
             navigator.share({
                 text: "Hey! Check out this code on CodeBloks",
                 url: shareLink
             })
         } else {
+            // open share dialog for desktop sharing options
             setIsShareDialogOpen( true )
         }
     }
 
 
     switch( loadingState ) {
+        // render loading state
         case "loading":
             return (
                 <>
+                    {/* Loading Editor */}
                     <Helmet>
                         <title>Loading Editor - CodeBloks</title>
                         <meta name="description" content="Edit your code blok using the online code editor" />
@@ -717,6 +852,7 @@ export default function Editor() {
                 </>
             )
         
+        // render error state
         case "error":
             return (
                 <>
@@ -764,14 +900,17 @@ export default function Editor() {
                 </>
             )
 
+        // render loaded state
         case "loaded":
             return (
                 <>
+                    {/* Insert Editor info into page metadata using React Helmet */}
                     <Helmet>
                         <title>Edit Blok { blokName } - CodeBloks</title>
                         <meta name="description" content="Edit your code blok using the online code editor" />
                     </Helmet>
 
+                    {/* Editor content */}
                     <EditorContext.Provider value={ {
                         editorSettings,
                         mobileBreakpoint,
@@ -790,6 +929,7 @@ export default function Editor() {
                         handleSharing
                     } }>
                         <>
+                            {/* Editor main layout */}
                             <WideLayout>
                                 <div 
                                     className="
@@ -800,7 +940,7 @@ export default function Editor() {
                                         pb-8
                                     "
                                 >
-                                    {/* editor desktop content */}
+                                    {/* editor header */}
                                     <div 
                                         className="
                                             editor--header
@@ -809,8 +949,10 @@ export default function Editor() {
                                             items-center
                                         "
                                     >
+                                        {/* Editor navigation menu */}
                                         <NavMenu />
                 
+                                        {/* Editor blok name and rename button */}
                                         <span 
                                             className="
                                                 editor--header__name-ctn
@@ -842,6 +984,7 @@ export default function Editor() {
                                             </button>
                                         </span>
                 
+                                        {/* Editor header actions container */}
                                         <div 
                                             className="
                                                 editor--header__actions-ctn
@@ -857,6 +1000,7 @@ export default function Editor() {
                                                 [&>button]:rounded-md
                                             "
                                         >
+                                            {/* Editor run code and other options dropdown menu */}
                                             <DropdownMenu.Root>
                                                 <div
                                                     className="
@@ -925,6 +1069,7 @@ export default function Editor() {
                                                 />
                                             </DropdownMenu.Root>
                 
+                                            {/* Editor fullscreen/focus mode toggle button */}
                                             <button 
                                                 className="
                                                     editor--header__fullscreen-btn
@@ -940,6 +1085,7 @@ export default function Editor() {
                                                 { editorSettings.focusMode && <FaCompress/>}
                                             </button>
                 
+                                            {/* Editor theme toggle button */}
                                             <button 
                                                 className="editor--header__theme-toggle"
                                                 onClick={ toggleTheme }
@@ -948,16 +1094,19 @@ export default function Editor() {
                                                 { theme == "dark" && <FaRegSun/> }
                                             </button>
                 
+                                            {/* Editor settings popover */}
                                             <EditorSettingsPopover 
                                                 className="
                                                     hidden lg:block
                                                 "
                                             />
                 
+                                            {/* User avatar and profile menu */}
                                             <NavAvatar />
                                         </div>
                                     </div>
                 
+                                    {/* editor desktop content */}
                                     <div 
                                         className={`
                                             editor--main
@@ -968,6 +1117,7 @@ export default function Editor() {
                                             gap-4
                                         `}
                                     >
+                                        {/* editor main editors: html, css, js container */}
                                         <div 
                                             className={`
                                                 editor--main__editors-ctn
@@ -1011,6 +1161,7 @@ export default function Editor() {
                                             }
                                         </div>
                                         
+                                        {/* preview frame container */}
                                         <PreviewFrame 
                                             srcDoc={ generateIframeContent( 
                                                 previewContent.html,
@@ -1042,6 +1193,7 @@ export default function Editor() {
                                         " 
                                         defaultValue="html"
                                     >
+                                        {/* Editor mobile navigation list */}
                                         <Tabs.List 
                                             className="
                                                 editor--mobile-main__tabs
@@ -1072,6 +1224,7 @@ export default function Editor() {
                                             <EditorSettingsPopover />
                                         </Tabs.List>
                 
+                                        {/* HTML editor on mobile */}
                                         <Tabs.Content 
                                             value="html"
                                             className="
@@ -1087,6 +1240,7 @@ export default function Editor() {
                                             />
                                         </Tabs.Content>
                 
+                                        {/* CSS editor on mobile */}
                                         <Tabs.Content 
                                             value="css"
                                             className="
@@ -1102,6 +1256,7 @@ export default function Editor() {
                                             />
                                         </Tabs.Content>
                 
+                                        {/* JS editor on mobile */}
                                         <Tabs.Content 
                                             value="js"
                                             className="
@@ -1117,6 +1272,7 @@ export default function Editor() {
                                             />
                                         </Tabs.Content>
                 
+                                        {/* Preview tab on mobile */}
                                         <Tabs.Content 
                                             value="preview"
                                             className="
@@ -1141,6 +1297,7 @@ export default function Editor() {
                                 </div>
                             </WideLayout>
 
+                            {/* Rename blok dialog */}
                             <DialogComponent
                                 open={ isRenameDialogOpen }
                                 onOpenChange={ setIsRenameDialogOpen }
@@ -1175,6 +1332,7 @@ export default function Editor() {
                                 )}
                             />
                             
+                            {/* Shortcuts dialog */}
                             <DialogComponent
                                 open={ isShortcutsDialogOpen }
                                 onOpenChange={ setIsShortcutsDialogOpen }
@@ -1194,6 +1352,8 @@ export default function Editor() {
                                         "
                                     >
                                         {
+                                            // list all editor shortcuts by mapping through editorShortcuts array
+                                            // and rendering each shortcut with its keys and description
                                             editorShortcuts.map( ( shortcut, index ) => (
                                                 <div 
                                                     className="
@@ -1241,6 +1401,7 @@ export default function Editor() {
                                 )}
                             />
                             
+                            {/* Share blok dialog */}
                             <DialogComponent
                                 open={ isShareDialogOpen }
                                 onOpenChange={ setIsShareDialogOpen }
@@ -1260,6 +1421,7 @@ export default function Editor() {
                                         "
                                         defaultValue="link"
                                     >
+                                        {/* Share options tabs list */}
                                         <Tabs.List
                                             className="
                                                 share-dialog--tabs__list
@@ -1289,6 +1451,7 @@ export default function Editor() {
                                             "
                                         >
                                             {
+                                                // map through shareOptions array to render each share option as a tab trigger
                                                 shareOptions.map( function ( Option, index ) {
                                                     const Icon = Option.icon
 
@@ -1312,6 +1475,8 @@ export default function Editor() {
                                         </Tabs.List>
 
                                         {
+                                            // map through shareOptions array to render each share option content
+                                            // using ShareTabContent component for their link and action buttons
                                             shareOptions.map( function( option, index ) {
                                                 return (
                                                     <ShareTabContent
@@ -1334,6 +1499,9 @@ export default function Editor() {
 
 
 // internal/partial components to be used inside Editor component
+
+// editor settings popover component - for changing editor settings like 
+// theme, font size, tab size, etc.
 function EditorSettingsPopover({ 
     className,
 }) {
@@ -1352,6 +1520,7 @@ function EditorSettingsPopover({
     } = useContext( EditorContext )
 
     return <Popover.Root>
+        {/* Editor settings popover trigger button */}
         <Popover.Trigger asChild>
             <button className={`editor--header__editor-setting ${className}`}>
                 <FaGear/>
@@ -1359,6 +1528,7 @@ function EditorSettingsPopover({
         </Popover.Trigger>
 
         <Popover.Portal>
+            {/* Editor settings popover content */}
             <Popover.Content 
                 className="
                     bg-gray-100 dark:bg-gray-800
@@ -1372,6 +1542,7 @@ function EditorSettingsPopover({
                 align="end"
                 sideOffset={8}
             >
+                {/* popover content */}
                 <span 
                     className="
                         editor-settings__popover-content
@@ -1385,6 +1556,7 @@ function EditorSettingsPopover({
                     editor settings
                 </span>
 
+                {/* Editor layout toggle option */}
                 { !mobileBreakpoint && <ToggleOption
                     label="Layout"
                     value={ editorSettings.layout }
@@ -1408,6 +1580,7 @@ function EditorSettingsPopover({
                     ]}
                 />}
 
+                {/* Active code editors toggle option */}
                 { !mobileBreakpoint && <ToggleOption
                     label="Toggle Code"
                     value={ editorSettings.editors }
@@ -1441,6 +1614,7 @@ function EditorSettingsPopover({
                     ]}
                 />}
 
+                {/* Focus mode switch option */}
                 <SwitchOption
                     className="
                         flex-row
@@ -1452,6 +1626,7 @@ function EditorSettingsPopover({
                     onCheckedChange={ toggleFocusMode }
                 />
 
+                {/* Editor theme select option */}
                 <SelectOption
                     label="Editor Theme:"
                     type="grouped"
@@ -1473,6 +1648,7 @@ function EditorSettingsPopover({
                     }
                 />
 
+                {/* Editor font size range option */}
                 <RangeOption
                     label="Font Size"
                     unit="px"
@@ -1486,6 +1662,7 @@ function EditorSettingsPopover({
                     "
                 />
 
+                {/* Tab size toggle option */}
                 <ToggleOption
                     label="Tab Size"
                     value={ editorSettings.tabSize }
@@ -1509,6 +1686,7 @@ function EditorSettingsPopover({
                     "
                 />
 
+                {/* Autocomplete switch option */}
                 <SwitchOption
                     className="
                         flex-row
@@ -1520,6 +1698,7 @@ function EditorSettingsPopover({
                     label="Autocomplete"
                 />
                 
+                {/* Line numbers switch option */}
                 <SwitchOption
                     className="
                         flex-row
@@ -1531,6 +1710,7 @@ function EditorSettingsPopover({
                     label="Line Number"
                 />
 
+                {/* Shortcuts button option */}
                 { !mobileBreakpoint && <button 
                     className="
                         shortcut-option
@@ -1558,12 +1738,14 @@ function EditorSettingsPopover({
     </Popover.Root>
 }
 
+// main code editor component - for the code editors in desktop layout
 const MainEditor = forwardRef( function( { 
     label, 
     onToggle, 
     className,
     ...props
 }, ref ) {
+    // get editor settings and initializeEditorThemes function from EditorContext
     const {
         editorSettings,
         initializeEditorThemes
@@ -1571,6 +1753,7 @@ const MainEditor = forwardRef( function( {
 
 
     return (
+        // main editor container
         <div 
             className={`
                 editor--main__editor
@@ -1591,6 +1774,7 @@ const MainEditor = forwardRef( function( {
                     py-2 px-4
                 "
             >
+                {/* editor label - e.g. HTML */}
                 <span 
                     className="
                         editor--main__editor-name
@@ -1601,6 +1785,7 @@ const MainEditor = forwardRef( function( {
                     { label }
                 </span>
 
+                {/* editor close button */}
                 <FaXmark 
                     className="
                         editor--main__editor-close-btn
@@ -1610,6 +1795,7 @@ const MainEditor = forwardRef( function( {
                 />
             </div>
 
+            {/* monaco instance for rendering the code editor */}
             <MonacoEditor 
                 className="
                     editor--main__editor-body
@@ -1639,13 +1825,16 @@ const MainEditor = forwardRef( function( {
     )
 })
 
+// mobile code editor component - for the code editors in mobile layout
 const MobileEditor = forwardRef( function( props, ref ) {
+    // get editor settings and initializeEditorThemes function from EditorContext
     const {
         editorSettings,
         initializeEditorThemes
     } = useContext( EditorContext )
 
     return (
+        // monaco instance for rendering the code editor
         <MonacoEditor 
             options={{
                 minimap: { enabled: false },
@@ -1668,7 +1857,9 @@ const MobileEditor = forwardRef( function( props, ref ) {
     )
 })
 
+// preview frame component - for rendering the live preview of the code
 function PreviewFrame( { srcDoc, className } ) {
+    // get editor settings and toggleTabPreviewVisibility function from EditorContext
     const { 
         editorSettings, 
         toggleTabPreviewVisibility,
@@ -1676,6 +1867,7 @@ function PreviewFrame( { srcDoc, className } ) {
     } = useContext( EditorContext )
 
     return (
+        // preview frame container
         <div 
             className={`
                 editor--main__preview   
@@ -1685,6 +1877,7 @@ function PreviewFrame( { srcDoc, className } ) {
                 ${className || ''}
             `}
         >
+            {/* preview iframe */}
             <iframe 
                 className="
                     editor--main__preview-iframe
@@ -1692,9 +1885,10 @@ function PreviewFrame( { srcDoc, className } ) {
                     h-full
                     rounded-md
                 "
-                srcDoc={ srcDoc}
+                srcDoc={ srcDoc }
             ></iframe>
 
+            {/* preview action buttons */}
             <div 
                 className="
                     editor--main__preview-actions
@@ -1710,6 +1904,7 @@ function PreviewFrame( { srcDoc, className } ) {
                     *:cursor-pointer
                 "
             >
+                {/* preview share button */}
                 <button 
                     className="
                         editor--main__share-btn
@@ -1723,6 +1918,7 @@ function PreviewFrame( { srcDoc, className } ) {
                     share <FaShareNodes />
                 </button>
 
+                {/* preview toggle button */}
                 <button 
                     className="
                         editor--main__preview-btn
@@ -1737,8 +1933,12 @@ function PreviewFrame( { srcDoc, className } ) {
     )
 }
 
+// shareTabContent component - component to render the content of each share tab
 function ShareTabContent({ value, blokId }) {
+    // get backend URL from environment variables
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:7000"
+
+    // construct share link and embed code using the blok ID
     const shareLink = `${ backendURL }/share/#/${ blokId }`
     const embedCode = `<iframe 
                                 width="600" 
@@ -1748,40 +1948,53 @@ function ShareTabContent({ value, blokId }) {
                                 allowFullScreen
                             ></iframe>`
 
+    // state to track if the link/code has been copied
     const [ isCopied, setIsCopied ] = useState( false )
 
+    // copyText() - function to copy the share link or embed code to clipboard
     async function copyText() {
+        // check if the Clipboard API is supported
         if ( navigator.clipboard && navigator.clipboard.writeText ) {
+            // copy the appropriate text based on the tab value
             if ( value === "link" ) {
+                // if value is "link", copy the share link
                 await navigator.clipboard.writeText( shareLink )
                 
                 setIsCopied( true )
             } else {
+                // if value is "embed", copy the embed code
                 await navigator.clipboard.writeText( embedCode )
                 
                 setIsCopied( true )
             }
 
             setTimeout( function() {
+                // reset isCopied state after 1 second
                 setIsCopied( false )
             }, 1000 )
         }
     }
 
+    // promptSocialShare() - function to open social media share dialogs
     function promptSocialShare() {
+        // open the appropriate social media share window based on the tab value
         switch( value ) {
+            // Facebook share
             case "facebook":
                 window.open( `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent( shareLink )}`)
             break;
             
+            // X (Twitter) share
             case "x":
                 window.open( `https://twitter.com/intent/tweet?url=${encodeURIComponent( shareLink )}&text=${encodeURIComponent("Hey! Check out my code on codebloks")}`)
             break;
             
+            // LinkedIn share
             case "linkedin":
                 window.open( `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent( shareLink )}&title=${encodeURIComponent("Hey! Check out my code on codebloks")}`)
             break;
             
+            // WhatsApp share
             case "whatsapp":
                 window.open( `https://wa.me/?text=${encodeURIComponent("Hey! Check out my code on codebloks " + shareLink)}` )
             break;
@@ -1789,6 +2002,7 @@ function ShareTabContent({ value, blokId }) {
     }
 
     return (
+        // share tab content container
         <Tabs.Content 
             value={ value }
             className="
@@ -1799,6 +2013,7 @@ function ShareTabContent({ value, blokId }) {
                 text-white dark:text-gray-900
             "
         >
+            {/* share tab content group */}
             <div 
                 className="
                     share-dialog--tabs__link-ctn
@@ -1808,6 +2023,7 @@ function ShareTabContent({ value, blokId }) {
                     [&_.share-dialog--tabs\_\_link-copy-btn]:capitalize
                 "
             >
+                {/* share link or embed code */}
                 <span 
                     className="
                         share-dialog--tabs__link-text
@@ -1822,6 +2038,7 @@ function ShareTabContent({ value, blokId }) {
                     }
                 </span>
 
+                {/* copy link button */}
                 { value === "link" && <Button
                     className="
                         share-dialog--tabs__link-copy-btn
@@ -1842,6 +2059,7 @@ function ShareTabContent({ value, blokId }) {
                     }
                 </Button> }
                 
+                {/* copy embed code button */}
                 { value === "embed" && <Button
                     className="
                         share-dialog--tabs__link-copy-btn
@@ -1862,6 +2080,7 @@ function ShareTabContent({ value, blokId }) {
                     }
                 </Button> }
                 
+                {/* email send button */}
                 { value === "email" && <Button
                     className="
                         share-dialog--tabs__link-copy-btn
@@ -1879,6 +2098,7 @@ function ShareTabContent({ value, blokId }) {
                     <FaArrowRightLong />
                 </Button> }
                 
+                {/* social media share buttons */}
                 { ["facebook", "x", "linkedin", "whatsapp" ].includes(value) && 
                     <Button
                         className="
