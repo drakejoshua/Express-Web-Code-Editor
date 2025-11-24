@@ -1,3 +1,4 @@
+// import route dependencies
 import Logo from '../components/Logo'
 import Button from '../components/Button'
 import { 
@@ -28,15 +29,20 @@ import { useThemeProvider } from '../providers/ThemeProvider'
 import { useState } from 'react'
 
 
-
+// define Home component for the landing page
 export default function Home() {
+    // image address for the CTA section
     const manImageAddress = `https://images.unsplash.com/photo-1522556189639-b150ed9c4330?ixlib=rb-4.1.
     0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c21pbGluZyUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500`
 
+    // get theme state and toggleTheme function from ThemeProvider
     const { theme, toggleTheme } = useThemeProvider()
+
+    // state to manage mobile breakpoint and nav links visibility
     const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
     const [ isNavLinksVisible, setIsNavLinksVisible ] = useState( true )
 
+    // get navigate function from react-router-dom
     const navigateTo = useNavigate()
 
     return (
@@ -50,6 +56,7 @@ export default function Home() {
                 overflow-auto
             '
         >
+            {/* Navbar section */}
             <div 
                 className="
                     home--navbar
@@ -62,8 +69,10 @@ export default function Home() {
                     py-6 lg:py-4
                 "
             >
+                {/* Logo section */}
                 <Logo />
 
+                {/* Theme toggle button */}
                 <button 
                     className="
                         home--navbar__theme-toggle
@@ -76,6 +85,7 @@ export default function Home() {
                     { theme === 'light' ? <FaMoon/> : <FaRegSun/> }
                 </button>
 
+                {/* Mobile menu toggle button */}
                 { mobileBreakpoint && <button
                     className='
                         home--navbar__mobile-toggle
@@ -86,6 +96,7 @@ export default function Home() {
                     <FaBars />
                 </button>}
 
+                {/* Navigation links */}
                 { ( !mobileBreakpoint || isNavLinksVisible ) && 
                     <div 
                         className="
@@ -107,6 +118,7 @@ export default function Home() {
                             features
                         </a>
 
+                        {/* Sign up button */}
                         <Button
                             className="
                                 outline-2
@@ -118,6 +130,7 @@ export default function Home() {
                             sign up
                         </Button>
 
+                        {/* API Docs link */}
                         <a
                             className='
                                 outline-2
@@ -141,6 +154,7 @@ export default function Home() {
                 }
             </div>
 
+            {/* Hero section */}
             <div 
                 className="
                     home--hero
@@ -151,6 +165,7 @@ export default function Home() {
                     px-4
                 "
             >
+                {/* Pre-text */}
                 <h3
                     className='
                         home--hero__pre-text
@@ -162,6 +177,7 @@ export default function Home() {
                     the ultimate web code editor
                 </h3>
 
+                {/* Main heading */}
                 <h1
                     className='
                         home--hero__main-text
@@ -177,6 +193,7 @@ export default function Home() {
                     Experience the future of web code editing
                 </h1>
 
+                {/* Sub-text */}
                 <p
                     className='
                         home--hero__sub-text
@@ -190,6 +207,7 @@ export default function Home() {
                     With an intuitive interface, real-time collaboration, and seamless deployment options.
                 </p>
 
+                {/* Hero image */}
                 <img 
                     src={ HeroImage } 
                     alt="image of the hero section" 
@@ -204,6 +222,7 @@ export default function Home() {
                 />
             </div>
 
+            {/* Clients marquee section */}
             <div 
                 className="
                     home--clients-marquee
@@ -212,6 +231,7 @@ export default function Home() {
                     overflow-hidden
                 "
             >
+                {/* Clients logos track */}
                 <div 
                     className="
                         home--clients-marquee__track
@@ -257,7 +277,7 @@ export default function Home() {
                             items-center
                             gap-12
 
-                            *:grayscale
+                            *:grayscale dark:*:grayscale-50
                             *:h-14
                             *:w-auto
                         '
@@ -280,6 +300,7 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* Features section */}
             <div
                 id='features'
                 class="
@@ -292,7 +313,7 @@ export default function Home() {
                     bg-center
                 "
             >
-
+                {/* Features heading */}
                 <div 
                     className="
                         home--feature__heading
@@ -303,6 +324,7 @@ export default function Home() {
                         gap-8
                     "
                 >
+                    {/* Features text group */}
                     <div
                         className='
                             home--feature__text-group
@@ -311,6 +333,7 @@ export default function Home() {
                             items-start
                         '
                     >
+                        {/* Features pre-text */}
                         <h4 
                             className="
                                 home--feature__pre-text
@@ -322,6 +345,7 @@ export default function Home() {
                             coding reimagined
                         </h4>
 
+                        {/* Features main heading */}
                         <h2 
                             className="
                                 home--feature__main-text
@@ -337,6 +361,7 @@ export default function Home() {
                             An all-in-one platform for web development
                         </h2>
 
+                        {/* Features CTA button */}
                         <Link 
                             href="" 
                             className="
@@ -358,6 +383,7 @@ export default function Home() {
                         </Link>
                     </div>
 
+                    {/* Features sub-text */}
                     <p 
                         className="
                             home--feature__sub-text
@@ -371,6 +397,7 @@ export default function Home() {
                     </p>
                 </div>
 
+                {/* Features list */}
                 <div 
                     className="
                         home--feature__list
@@ -475,6 +502,7 @@ export default function Home() {
                 </div>
             </div>
 
+            {/* Call-to-action section */}
             <div 
                 className="
                     home--admonition
@@ -489,11 +517,13 @@ export default function Home() {
                     *:flex-[1_1_50%]
                 "
             >
+                {/* Call-to-action content */}
                 <div 
                     className="
                         home--admonition__content
                     "
                 >
+                    {/* Call-to-action main heading */}
                     <h2
                         className='
                             home--admonition__main-text
@@ -507,6 +537,7 @@ export default function Home() {
                         Ready to elevate your web development experience?
                     </h2>
 
+                    {/* Call-to-action sub-text */}
                     <p
                         className='
                             home--admonition__sub-text
@@ -519,6 +550,7 @@ export default function Home() {
                         Everything you need to create, collaborate, and deploy is right at your fingertips.
                     </p>
 
+                    {/* Call-to-action buttons */}
                     <div 
                         className="
                             home--admonition__cta-group
@@ -528,6 +560,7 @@ export default function Home() {
                             gap-6
                         "
                     >
+                        {/* Get started button */}
                         <Link 
                             to="/auth/signup"
                             className='
@@ -546,6 +579,7 @@ export default function Home() {
                             get started
                         </Link>
 
+                        {/* Explore features button */}
                         <Link 
                             to="/features"
                             className='
@@ -560,6 +594,7 @@ export default function Home() {
                     </div>
                 </div>
 
+                {/* Call-to-action image */}
                 <img 
                     src={ manImageAddress } 
                     alt="" 
@@ -572,6 +607,7 @@ export default function Home() {
                 />
             </div>
 
+            {/* Footer section */}
             <footer 
                 className="
                     home--footer
@@ -584,12 +620,15 @@ export default function Home() {
                     border-gray-300/50
                 "
             >
+                {/* Logo section */}
                 <Logo />
 
+                {/* Copyright text */}
                 <p>
                     &copy; 2024 CodeBloks. All rights reserved.
                 </p>
 
+                {/* Footer links */}
                 <div 
                     className="
                         home--footer__links 

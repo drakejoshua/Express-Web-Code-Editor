@@ -1,25 +1,38 @@
+// ErrorBoundary.jsx
+// This component acts as an error boundary to catch JavaScript errors
+// in its child component tree. When an error is caught, it displays
+// a user-friendly fallback UI instead of crashing the entire app.
+
+
+// import dependencies
 import React from "react";
 import RouteContainer from "../components/RouteContainer";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
 import RouteThemeToggle from "../components/RouteThemeToggle";
 
+
+// define ErrorBoundary component to catch errors in child components
 class ErrorBoundary extends React.Component {
+    // initialize state to track error occurrence
     constructor(props) {
         super(props);
         this.state = { hasError: false, error: null };
     }
 
+    // state getDerivedStateFromError() - to update state when an error is caught
     static getDerivedStateFromError( error ) {
         return { hasError: true, error: error };
     }
 
+    // componentDidCatch() - log error details
     componentDidCatch(error, info) {
         // You can also log the error to an error reporting service
         console.error("ErrorBoundary caught an error:", error, info);
     }
 
     render() {
+        // if an error has occurred, display fallback UI
         if (this.state.hasError) {
             return (
                     <div 
@@ -32,9 +45,11 @@ class ErrorBoundary extends React.Component {
                         '
                     >
                         <RouteContainer>
+                            {/* Logo */}
                             <Logo />
 
                             <div>
+                                {/* "Ouch!" heading */}
                                 <h1
                                     className='
                                         text-9xl
@@ -47,6 +62,7 @@ class ErrorBoundary extends React.Component {
                                     Ouch!
                                 </h1>
 
+                                {/* Error description */}
                                 <p
                                     className='
                                         mt-12
@@ -61,6 +77,7 @@ class ErrorBoundary extends React.Component {
                                     Please try navigating back to the home page and attempt your action again.
                                 </p>
 
+                                {/* "Go To Home" button */}
                                 <Button
                                     className="
                                         mx-auto
@@ -70,6 +87,7 @@ class ErrorBoundary extends React.Component {
                                     Go To Home
                                 </Button>
 
+                                {/* Display error message - for debugging purposes*/}
                                 <div
                                     className='
                                         mt-12
@@ -88,11 +106,14 @@ class ErrorBoundary extends React.Component {
                                 </div>
                             </div>
 
+                            {/* Theme toggle button */}
                             <RouteThemeToggle />
                         </RouteContainer>
                     </div>
             );
         }
+
+        // if no error, render child components normally
         return this.props.children;
     }
 }
