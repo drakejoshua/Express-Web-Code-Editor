@@ -1,3 +1,9 @@
+// ThemeProvider.jsx
+// This provider manages the application's theme (light/dark).
+// It uses a custom hook to persist the theme choice in local storage
+// and provides a toggle function to switch themes across the app.
+
+
 // import provider dependencies
 import { createContext, useContext, useEffect } from 'react'
 import useTheme from '../hooks/useTheme.js'

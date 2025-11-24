@@ -1,40 +1,64 @@
-import { createContext, forwardRef, useContext, useState } from 'react'
+// ToastProvider.jsx
+// This provider manages toast notifications across the application.
+// It allows components to show and hide toasts with custom messages,
+// types, and actions using a shared context.
+
+
+// import provider dependencies
+import { createContext, useContext, useState } from 'react'
 import { Toast } from "radix-ui"
 import Button from '../components/Button'
 import { FaCircleCheck, FaCircleInfo, FaTriangleExclamation, FaXmark } from 'react-icons/fa6'
 
-
+// create context for sharing toast state and functions
+// across the application
 const ToastContext = createContext()
 
+// custom hook to access toast context from ToastProvider
 export function useToastProvider() {
     return useContext(ToastContext)
 }
 
 
+// ToastProvider component to provide toast state and functions
+// while rendering active toasts and children components
 export default function ToastProvider({ children }) {
+    // state to manage active toasts
     const [ toasts, setToasts ] = useState([])
-    // message, type, action, actionLabel
+    // toast - message, type, action, actionLabel
 
+    // showToast() - add a new toast to the state
     function showToast({ message, type, action, actionLabel }) {
+        // generate unique id for the toast
         const id = Date.now()
+
+        // add new toast to the list of active toasts
         setToasts([...toasts, { id, message, type, action, actionLabel }])
 
+        // return the unique id of the new toast
         return id
     }
 
+    // hideToast() - remove a toast from the state by its id
     function hideToast(id) {
+        // filter out the toast with the given id
         setToasts(toasts.filter(toast => toast.id !== id))
     }
 
+    // ToastProvider component to provide toast state and functions
+    // while rendering active toasts and children components
     return (
         <ToastContext.Provider value={{ showToast, hideToast }}>
+            {/* Toast provider to manage toast notifications */}
             <Toast.Provider
                 swipeDirection='right'
                 duration={5000}
             >
                 { children }
 
+                {/* Render active toasts by mapping over the toasts state */}
                 { toasts.map(toast => (
+                        // Toast root for each toast object
                         <Toast.Root
                             key={toast.id}
                             className='
@@ -52,6 +76,7 @@ export default function ToastProvider({ children }) {
                             onOpenChange={ () => hideToast( toast.id ) }
                             onEscapeKeyDown={ () => hideToast( toast.id ) }
                         >
+                            {/* Icon based on toast type */}
                             { toast.type == "success" && <FaCircleCheck
                                 className='
                                     flex-shrink-0
@@ -74,10 +99,12 @@ export default function ToastProvider({ children }) {
                                 '
                             />}
 
+                            {/* Toast message description */}
                             <Toast.Description>
                                 { toast.message}
                             </Toast.Description>
 
+                            {/* Render action button if action is provided */}
                             { toast.action && <Toast.Action 
                                 asChild
                                 altText='Notification Action'
@@ -92,6 +119,7 @@ export default function ToastProvider({ children }) {
                                 </Button>
                             </Toast.Action> }
 
+                            {/* Toast close button */}
                             <Toast.Close
                                 className='ml-auto'
                             >
@@ -106,6 +134,7 @@ export default function ToastProvider({ children }) {
                     ))
                 }
 
+                {/* Toast viewport to position toasts on screen */}
                 <Toast.Viewport 
                     className='
                         fixed
