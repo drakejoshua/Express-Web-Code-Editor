@@ -1,3 +1,7 @@
+// editor_utils.js
+// utility functions and constants for code editor
+
+
 // import util depdendencies
 import githubLight from "monaco-themes/themes/GitHub Light.json"
 import solarizedLight from "monaco-themes/themes/Solarized-light.json"
@@ -7,7 +11,6 @@ import githubDark from "monaco-themes/themes/Github Dark.json"
 import monokai from "monaco-themes/themes/Monokai.json"
 import nightOwl from "monaco-themes/themes/Night Owl.json"
 import solarizedDark from "monaco-themes/themes/Solarized-dark.json"
-import { useThemeProvider } from "../providers/ThemeProvider"
 
 
 export const editorThemes = [
@@ -88,6 +91,8 @@ export const editorThemes = [
     },
 ]
 
+
+// generateIframeContent() - generate complete HTML content for iframe preview or display message if no content
 export function generateIframeContent( html, css, js, theme ) {
     if ( !html && !css && !js ) {
         if ( theme === "dark" ) {

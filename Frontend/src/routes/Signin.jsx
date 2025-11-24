@@ -30,11 +30,17 @@ import { BACKEND_ERROR_CODES } from '../utils/error_util'
 
 // define signin route component
 export default function Signin() {
+    // state for managing email and password inputs
     const [ email, setEmail ] = useState("")
     const [ password, setPassword ] = useState("")
+
+    // state for managing magic link email input
     const [ magicLinkEmail, setMagicLinkEmail ] = useState("")
+
+    // state for managing password reset email input
     const [ passwordResetEmail, setPasswordResetEmail ] = useState("")
     
+    // states for managing dialog visibility and loading states
     const [ isPasswordResetDialogVisible, setIsPasswordResetDialogVisible ] = useState( false )
     const [ isEmailSignInDialogVisible, setIsEmailSignInDialogVisible ] = useState( false )
     const [ isEmailNotVerifiedDialogVisible, setIsEmailNotVerifiedDialogVisible ] = useState( false )
@@ -43,6 +49,7 @@ export default function Signin() {
     const [ isSendingMagiclink, setIsSendingMagiclink ] = useState( false )
     const [ isSendingPasswordReset, setIsSendingPasswordReset ] = useState( false )
 
+    // get auth provider functions for signin, email verification and other signin methods
     const { 
         signInUser, 
         resendEmailVerification, 
@@ -51,36 +58,50 @@ export default function Signin() {
         resetPassword
     } = useAuthProvider()
 
+    // get navigate function for programmatic navigation from react-router
     const navigateTo = useNavigate()
 
+    // get toast provider function for displaying toast notifications
     const { showToast } = useToastProvider()
     
 
+    // handleResendEmail() - resend email verification to user who hasn't verified their email
     async function handleResendEmail() {
+        // set Resending state to true
         setIsResendingEmail( true )
 
+        // call resendEmailVerification from auth provider
         const { status, data, error } = await resendEmailVerification( email )
 
+        
         if ( status === "success" ) {
+            // show success toast notification if email resent successfully
             showToast({
                 type: "success",
                 message: data.message || "Email Verification Resent Successfully"
             })
         } else {
+            // show error toast notification if email resend failed
             showToast({
                 type: "error",
                 message: error.message
             })
         }
 
+        // close email not verified dialog and reset resending state
         setIsEmailNotVerifiedDialogVisible( false )
         setIsResendingEmail( false )
     }
 
+    // handleSubmit() - handle signin form submission and user authentication
     async function handleSubmit( e ) {
+        // prevent default form submission behavior
         e.preventDefault()
+
+        // set signing in state to true
         setIsSigningIn( true )
         
+        // call signInUser from auth provider with email and password
         const { status, error } = await signInUser( {
             email,
             password
@@ -90,7 +111,9 @@ export default function Signin() {
             // redirect user to dashboard upon successful signin
             navigateTo( '/dashboard' )
         } else {
+            // if signin failed, check if email not verified error
             if ( error.code === BACKEND_ERROR_CODES.EMAIL_NOT_VERIFIED ) {
+                // if email not verified, show email not verified dialog
                 setIsEmailNotVerifiedDialogVisible( true )
             } else {
                 // use a toast to display error message to user upon failed signin
@@ -101,51 +124,66 @@ export default function Signin() {
             }
         }
 
+        // reset signing in state
         setIsSigningIn( false )
     }
 
+    // handleSendMagiclink() - handle sending magic link for email signin 
     async function handleSendMagiclink( e ) {
+        // prevent default form submission behavior
         e.preventDefault()
 
+        // set sending magic link state to true
         setIsSendingMagiclink( true )
 
+        // call signInWithMagicLink from auth provider with magicLinkEmail
         const { status, error } = await signInWithMagicLink( magicLinkEmail )
 
         if ( status === "success" ) {
+            // show success toast notification if magic link sent successfully
             showToast({
                 type: "success",
                 message: "Magic Link Sent Successfully. Please check your email."
             })
         } else {
+            // show error toast notification if sending magic link failed
             showToast({
                 type: "error",
                 message: error.message
             })
         }
 
+        // close email signin dialog and reset sending magic link state
         setIsEmailSignInDialogVisible( false )
         setIsSendingMagiclink( false )
     }
 
+    // handlePasswordReset() - handle sending password reset link to user email
     async function handlePasswordReset( e ) {
+        // prevent default form submission behavior
         e.preventDefault()
 
+        // set sending password reset state to true
         setIsSendingPasswordReset( true )
 
+        // call resetPassword from auth provider with passwordResetEmail
         const { status, error } = await resetPassword( passwordResetEmail )
 
         if ( status === "success" ) {
+            // show success toast notification if password reset link sent successfully
             showToast({
                 type: "success",
                 message: "A password reset link has just been sent to your email. it will expire in 5 mins"
             })
         } else {
+            // show error toast notification if sending password reset link failed
             showToast({
                 type: "error",
                 message: error.message
             })
         }
 
+        // close password reset dialog and reset sending password reset state
         setIsPasswordResetDialogVisible( false )
         setIsSendingPasswordReset( false )
     }
