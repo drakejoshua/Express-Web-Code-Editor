@@ -20,7 +20,7 @@ createRoot(document.getElementById('root')).render(
                     <HelmetProvider>
                         <AuthProvider>
                             <BlokProvider>
-                                <RouterProvider router={router} />
+                                <RouterProvider router={router} basename="./" />
                             </BlokProvider>
                         </AuthProvider>
                     </HelmetProvider>
