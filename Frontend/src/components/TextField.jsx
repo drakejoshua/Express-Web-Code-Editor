@@ -41,6 +41,7 @@ const TextField = React.forwardRef(({
             className='
                 text-field__label
                 font-medium
+                dark:text-white
             '
         >
             {label}

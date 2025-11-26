@@ -23,6 +23,7 @@ import { useToastProvider } from "../providers/ToastProvider";
 import { DialogComponent, useDialogProvider } from "../providers/DialogProvider";
 import Button from "../components/Button";
 import { useState } from "react";
+import { Helmet } from 'react-helmet-async'
 
 
 // define Settings component to manage user settings

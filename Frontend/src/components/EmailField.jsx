@@ -40,6 +40,7 @@ const EmailField = React.forwardRef(({
             className='
                 email-field__label
                 font-medium
+                dark:text-white
             '
         >
             {label}

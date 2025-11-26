@@ -43,6 +43,7 @@ const PasswordField = React.forwardRef(({
                 className='
                     password-field__label
                     font-medium
+                    dark:text-white
                 '
             >
                 {label}

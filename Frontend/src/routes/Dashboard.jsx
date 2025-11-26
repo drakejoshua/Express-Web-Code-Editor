@@ -33,6 +33,7 @@ import useDebounce from '../hooks/useDebounce'
 import { useToastProvider } from '../providers/ToastProvider'
 import { DialogComponent, useDialogProvider } from '../providers/DialogProvider'
 import TextField from '../components/TextField'
+import { Helmet } from 'react-helmet-async'
 
 
 export default function Dashboard() {
@@ -461,6 +462,7 @@ export default function Dashboard() {
                                     className="
                                         gap-2
                                     "
+                                    onClick={ () => navigateTo('/create') }
                                 >
                                     <FaPlus
                                         className='

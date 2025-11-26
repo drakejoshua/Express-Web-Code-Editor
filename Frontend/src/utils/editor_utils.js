@@ -3,14 +3,14 @@
 
 
 // import util depdendencies
-import githubLight from "monaco-themes/themes/GitHub Light.json"
-import solarizedLight from "monaco-themes/themes/Solarized-light.json"
-import sunburst from "monaco-themes/themes/Sunburst.json"
-import clouds from "monaco-themes/themes/Clouds.json"
-import githubDark from "monaco-themes/themes/Github Dark.json"
-import monokai from "monaco-themes/themes/Monokai.json"
-import nightOwl from "monaco-themes/themes/Night Owl.json"
-import solarizedDark from "monaco-themes/themes/Solarized-dark.json"
+import githubLight from "./editor_themes/GitHub Light.json"
+import solarizedLight from "./editor_themes/Solarized-light.json"
+import sunburst from "./editor_themes/Sunburst.json"
+import clouds from "./editor_themes/Clouds.json"
+import githubDark from "./editor_themes/Github Dark.json"
+import monokai from "./editor_themes/Monokai.json"
+import nightOwl from "./editor_themes/Night Owl.json"
+import solarizedDark from "./editor_themes/Solarized-dark.json"
 
 
 export const editorThemes = [
