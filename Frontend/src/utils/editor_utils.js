@@ -3,13 +3,13 @@
 
 
 // import util depdendencies
-import githubLight from "./editor_themes/GitHub Light.json"
+import githubLight from "./editor_themes/GitHub_Light.json"
 import solarizedLight from "./editor_themes/Solarized-light.json"
 import sunburst from "./editor_themes/Sunburst.json"
 import clouds from "./editor_themes/Clouds.json"
-import githubDark from "./editor_themes/Github Dark.json"
+import githubDark from "./editor_themes/Github_Dark.json"
 import monokai from "./editor_themes/Monokai.json"
-import nightOwl from "./editor_themes/Night Owl.json"
+import nightOwl from "./editor_themes/Night_Owl.json"
 import solarizedDark from "./editor_themes/Solarized-dark.json"
 
 
