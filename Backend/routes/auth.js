@@ -342,7 +342,7 @@ async function( req, res, next ) {
             httpOnly: true,
             path: '/auth',
             secure: nodeEnv === 'production', // use secure cookies in production
-            sameSite: 'lax',
+            sameSite: nodeEnv === "production" ? 'none' : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
         })
 
@@ -444,7 +444,7 @@ async function( req, res, next )  {
             httpOnly: true,
             path: '/auth',
             secure: nodeEnv === 'production', // use secure cookies in production
-            sameSite: 'lax',
+            sameSite: nodeEnv === "production" ? 'none' : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000 // cookie valid for 7 days
         })
 
@@ -614,7 +614,7 @@ router.post("/reset-password/:token",
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production', // use secure cookies in production
-                sameSite: 'lax',
+                sameSite: nodeEnv === "production" ? 'none' : "lax",
                 path: '/auth',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // cookie valid for 7 days
             })
@@ -805,7 +805,7 @@ router.get("/magiclink/:token",
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 path: '/auth',
-                sameSite: 'lax',
+                sameSite: nodeEnv === "production" ? 'none' : "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             })
 
@@ -857,7 +857,7 @@ router.get('/google/callback',
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                sameSite: nodeEnv === "production" ? 'none' : "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
                 path: '/auth'
             })
@@ -884,7 +884,7 @@ router.post("/signout",
                 httpOnly: true,
                 path: '/auth',               // must match the original
                 secure: nodeEnv === 'production',
-                sameSite: 'lax',         // or 'none' in prod
+                sameSite: nodeEnv === "production" ? 'none' : "lax",         // or 'none' in prod
             });
 
             // send success response
