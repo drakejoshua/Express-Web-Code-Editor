@@ -29,33 +29,44 @@ connectDB()
 
 // initialize helmet middleware on server for security
 server.use( 
-    helmet({
-        contentSecurityPolicy: {
-            useDefaults: true,
-            directives: {
-                "script-src": ["'self'", "https://cdn.jsdelivr.net"],
-                "worker-src": ["'self'", "blob:"],
-                // Allow images
-                "img-src": ["'self'", "data:", "blob:", "*"],
-                // Allow iframe preview to load external content
-                "frame-src": ["'self'", "*"],
-                "child-src": ["'self'", "blob:", "*"],
-            },
-        }
-    }) 
+    helmet()
 )
 
-// initialize cors middleware on server for cross-origin requests
-server.use( cors({
+// define cors middleware for cross-origin requests
+const secureCors = cors({
     credentials: true,
     origin: process.env.FRONTEND_URL || 'http://localhost:5173'
-}) )
+})
+const openCors = cors()
+
+// define helmet constraints for static files
+const staticFileHelmet = helmet({
+    contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+            "default-src": ["'self'", "data:", "blob:", "https:"],
+            "script-src": ["'self'", "https:", "'unsafe-inline'", "'unsafe-eval'"],
+            "worker-src": ["'self'", "blob:"],
+            // Allow images
+            "img-src": ["'self'", "data:", "blob:", "https:"],
+            // Allow iframe preview to load external content
+            "frame-src": ["'self'", "*"],
+            "frame-ancestors": ["'self'", "https:"],
+            "script-src-attr": ["'unsafe-inline'"],
+        },
+    }
+}) 
 
 const __filename = url.fileURLToPath( import.meta.url )
 const __dirname = path.dirname( __filename )
 
-// static folder
-server.use( express.static( path.join( __dirname, 'public' ) ) )
+// static folder setup for serving shared blok requests
+server.use( 
+    "/share", 
+    openCors, 
+    staticFileHelmet, 
+    express.static(path.join(__dirname, "public/share")) 
+);
 
 // initialize passport middleware on server
 server.use( passport.initialize() )
@@ -72,10 +83,10 @@ server.use( express.json() )
 // initialize urlencoded body parsing middleware on server
 server.use( express.urlencoded({ extended: true }) )
 
-// connect grouped routes to server using their routers
-server.use('/auth', AuthRouter )
-server.use('/app', AppRouter )
-server.use('/api', ApiRouter )
+// connect grouped routes to server using their routers with appropriate cors middleware
+server.use('/auth', secureCors, AuthRouter )
+server.use('/app', secureCors, AppRouter )
+server.use('/api', openCors, ApiRouter )
 
 // test route
 server.get("/hello", function( req, res ) {
