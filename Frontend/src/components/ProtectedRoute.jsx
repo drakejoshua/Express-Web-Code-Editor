@@ -8,6 +8,8 @@
 import { useEffect } from "react"
 import { useAuthProvider } from "../providers/AuthProvider.jsx"
 import { useNavigate } from "react-router-dom"
+import { FaSpinner } from "react-icons/fa6"
+import RouteContainer from "./RouteContainer.jsx"
 
 
 // define ProtectedRoute component
@@ -36,8 +38,25 @@ function ProtectedRoute({ children }) {
     if ( user === "loading" ) {
         // show loading state while fetching user
         return (
-            <div>
-                Loading Authenticated User...
+            <div 
+                className="
+                    h-screen
+                    text-black dark:text-white
+                    bg-white dark:bg-gray-800
+                "
+            >
+                <RouteContainer
+                    className="
+                        gap-4
+                        flex-row
+                    "
+                >
+                    <FaSpinner className="text-3xl animate-spin"/>
+
+                    <p className="text-center">
+                        Loading Authenticated User...
+                    </p>
+                </RouteContainer>
             </div>
         )
     } else if ( user !== "logout" && user !== "unavailable" && user ) {

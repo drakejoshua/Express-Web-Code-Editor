@@ -191,7 +191,7 @@ export default function NavMenu() {
                     <Dialog.Content 
                         className='
                             dashboard--header__menu-content
-                            h-screen
+                            h-full
                             fixed
                             top-0
                             bg-white dark:bg-gray-900

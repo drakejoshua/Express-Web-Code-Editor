@@ -45,7 +45,7 @@ export default function Home() {
 
     // state to manage mobile breakpoint and nav links visibility
     const [ mobileBreakpoint, setMobileBreakpoint ] = useState( window.innerWidth <= 1024 )
-    const [ isNavLinksVisible, setIsNavLinksVisible ] = useState( true )
+    const [ isNavLinksVisible, setIsNavLinksVisible ] = useState( false )
 
     // get navigate function from react-router-dom
     const navigateTo = useNavigate()
@@ -254,8 +254,8 @@ export default function Home() {
                             items-center
                             gap-12
 
-                            *:grayscale dark:*:grayscale-50
-                            *:h-14
+                            *:grayscale dark:*:grayscale-0
+                            lg:*:h-10 *:h-8
                             *:w-auto
                         '
                     >
@@ -282,8 +282,8 @@ export default function Home() {
                             items-center
                             gap-12
 
-                            *:grayscale dark:*:grayscale-50
-                            *:h-14
+                            *:grayscale dark:*:grayscale-0
+                            lg:*:h-10 *:h-8
                             *:w-auto
                         '
                     >

@@ -350,7 +350,11 @@ export default function Editor() {
 
             setEditorSettings({
                 ...editorSettings,
-                ...data.blok.settings
+                theme: data.blok.settings.theme,
+                tabSize: data.blok.settings.tab_size.toString(),
+                fontSize: data.blok.settings.font_size,
+                autocomplete: data.blok.settings.auto_complete,
+                layout: data.blok.settings.editor_layout,
             })
         } else {
             // if blok fetch fails, set error state with error message
@@ -823,9 +827,9 @@ export default function Editor() {
         case "loading":
             return (
                 <>
-                    {/* Loading Editor */}
+                    {/* Add page metadata using React Helmet */}
                     <Helmet>
-                        <title>Loading Editor - CodeBloks</title>
+                        <title>Edit Blok - CodeBloks</title>
                         <meta name="description" content="Edit your code blok using the online code editor" />
                     </Helmet>
 
@@ -856,10 +860,12 @@ export default function Editor() {
         case "error":
             return (
                 <>
+                    {/* Add page metadata using React Helmet */}
                     <Helmet>
-                        <title>Editor Load Error - CodeBloks</title>
+                        <title>Edit Blok - CodeBloks</title>
                         <meta name="description" content="Edit your code blok using the online code editor" />
                     </Helmet>
+
 
                     <div 
                         className="
@@ -904,12 +910,6 @@ export default function Editor() {
         case "loaded":
             return (
                 <>
-                    {/* Insert Editor info into page metadata using React Helmet */}
-                    <Helmet>
-                        <title>Edit Blok { blokName } - CodeBloks</title>
-                        <meta name="description" content="Edit your code blok using the online code editor" />
-                    </Helmet>
-
                     {/* Editor content */}
                     <EditorContext.Provider value={ {
                         editorSettings,
@@ -929,6 +929,13 @@ export default function Editor() {
                         handleSharing
                     } }>
                         <>
+                            {/* Add page metadata using React Helmet */}
+                            <Helmet>
+                                <title>Edit Blok - CodeBloks</title>
+                                <meta name="description" content="Edit your code blok using the online code editor" />
+                            </Helmet>
+
+
                             {/* Editor main layout */}
                             <WideLayout>
                                 <div 

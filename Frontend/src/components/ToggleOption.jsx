@@ -63,8 +63,8 @@ const ToggleOption = React.forwardRef(({
                     the options prop 
                 */}
                 {
-                    options.map( ( option ) => (
-                        <ToggleGroup.Item value={ option.value }>
+                    options.map( ( option, index ) => (
+                        <ToggleGroup.Item value={ option.value } key={index}>
                             { option.content }
                         </ToggleGroup.Item>
                     ))

@@ -12,7 +12,7 @@ const WideLayout = forwardRef(({ children }, ref) => {
         <div
             ref={ref}
             className="
-                h-screen
+                h-[100dvh]
                 text-gray-900 dark:text-white
                 bg-white dark:bg-gray-900
                 overflow-auto
